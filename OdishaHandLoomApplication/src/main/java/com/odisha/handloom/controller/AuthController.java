@@ -18,7 +18,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.odisha.handloom.entity.Otp;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -37,8 +44,169 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     @Autowired
     com.odisha.handloom.service.EmailService emailService;
+
+    @Transactional
+    @PostMapping("/login/request-otp")
+    public ResponseEntity<?> requestOtp(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        if (email == null || email.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Email is required"));
+        }
+
+        // 1. Check if user exists (Silent fail if not found for security, or explicit
+        // generic message)
+        if (!userRepository.existsByEmail(email)) {
+            // Returning generic success to prevent email enumeration
+            return ResponseEntity.ok(new MessageResponse("If this email is registered, an OTP has been sent."));
+        }
+
+        // 2. Cooldown Check (60 seconds)
+        // Manual JPQL query
+        List<Otp> allOtps = entityManager.createQuery("SELECT o FROM Otp o WHERE o.email = :email", Otp.class)
+                .setParameter("email", email)
+                .getResultList();
+
+        Optional<Otp> existingOtp = allOtps.stream()
+                .filter(o -> !o.isUsed())
+                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
+                .findFirst();
+
+        if (existingOtp.isPresent()) {
+            Otp otp = existingOtp.get();
+            if (otp.getLastSentAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+                return ResponseEntity.badRequest().body(new MessageResponse("Please wait before requesting a new OTP"));
+            }
+        }
+
+        // 3. Generate New OTP
+        String otpCode = String.format("%06d", new SecureRandom().nextInt(999999));
+
+        // 4. Clean old OTPs (Strict Requirement)
+        deleteOldOtps(email);
+
+        Otp newOtp = Otp.builder()
+                .email(email)
+                .otp(otpCode)
+                .expiryTime(LocalDateTime.now().plusMinutes(5))
+                .used(false)
+                .attemptCount(0)
+                .lastSentAt(LocalDateTime.now())
+                .build();
+
+        saveOtp(newOtp);
+
+        System.out.println("=================================================");
+        System.out.println(" DEBUG OTP: " + otpCode);
+        System.out.println("=================================================");
+
+        // 5. Send Email
+        try {
+            emailService.sendOtpEmail(email, otpCode);
+        } catch (Exception e) {
+            System.err.println("EMAIL FAILED: " + e.getMessage());
+            // FALLBACK FOR DEBUGGING: Return success so user can use Console OTP
+            return ResponseEntity.ok(
+                    new MessageResponse("Email failed (" + e.getMessage() + ") BUT OTP generated. Check Server Logs."));
+        }
+
+        return ResponseEntity.ok(new MessageResponse("OTP sent successfully to your email."));
+    }
+
+    @Transactional
+    @PostMapping("/login/otp")
+    public ResponseEntity<?> loginWithOtp(@RequestBody java.util.Map<String, String> request) {
+        String email = request.get("email");
+        String otpCode = request.get("otp");
+
+        if (email == null || otpCode == null) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Email and OTP are required"));
+        }
+
+        // 1. Fetch latest unused OTP
+        List<Otp> allOtps = entityManager.createQuery("SELECT o FROM Otp o WHERE o.email = :email", Otp.class)
+                .setParameter("email", email)
+                .getResultList();
+
+        Optional<Otp> otpOptional = allOtps.stream()
+                .filter(o -> !o.isUsed())
+                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
+                .findFirst();
+
+        if (otpOptional.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP"));
+        }
+
+        Otp otp = otpOptional.get();
+
+        if (otp.isUsed()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP"));
+        }
+
+        // 2. Check Expiry
+        if (otp.getExpiryTime().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("OTP expired"));
+        }
+
+        // 3. Check Attempt Limit
+        if (otp.getAttemptCount() >= 5) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("OTP attempts exceeded. Please request a new OTP"));
+        }
+
+        // 4. Validate Code
+        if (!otp.getOtp().equals(otpCode)) {
+            otp.setAttemptCount(otp.getAttemptCount() + 1);
+            saveOtp(otp);
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid OTP"));
+        }
+
+        // 5. Success - Mark Used
+        otp.setUsed(true);
+        saveOtp(otp);
+
+        // 6. Generate JWT & Login
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isBlocked()) {
+            return ResponseEntity.status(401).body(new MessageResponse("Your account has been blocked."));
+        }
+
+        // Manually create authentication token without password check
+        // We need a way to authenticate "without password".
+        // Usually, we load UserDetails and create UsernamePasswordAuthenticationToken
+        // with authorities.
+        // Or we use a custom AuthenticationProvider.
+        // For simplicity reusing jwtUtils.generateJwtToken(authentication) requires an
+        // Authentication object.
+
+        // Let's create a dummy Auth object since we verified identity via OTP
+        org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User
+                .builder()
+                .username(user.getEmail())
+                .password("") // data not used
+                .authorities(user.getRole().name())
+                .build();
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        // No need to set Context if stateless, but good practice
+
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        List<String> roles = List.of(user.getRole().name());
+
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                user.getId(),
+                user.getEmail(),
+                roles,
+                user.getFullName(),
+                user.getShopName(),
+                user.isApproved()));
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -206,5 +374,21 @@ public class AuthController {
                 user.getFullName(),
                 user.getShopName(),
                 user.isApproved()));
+    }
+
+    @Transactional
+    public void saveOtp(Otp otp) {
+        if (otp.getId() == null) {
+            entityManager.persist(otp);
+        } else {
+            entityManager.merge(otp);
+        }
+    }
+
+    @Transactional
+    public void deleteOldOtps(String email) {
+        entityManager.createQuery("DELETE FROM Otp o WHERE o.email = :email")
+                .setParameter("email", email)
+                .executeUpdate();
     }
 }

@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LoginWithOtp from './pages/LoginWithOtp';
 import Home from './pages/Home';
 import AnalyticsDashboard from './pages/admin/AnalyticsDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -37,6 +38,7 @@ function App() {
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/login-otp" element={<PublicRoute><LoginWithOtp /></PublicRoute>} />
 
           {/* Checkout Flow (Customer only but distinct look, usually keeps Navbar or minimal) */}
           <Route path="/checkout" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><Checkout /></ProtectedRoute>} />

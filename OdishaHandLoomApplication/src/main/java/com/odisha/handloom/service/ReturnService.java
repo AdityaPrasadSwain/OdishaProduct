@@ -30,6 +30,9 @@ public class ReturnService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public ReturnRequest createReturnRequest(UUID orderItemId, String reason, String description,
             ReturnRequest.ReturnType type, String proofImageUrl, UUID customerId) {
@@ -71,16 +74,51 @@ public class ReturnService {
 
         ReturnRequest savedRequest = returnRequestRepository.save(request);
 
-        // Notify Seller
+        // Notify Seller (System Notification)
         notificationService.createNotification(request.getSeller(), "Return Requested",
                 "A return has been requested for " + item.getProduct().getName() + " by "
                         + request.getCustomer().getFullName());
+
+        // Send Email to Seller
+        try {
+            User seller = request.getSeller();
+            emailService.sendSellerReturnRequestEmail(
+                    seller.getEmail(),
+                    seller.getShopName() != null ? seller.getShopName() : seller.getFullName(),
+                    savedRequest.getOrderItem().getOrder().getId().toString().substring(0, 8),
+                    savedRequest.getOrderItem().getProduct().getName(),
+                    savedRequest.getType().toString());
+        } catch (Exception e) {
+            System.err.println("[ReturnService] Failed to send email to seller: " + e.getMessage());
+        }
 
         // Notify Admins
         List<User> admins = userRepository.findByRole(com.odisha.handloom.entity.Role.ADMIN);
         for (User admin : admins) {
             notificationService.createNotification(admin, "New Return Request",
                     "Return request #" + savedRequest.getId().toString().substring(0, 8) + " needs attention.");
+        }
+
+        // Send Email to Customer
+        try {
+            String orderId = savedRequest.getOrderItem().getOrder().getId().toString().substring(0, 8);
+            String productName = savedRequest.getOrderItem().getProduct().getName();
+
+            if (savedRequest.getType() == ReturnRequest.ReturnType.REPLACEMENT) {
+                emailService.sendReplacementRequestSubmittedEmail(
+                        savedRequest.getCustomer().getEmail(),
+                        savedRequest.getCustomer().getFullName(),
+                        orderId,
+                        productName);
+            } else {
+                emailService.sendReturnRequestSubmittedEmail(
+                        savedRequest.getCustomer().getEmail(),
+                        savedRequest.getCustomer().getFullName(),
+                        orderId,
+                        productName);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to send return/replacement email: " + e.getMessage());
         }
 
         return savedRequest;

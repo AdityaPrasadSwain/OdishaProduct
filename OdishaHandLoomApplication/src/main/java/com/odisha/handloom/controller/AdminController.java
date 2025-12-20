@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import com.odisha.handloom.service.EmailService;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +30,9 @@ public class AdminController {
 
     @Autowired
     com.odisha.handloom.repository.OrderRepository orderRepository;
+
+    @Autowired
+    EmailService emailService;
 
     @GetMapping("/sellers")
     public List<User> getAllSellers() {
@@ -112,6 +116,15 @@ public class AdminController {
         User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
         seller.setApproved(true);
         userRepository.save(seller);
+
+        // Send Approval Email (Async) - Catch any startup/config errors to prevent
+        // blocking approval
+        try {
+            emailService.sendSellerApprovalEmail(seller.getEmail(), seller.getFullName());
+        } catch (Exception e) {
+            System.err.println("Failed to send seller approval email: " + e.getMessage());
+        }
+
         return ResponseEntity.ok(new MessageResponse("Seller approved successfully!"));
     }
 
@@ -129,6 +142,18 @@ public class AdminController {
         seller.setBlocked(false);
         userRepository.save(seller);
         return ResponseEntity.ok(new MessageResponse("Seller unblocked successfully!"));
+    }
+
+    @PutMapping("/sellers/{id}/reject")
+    public ResponseEntity<?> rejectSeller(@PathVariable UUID id, @RequestParam(required = false) String reason) {
+        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        seller.setApproved(false);
+        userRepository.save(seller);
+
+        // Send Rejection Email
+        emailService.sendSellerRejectionEmail(seller.getEmail(), seller.getFullName(), reason);
+
+        return ResponseEntity.ok(new MessageResponse("Seller application rejected."));
     }
 
     @PutMapping("/products/{id}/approve")
@@ -187,5 +212,41 @@ public class AdminController {
 
         userRepository.delete(seller);
         return ResponseEntity.ok(new MessageResponse("Seller and their products deleted successfully!"));
+    }
+
+    @PostMapping("/test-email")
+    public ResponseEntity<?> testEmail(@RequestParam String type, @RequestParam String to) {
+        try {
+            switch (type) {
+                case "welcome":
+                    emailService.sendCustomerWelcomeEmail(to, "Test User");
+                    break;
+                case "order":
+                    // Create dummy items
+                    com.odisha.handloom.entity.OrderItem item = new com.odisha.handloom.entity.OrderItem();
+                    com.odisha.handloom.entity.Product product = new com.odisha.handloom.entity.Product();
+                    product.setName("Test Sambalpuri Saree");
+                    item.setProduct(product);
+                    item.setQuantity(1);
+                    item.setPrice(new java.math.BigDecimal("4999.00"));
+
+                    emailService.sendOrderConfirmationEmail(to, "Test User", "TEST-123", 4999.00, List.of(item));
+                    break;
+                case "seller-return":
+                    emailService.sendSellerReturnRequestEmail(to, "Test Seller", "TEST-123", "Test Sambalpuri Saree",
+                            "REFUND");
+                    break;
+                case "admin-report":
+                    emailService.sendHtmlEmail(to, "Test Admin Report",
+                            "<h1>Admin Report Test</h1><p>If you see this, the email service is working.</p>");
+                    break;
+                default:
+                    return ResponseEntity.badRequest().body(new MessageResponse(
+                            "Invalid email type. Options: welcome, order, seller-return, admin-report"));
+            }
+            return ResponseEntity.ok(new MessageResponse("Test email sent for type: " + type));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Failed to send email: " + e.getMessage()));
+        }
     }
 }

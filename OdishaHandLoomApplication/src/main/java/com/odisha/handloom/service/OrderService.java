@@ -35,6 +35,9 @@ public class OrderService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private EmailService emailService;
+
     @Transactional
     public List<Order> createOrder(User customer, List<OrderItemRequest> items, String address, String paymentMethod,
             String paymentId, UUID addressId) {
@@ -124,6 +127,25 @@ public class OrderService {
             notificationService.createNotification(seller, "New Order Received",
                     "You have received a new order #" + savedOrder.getId().toString().substring(0, 8) + " from "
                             + customer.getFullName());
+
+            // Send Order Confirmation Email to Customer
+            emailService.sendOrderConfirmationEmail(
+                    customer.getEmail(),
+                    customer.getFullName(),
+                    savedOrder.getId().toString().substring(0, 8),
+                    savedOrder.getTotalAmount().doubleValue(),
+                    savedOrder.getOrderItems());
+
+            // Send New Order Email to Seller
+            try {
+                emailService.sendNewOrderReceivedEmail(
+                        seller.getEmail(),
+                        seller.getShopName() != null ? seller.getShopName() : seller.getFullName(),
+                        savedOrder.getId().toString().substring(0, 8),
+                        customer.getFullName());
+            } catch (Exception e) {
+                System.err.println("[OrderService] Failed to send email to seller: " + e.getMessage());
+            }
         }
 
         // Update customer address if not present
@@ -171,6 +193,44 @@ public class OrderService {
 
         order.setStatus(OrderStatus.RETURN_REQUESTED);
         orderRepository.save(order);
+
+        // Send Return Request Email
+        String productNames = order.getOrderItems().stream()
+                .map(item -> item.getProduct().getName())
+                .collect(Collectors.joining(", "));
+
+        emailService.sendReturnRequestSubmittedEmail(
+                order.getUser().getEmail(),
+                order.getUser().getFullName(),
+                order.getId().toString().substring(0, 8),
+                productNames);
+    }
+
+    public void requestReplacement(UUID orderId, UUID userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (!order.getUser().getId().equals(userId)) {
+            throw new RuntimeException("You are not authorized to replace this order");
+        }
+
+        if (order.getStatus() != OrderStatus.DELIVERED) {
+            throw new RuntimeException("Only delivered orders can be replaced");
+        }
+
+        order.setStatus(OrderStatus.REPLACEMENT_REQUESTED);
+        orderRepository.save(order);
+
+        // Send Replacement Request Email
+        String productNames = order.getOrderItems().stream()
+                .map(item -> item.getProduct().getName())
+                .collect(Collectors.joining(", "));
+
+        emailService.sendReplacementRequestSubmittedEmail(
+                order.getUser().getEmail(),
+                order.getUser().getFullName(),
+                order.getId().toString().substring(0, 8),
+                productNames);
     }
 
     public void cancelOrder(UUID orderId, UUID userId) {

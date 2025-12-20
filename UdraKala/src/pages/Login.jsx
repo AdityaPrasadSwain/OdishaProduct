@@ -108,6 +108,12 @@ const Login = () => {
                             {loading ? 'Signing in...' : 'Sign In'}
                         </button>
 
+                        <div className="flex justify-center mt-4">
+                            <Link to="/login-otp" className="text-sm text-gray-500 hover:text-orange-600 transition-colors">
+                                Login with OTP
+                            </Link>
+                        </div>
+
                         <div className="text-center mt-6">
                             <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors">
                                 Don't have an account?{' '}

@@ -111,6 +111,20 @@ public class OrderController {
         }
     }
 
+    @PutMapping("/{id}/replacement")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<?> requestReplacement(@PathVariable UUID id) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User customer = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        try {
+            orderService.requestReplacement(id, customer.getId());
+            return ResponseEntity.ok(new MessageResponse("Replacement requested successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
     // Helper class for payload
     public static class StatusUpdateRequest {
         private OrderStatus status;

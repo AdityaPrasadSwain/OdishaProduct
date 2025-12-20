@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "return_requests_v2")
+@Table(name = "return_requests_v3")
 @Data
 public class ReturnRequest {
     @Id
@@ -29,21 +29,18 @@ public class ReturnRequest {
     private User seller;
 
     @Column(nullable = false)
-    private String reason; // "Damaged", "Wrong Item", "Size Issue", etc.
+    private String reason;
 
     @Column(length = 1000)
     private String description;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "return_type") // Changed name to avoid keyword reserved conflict if any, but also good
-                                  // practice. Actually kept 'type' in code but let's check. Original was 'type'.
-                                  // I will keep it but remove nullable.
-    private ReturnType type; // REFUND or REPLACEMENT
+    @Column(name = "req_type", nullable = false)
+    private ReturnType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "return_status") // Renaming status to return_status just in case, but MAINLY removing
-                                    // nullable=false.
-    private ReturnStatus status; // PENDING, APPROVED, REJECTED, PICKED_UP, COMPLETED
+    @Column(name = "req_status", nullable = false)
+    private ReturnStatus status;
 
     private String proofImageUrl;
 

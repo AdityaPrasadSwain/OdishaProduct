@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { motion as Motion } from 'motion/react';
 import { Eye, EyeOff } from 'lucide-react';
 import Swal from 'sweetalert2';
-import { sendWelcomeEmail, sendAdminNotification } from '../utils/emailService';
+
 
 const Register = () => {
     const navigate = useNavigate();
@@ -111,28 +111,15 @@ const Register = () => {
         try {
             await register(formData);
 
-            // Send Emails (Service handles errors & alerts)
-            await sendWelcomeEmail(formData.email, formData.fullName);
-            if (formData.role === 'SELLER') {
-                await sendAdminNotification(formData.fullName, formData.email);
-            }
-
             // Success Message
-            if (formData.role === 'SELLER') {
-                await Swal.fire({
-                    title: 'Success!',
-                    html: 'Seller account created successfully.<br>your account will be approved within 24–48 hours.', // Using HTML for line break
-                    icon: 'success',
-                    confirmButtonColor: '#ea580c'
-                });
-            } else {
-                await Swal.fire({
-                    title: 'Success!',
-                    text: 'Account created successfully. Please login.',
-                    icon: 'success',
-                    confirmButtonColor: '#ea580c'
-                });
-            }
+            await Swal.fire({
+                title: 'Success!',
+                text: 'Your Account Created succefully.',
+                icon: 'success',
+                confirmButtonColor: '#ea580c',
+                confirmButtonText: 'OK'
+            });
+
             navigate('/login');
         } catch (err) {
             // Backend Error Handling
