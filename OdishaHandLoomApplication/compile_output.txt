@@ -1,0 +1,75 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/C:/Users/swain/Downloads/apache-maven-3.9.11/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.odisha:OdishaHandLoomApplication >----------------
+[INFO] Building OdishaHandLoomApplication 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ OdishaHandLoomApplication ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ OdishaHandLoomApplication ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 56 source files with javac [debug parameters release 25] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/entity/Product.java:[40,14] cannot find symbol
+  symbol:   method setProduct(com.odisha.handloom.entity.Product)
+  location: variable image of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/entity/Product.java:[45,14] cannot find symbol
+  symbol:   method setProduct(<nulltype>)
+  location: variable image of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[125,66] constructor ProductImage in class com.odisha.handloom.entity.ProductImage cannot be applied to given types;
+  required: java.lang.String,int,com.odisha.handloom.entity.Product
+  found:    no arguments
+  reason: actual and formal argument lists differ in length
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[126,23] cannot find symbol
+  symbol:   method setImageUrl(java.lang.String)
+  location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[127,23] cannot find symbol
+  symbol:   method setPosition(int)
+  location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[128,23] cannot find symbol
+  symbol:   method setProduct(com.odisha.handloom.entity.Product)
+  location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[INFO] 6 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.534 s
+[INFO] Finished at: 2025-12-16T14:27:15+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.1:compile (default-compile) on project OdishaHandLoomApplication: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/entity/Product.java:[40,14] cannot find symbol
+[ERROR]   symbol:   method setProduct(com.odisha.handloom.entity.Product)
+[ERROR]   location: variable image of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/entity/Product.java:[45,14] cannot find symbol
+[ERROR]   symbol:   method setProduct(<nulltype>)
+[ERROR]   location: variable image of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[125,66] constructor ProductImage in class com.odisha.handloom.entity.ProductImage cannot be applied to given types;
+[ERROR]   required: java.lang.String,int,com.odisha.handloom.entity.Product
+[ERROR]   found:    no arguments
+[ERROR]   reason: actual and formal argument lists differ in length
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[126,23] cannot find symbol
+[ERROR]   symbol:   method setImageUrl(java.lang.String)
+[ERROR]   location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[127,23] cannot find symbol
+[ERROR]   symbol:   method setPosition(int)
+[ERROR]   location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/SellerController.java:[128,23] cannot find symbol
+[ERROR]   symbol:   method setProduct(com.odisha.handloom.entity.Product)
+[ERROR]   location: variable pImage of type com.odisha.handloom.entity.ProductImage
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

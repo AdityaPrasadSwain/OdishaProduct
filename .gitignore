@@ -26,6 +26,9 @@ dist-ssr
 *.sln
 *.sw?
 
+# Local Config
+application.properties
+
 # Java / Maven
 target/
 *.class

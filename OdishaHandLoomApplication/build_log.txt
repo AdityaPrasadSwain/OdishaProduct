@@ -1,0 +1,22 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.odisha:OdishaHandLoomApplication >----------------
+[INFO] Building OdishaHandLoomApplication 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.4.1:clean (default-clean) @ OdishaHandLoomApplication ---
+[INFO] Deleting C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\target
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.406 s
+[INFO] Finished at: 2025-12-19T13:56:53+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-clean-plugin:3.4.1:clean (default-clean) on project OdishaHandLoomApplication: Failed to clean project: Failed to delete C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\target\classes -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
