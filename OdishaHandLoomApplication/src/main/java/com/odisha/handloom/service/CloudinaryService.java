@@ -19,4 +19,12 @@ public class CloudinaryService {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         return uploadResult.get("secure_url").toString();
     }
+
+    public String uploadVideo(MultipartFile file) throws IOException {
+        java.util.Map<String, Object> params = new java.util.HashMap<>();
+        params.put("resource_type", "video");
+        params.put("format", "mp4");
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
+        return uploadResult.get("secure_url").toString();
+    }
 }

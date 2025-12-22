@@ -44,6 +44,11 @@ public class Order {
     private String courierName;
     private String trackingId;
 
+    // Invoice Details
+    private boolean invoiceSent = false;
+    private LocalDateTime invoiceSentAt;
+    private String invoiceNumber;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -56,6 +61,7 @@ public class Order {
     public Order(UUID id, User user, User seller, List<OrderItem> orderItems, BigDecimal totalAmount,
             OrderStatus status,
             String shippingAddress, String paymentMethod, String paymentId, String courierName, String trackingId,
+            boolean invoiceSent, LocalDateTime invoiceSentAt, String invoiceNumber,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
         this.id = id;
@@ -69,6 +75,9 @@ public class Order {
         this.paymentId = paymentId;
         this.courierName = courierName;
         this.trackingId = trackingId;
+        this.invoiceSent = invoiceSent;
+        this.invoiceSentAt = invoiceSentAt;
+        this.invoiceNumber = invoiceNumber;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -89,6 +98,9 @@ public class Order {
         private String paymentId;
         private String courierName;
         private String trackingId;
+        private boolean invoiceSent;
+        private LocalDateTime invoiceSentAt;
+        private String invoiceNumber;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -150,6 +162,21 @@ public class Order {
             return this;
         }
 
+        public OrderBuilder invoiceSent(boolean invoiceSent) {
+            this.invoiceSent = invoiceSent;
+            return this;
+        }
+
+        public OrderBuilder invoiceSentAt(LocalDateTime invoiceSentAt) {
+            this.invoiceSentAt = invoiceSentAt;
+            return this;
+        }
+
+        public OrderBuilder invoiceNumber(String invoiceNumber) {
+            this.invoiceNumber = invoiceNumber;
+            return this;
+        }
+
         public OrderBuilder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -162,7 +189,7 @@ public class Order {
 
         public Order build() {
             return new Order(id, user, seller, orderItems, totalAmount, status, shippingAddress, paymentMethod,
-                    paymentId, courierName, trackingId,
+                    paymentId, courierName, trackingId, invoiceSent, invoiceSentAt, invoiceNumber,
                     createdAt, updatedAt);
         }
     }
@@ -261,6 +288,30 @@ public class Order {
 
     public void setTrackingId(String trackingId) {
         this.trackingId = trackingId;
+    }
+
+    public boolean isInvoiceSent() {
+        return invoiceSent;
+    }
+
+    public void setInvoiceSent(boolean invoiceSent) {
+        this.invoiceSent = invoiceSent;
+    }
+
+    public LocalDateTime getInvoiceSentAt() {
+        return invoiceSentAt;
+    }
+
+    public void setInvoiceSentAt(LocalDateTime invoiceSentAt) {
+        this.invoiceSentAt = invoiceSentAt;
+    }
+
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
+
+    public void setInvoiceNumber(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
     }
 
     public LocalDateTime getCreatedAt() {

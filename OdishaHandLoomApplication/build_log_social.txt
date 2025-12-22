@@ -1,0 +1,40 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.odisha:OdishaHandLoomApplication >----------------
+[INFO] Building OdishaHandLoomApplication 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ OdishaHandLoomApplication ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ OdishaHandLoomApplication ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 79 source files with javac [debug parameters release 25] to target\classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/ReelInteractionController.java:[103,56] incompatible types: inference variable T has incompatible bounds
+    equality constraints: java.util.Map<java.lang.String,java.lang.Object>
+    lower bounds: java.util.Map<java.lang.String,java.lang.Object&java.io.Serializable&java.lang.Comparable<? extends java.lang.Comparable<?>>>
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.502 s
+[INFO] Finished at: 2025-12-21T03:35:26+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project OdishaHandLoomApplication: Compilation failure
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/controller/ReelInteractionController.java:[103,56] incompatible types: inference variable T has incompatible bounds
+[ERROR]     equality constraints: java.util.Map<java.lang.String,java.lang.Object>
+[ERROR]     lower bounds: java.util.Map<java.lang.String,java.lang.Object&java.io.Serializable&java.lang.Comparable<? extends java.lang.Comparable<?>>>
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

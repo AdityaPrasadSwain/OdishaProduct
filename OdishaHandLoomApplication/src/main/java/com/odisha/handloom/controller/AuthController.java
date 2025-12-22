@@ -48,164 +48,103 @@ public class AuthController {
     EntityManager entityManager;
 
     @Autowired
+    com.odisha.handloom.service.OtpService otpService;
+
+    @Autowired
     com.odisha.handloom.service.EmailService emailService;
 
-    @Transactional
-    @PostMapping("/login/request-otp")
-    public ResponseEntity<?> requestOtp(@RequestBody java.util.Map<String, String> request) {
-        String email = request.get("email");
+    @Autowired
+    com.odisha.handloom.service.AdminNotificationService adminNotificationService;
+
+    @GetMapping("/login/otp-status")
+    public ResponseEntity<?> getOtpStatus(@RequestParam String email) {
         if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Email is required"));
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Email required"));
         }
-
-        // 1. Check if user exists (Silent fail if not found for security, or explicit
-        // generic message)
-        if (!userRepository.existsByEmail(email)) {
-            // Returning generic success to prevent email enumeration
-            return ResponseEntity.ok(new MessageResponse("If this email is registered, an OTP has been sent."));
-        }
-
-        // 2. Cooldown Check (60 seconds)
-        // Manual JPQL query
-        List<Otp> allOtps = entityManager.createQuery("SELECT o FROM Otp o WHERE o.email = :email", Otp.class)
-                .setParameter("email", email)
-                .getResultList();
-
-        Optional<Otp> existingOtp = allOtps.stream()
-                .filter(o -> !o.isUsed())
-                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
-                .findFirst();
-
-        if (existingOtp.isPresent()) {
-            Otp otp = existingOtp.get();
-            if (otp.getLastSentAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
-                return ResponseEntity.badRequest().body(new MessageResponse("Please wait before requesting a new OTP"));
-            }
-        }
-
-        // 3. Generate New OTP
-        String otpCode = String.format("%06d", new SecureRandom().nextInt(999999));
-
-        // 4. Clean old OTPs (Strict Requirement)
-        deleteOldOtps(email);
-
-        Otp newOtp = Otp.builder()
-                .email(email)
-                .otp(otpCode)
-                .expiryTime(LocalDateTime.now().plusMinutes(5))
-                .used(false)
-                .attemptCount(0)
-                .lastSentAt(LocalDateTime.now())
-                .build();
-
-        saveOtp(newOtp);
-
-        System.out.println("=================================================");
-        System.out.println(" DEBUG OTP: " + otpCode);
-        System.out.println("=================================================");
-
-        // 5. Send Email
-        try {
-            emailService.sendOtpEmail(email, otpCode);
-        } catch (Exception e) {
-            System.err.println("EMAIL FAILED: " + e.getMessage());
-            // FALLBACK FOR DEBUGGING: Return success so user can use Console OTP
-            return ResponseEntity.ok(
-                    new MessageResponse("Email failed (" + e.getMessage() + ") BUT OTP generated. Check Server Logs."));
-        }
-
-        return ResponseEntity.ok(new MessageResponse("OTP sent successfully to your email."));
+        return ResponseEntity.ok(otpService.getOtpStatus(email));
     }
 
-    @Transactional
-    @PostMapping("/login/otp")
-    public ResponseEntity<?> loginWithOtp(@RequestBody java.util.Map<String, String> request) {
-        String email = request.get("email");
-        String otpCode = request.get("otp");
+    @PostMapping("/login/request-otp")
+    public ResponseEntity<?> requestOtp(@RequestBody com.odisha.handloom.payload.request.OtpLoginRequest request) {
+        String loginType = request.getLoginType() != null ? request.getLoginType().toUpperCase() : "EMAIL";
+        String email = request.getEmail();
+        String mobile = request.getMobile();
 
-        if (email == null || otpCode == null) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Email and OTP are required"));
-        }
+        String identifier = "MOBILE".equals(loginType) ? mobile : email;
 
-        // 1. Fetch latest unused OTP
-        List<Otp> allOtps = entityManager.createQuery("SELECT o FROM Otp o WHERE o.email = :email", Otp.class)
-                .setParameter("email", email)
-                .getResultList();
-
-        Optional<Otp> otpOptional = allOtps.stream()
-                .filter(o -> !o.isUsed())
-                .sorted((o1, o2) -> o2.getCreatedAt().compareTo(o1.getCreatedAt()))
-                .findFirst();
-
-        if (otpOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP"));
-        }
-
-        Otp otp = otpOptional.get();
-
-        if (otp.isUsed()) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid or expired OTP"));
-        }
-
-        // 2. Check Expiry
-        if (otp.getExpiryTime().isBefore(LocalDateTime.now())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("OTP expired"));
-        }
-
-        // 3. Check Attempt Limit
-        if (otp.getAttemptCount() >= 5) {
+        if (identifier == null || identifier.isEmpty()) {
             return ResponseEntity.badRequest()
-                    .body(new MessageResponse("OTP attempts exceeded. Please request a new OTP"));
+                    .body(java.util.Map.of("success", false, "message", "Identifier required"));
         }
 
-        // 4. Validate Code
-        if (!otp.getOtp().equals(otpCode)) {
-            otp.setAttemptCount(otp.getAttemptCount() + 1);
-            saveOtp(otp);
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid OTP"));
+        // 1. Check if user exists
+        boolean userExists = "MOBILE".equals(loginType) ? userRepository.existsByPhoneNumber(identifier)
+                : userRepository.existsByEmail(identifier);
+
+        if (!userExists) {
+            // Anti-enumeration: return success even if user not found, or explicit error?
+            // Requirement said "OTP sent successfully" for success.
+            // But existing code returned "If this account exists...".
+            // User asked "Success: { success: true, message: 'OTP sent successfully' }"
+            // To be secure, we should simulate delay or return success.
+            // For now, mirroring "user not found" behavior might be safer to prevent
+            // confusion in DEV.
+            // But requirement "Make PROD strictly DLT-compliant" implies "Secure &
+            // scalable".
+            // I'll return the standard success message to mask existence.
+            return ResponseEntity.ok(java.util.Map.of("success", true, "message", "OTP sent successfully"));
         }
 
-        // 5. Success - Mark Used
-        otp.setUsed(true);
-        saveOtp(otp);
+        try {
+            String msg = otpService.generateAndSendOtp(identifier, loginType);
+            return ResponseEntity.ok(java.util.Map.of("success", true, "message", msg));
+        } catch (Exception e) {
+            // "OTP service temporarily unavailable" for failure
+            // Catching generic Exception to prevent any JVM crash from propagating
+            return ResponseEntity.badRequest()
+                    .body(java.util.Map.of("success", false, "message", "OTP service temporarily unavailable"));
+        }
+    }
 
-        // 6. Generate JWT & Login
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+    @PostMapping("/login/verify-otp")
+    public ResponseEntity<?> loginWithOtp(@RequestBody com.odisha.handloom.payload.request.OtpLoginRequest request) {
+        String loginType = request.getLoginType() != null ? request.getLoginType().toUpperCase() : "EMAIL";
+        String identifier = "MOBILE".equals(loginType) ? request.getMobile() : request.getEmail();
+        String otpCode = request.getOtp();
+
+        if (identifier == null || otpCode == null) {
+            return ResponseEntity.badRequest().body(java.util.Map.of("success", false, "message", "Missing fields"));
+        }
+
+        String validationResult = otpService.validateOtp(identifier, loginType, otpCode);
+
+        if (!"Success".equals(validationResult)) {
+            return ResponseEntity.badRequest()
+                    .body(java.util.Map.of("success", false, "message", validationResult));
+        }
+
+        // Generate JWT
+        User user = "MOBILE".equals(loginType)
+                ? userRepository.findByPhoneNumber(identifier).orElseThrow()
+                : userRepository.findByEmail(identifier).orElseThrow();
 
         if (user.isBlocked()) {
-            return ResponseEntity.status(401).body(new MessageResponse("Your account has been blocked."));
+            return ResponseEntity.status(401).body(new MessageResponse("Account blocked"));
         }
 
-        // Manually create authentication token without password check
-        // We need a way to authenticate "without password".
-        // Usually, we load UserDetails and create UsernamePasswordAuthenticationToken
-        // with authorities.
-        // Or we use a custom AuthenticationProvider.
-        // For simplicity reusing jwtUtils.generateJwtToken(authentication) requires an
-        // Authentication object.
-
-        // Let's create a dummy Auth object since we verified identity via OTP
         org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
-                .password("") // data not used
+                .password("")
                 .authorities(user.getRole().name())
                 .build();
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
                 userDetails.getAuthorities());
-        // No need to set Context if stateless, but good practice
-
         String jwt = jwtUtils.generateJwtToken(authentication);
-        List<String> roles = List.of(user.getRole().name());
 
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                user.getId(),
-                user.getEmail(),
-                roles,
-                user.getFullName(),
-                user.getShopName(),
-                user.isApproved()));
+        return ResponseEntity.ok(new JwtResponse(jwt, user.getId(), user.getEmail(), List.of(user.getRole().name()),
+                user.getFullName(), user.getShopName(), user.isApproved()));
     }
 
     @PostMapping("/login")
@@ -332,11 +271,15 @@ public class AuthController {
             user.setShopName(signUpRequest.getShopName());
             user.setGstNumber(signUpRequest.getGstNumber());
             user.setApproved(false);
+
+            userRepository.save(user);
+
+            // Notify Admin
+            adminNotificationService.notifySellerRegistration(user.getId(), user.getFullName());
         } else {
             user.setApproved(true);
+            userRepository.save(user);
         }
-
-        userRepository.save(user);
 
         // Send Welcome Email
         try {

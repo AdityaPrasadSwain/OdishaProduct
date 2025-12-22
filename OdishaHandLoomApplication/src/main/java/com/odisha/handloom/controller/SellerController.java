@@ -30,6 +30,9 @@ public class SellerController {
     ProductRepository productRepository;
 
     @Autowired
+    private com.odisha.handloom.service.CaptionGeneratorService captionGeneratorService;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -47,7 +50,8 @@ public class SellerController {
     @PostMapping(value = "/products", consumes = { "multipart/form-data" })
     public ResponseEntity<?> addProduct(
             @jakarta.validation.Valid @RequestPart("product") ProductRequest productRequest,
-            @RequestPart(value = "images", required = false) List<org.springframework.web.multipart.MultipartFile> images) {
+            @RequestPart(value = "images", required = false) List<org.springframework.web.multipart.MultipartFile> images,
+            @RequestPart(value = "reel", required = false) org.springframework.web.multipart.MultipartFile reel) {
 
         logger.info("Received addProduct request: {}", productRequest);
         logger.info("Received images: {}", images != null ? images.size() : "null");
@@ -71,24 +75,46 @@ public class SellerController {
             });
         }
 
-        for (org.springframework.web.multipart.MultipartFile image : images) {
-            // Validate Image Size (2MB)
-            if (image.getSize() > 2 * 1024 * 1024) {
+        if (images != null) {
+            for (org.springframework.web.multipart.MultipartFile image : images) {
+                // Validate Image Size (2MB)
+                if (image.getSize() > 2 * 1024 * 1024) {
+                    return ResponseEntity.badRequest().body(new java.util.HashMap<String, String>() {
+                        {
+                            put("field", "images");
+                            put("message", "Each image must be less than 2MB.");
+                        }
+                    });
+                }
+                String contentType = image.getContentType();
+                if (contentType == null
+                        || !List.of("image/jpeg", "image/png", "image/webp", "image/jpg")
+                                .contains(contentType.toLowerCase())) {
+                    return ResponseEntity.badRequest().body(new java.util.HashMap<String, String>() {
+                        {
+                            put("field", "images");
+                            put("message", "Invalid image format. Please upload JPG, PNG, or WEBP.");
+                        }
+                    });
+                }
+            }
+        }
+
+        if (reel != null && !reel.isEmpty()) {
+            if (reel.getSize() > 50 * 1024 * 1024) { // 50MB Limit
                 return ResponseEntity.badRequest().body(new java.util.HashMap<String, String>() {
                     {
-                        put("field", "images");
-                        put("message", "Each image must be less than 2MB.");
+                        put("field", "reel");
+                        put("message", "Reel video must be less than 50MB.");
                     }
                 });
             }
-            String contentType = image.getContentType();
-            if (contentType == null
-                    || !List.of("image/jpeg", "image/png", "image/webp", "image/jpg")
-                            .contains(contentType.toLowerCase())) {
+            String contentType = reel.getContentType();
+            if (contentType == null || !contentType.startsWith("video/")) {
                 return ResponseEntity.badRequest().body(new java.util.HashMap<String, String>() {
                     {
-                        put("field", "images");
-                        put("message", "Invalid image format. Please upload JPG, PNG, or WEBP.");
+                        put("field", "reel");
+                        put("message", "Invalid video format.");
                     }
                 });
             }
@@ -126,6 +152,8 @@ public class SellerController {
                 .size(productRequest.getSize())
                 .origin(productRequest.getOrigin())
                 .packOf(productRequest.getPackOf())
+                .origin(productRequest.getOrigin())
+                .packOf(productRequest.getPackOf())
                 .build();
 
         logger.info("Building product with attributes - Material: {}, Color: {}, Size: {}, Origin: {}, PackOf: {}",
@@ -159,6 +187,25 @@ public class SellerController {
         }
 
         logger.info("All images saved for product: {}", savedProduct.getId());
+
+        // Upload Reel if exists
+        try {
+            if (reel != null && !reel.isEmpty()) {
+                logger.info("Uploading reel video...");
+                String reelUrl = cloudinaryService.uploadVideo(reel);
+                logger.info("Reel uploaded: {}", reelUrl);
+                savedProduct.setReelUrl(reelUrl);
+
+                // Auto-generate caption using AI Service
+                String caption = captionGeneratorService.generateCaption(savedProduct);
+                savedProduct.setReelCaption(caption);
+
+                productRepository.save(savedProduct);
+            }
+        } catch (java.io.IOException e) {
+            logger.error("Error uploading reel", e);
+            return ResponseEntity.badRequest().body(new MessageResponse("Error uploading reel: " + e.getMessage()));
+        }
 
         return ResponseEntity.ok(new MessageResponse("Product added successfully!"));
     }

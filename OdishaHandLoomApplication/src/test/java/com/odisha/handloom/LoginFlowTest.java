@@ -2,7 +2,6 @@ package com.odisha.handloom;
 
 import com.odisha.handloom.entity.Role;
 import com.odisha.handloom.entity.User;
-import com.odisha.handloom.payload.request.LoginRequest;
 import com.odisha.handloom.repository.UserRepository;
 import com.odisha.handloom.security.jwt.JwtUtils;
 import org.junit.jupiter.api.Test;

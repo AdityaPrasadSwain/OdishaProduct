@@ -2,8 +2,6 @@ package com.odisha.handloom.security;
 
 import com.odisha.handloom.security.jwt.AuthEntryPointJwt;
 import com.odisha.handloom.security.jwt.AuthTokenFilter;
-import com.odisha.handloom.security.services.UserDetailsServiceImpl;
-import com.odisha.handloom.security.SellerApprovalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -84,13 +82,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/login/request-otp",
-                                "/api/auth/login/otp")
+                                "/api/auth/login/verify-otp")
                         .permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
-                        .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/features/**").permitAll()
-                        .requestMatchers("/api/customer/products", "/api/customer/products/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/public/**", "/api/products/public/**", "/api/cart/**",
+                                "/api/seller/registration/**", "/api/reels/public/**", "/api/user/profile/**",
+                                "/api/help/chat/**", "/api/categories/**", "/api/customer/products/**",
+                                "/api/products/search") // Added categories and customer products
+                        .permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")

@@ -12,4 +12,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     List<Order> findByUserId(UUID userId);
 
     List<Order> findBySellerId(UUID sellerId);
+
+    List<Order> findByUserIdAndCreatedAtAfter(UUID userId, java.time.LocalDateTime date);
 }

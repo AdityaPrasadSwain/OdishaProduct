@@ -34,7 +34,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("test")
 public class ApiHealthTest {
 
-    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ApiHealthTest.class);
+    // private static final org.slf4j.Logger logger =
+    // org.slf4j.LoggerFactory.getLogger(ApiHealthTest.class);
 
     @Autowired
     private CategoryController categoryController;
@@ -168,7 +169,8 @@ public class ApiHealthTest {
             org.springframework.mock.web.MockMultipartFile image = new org.springframework.mock.web.MockMultipartFile(
                     "image", "saree.jpg", "image/jpeg", "dummy image content".getBytes());
 
-            ResponseEntity<?> prodResponse = sellerController.addProduct(product, Collections.singletonList(image));
+            ResponseEntity<?> prodResponse = sellerController.addProduct(product, Collections.singletonList(image),
+                    null);
             assertEquals(200, prodResponse.getStatusCode().value());
 
             System.out.println("STEP 2 SUCCESS: Product Added by Seller");
@@ -266,7 +268,7 @@ public class ApiHealthTest {
             p.setCategoryId(categoryId);
             org.springframework.mock.web.MockMultipartFile img = new org.springframework.mock.web.MockMultipartFile(
                     "image", "x.jpg", "image/jpeg", "content".getBytes());
-            sellerController.addProduct(p, Collections.singletonList(img));
+            sellerController.addProduct(p, Collections.singletonList(img), null);
             com.odisha.handloom.entity.Product prod = productRepository.findAll().get(0);
             prod.setApproved(true);
             productRepository.save(prod);

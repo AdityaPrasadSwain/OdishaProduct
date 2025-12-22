@@ -293,18 +293,161 @@ public class EmailService {
         sendHtmlEmail(to, subject, getHtmlTemplate("Account Status Update", content));
     }
 
-    @Async
+    /**
+     * Synchronous OTP Email Sending (Strict Requirement).
+     * Throws exception on failure.
+     */
     public void sendOtpEmail(String to, String otp) {
-        String subject = "Your Login OTP - UdraKala";
-        String content = """
-                <p>Your One-Time Password (OTP) for login is:</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #ea580c; background: #fff7ed; padding: 10px 20px; border-radius: 8px; border: 1px dashed #ea580c;">%s</span>
-                </div>
-                <p>This OTP is valid for <strong>5 minutes</strong>.</p>
-                <p style="color: #6b7280; font-size: 13px;">If you did not request this, please ignore this email.</p>
-                """
-                .formatted(otp);
-        sendHtmlEmail(to, subject, getHtmlTemplate("Login Verification", content));
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("Your OTP – UdraKala");
+
+            String htmlContent = """
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>Your OTP – UdraKala</title>
+                        <style>
+                            body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333; line-height: 1.6; }
+                            table { border-collapse: collapse; width: 100%%; max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+                            .header { background-color: #ea580c; padding: 28px 20px; text-align: center; }
+                            .header h1 { color: #ffffff; margin: 0; font-size: 26px; letter-spacing: 1px; }
+                            .sub-header { color: #fbbf24; font-size: 13px; text-transform: uppercase; margin-top: 6px; }
+                            .content { padding: 40px 20px; text-align: center; }
+                            .content h2 { color: #ea580c; font-size: 22px; margin-bottom: 16px; }
+                            .otp-box { background-color: #f9fafb; border: 2px dashed #ea580c; border-radius: 8px; padding: 18px; font-size: 28px; font-weight: bold; letter-spacing: 6px; color: #111827; display: inline-block; margin: 20px 0; }
+                            .info-text { font-size: 14px; color: #374151; margin-top: 10px; }
+                            .warning { margin-top: 20px; font-size: 13px; color: #6b7280; }
+                            .footer { background-color: #f9fafb; padding: 25px 20px; text-align: center; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }
+                            @media only screen and (max-width: 480px) { .content { padding: 25px 16px; } .otp-box { font-size: 24px; letter-spacing: 4px; } }
+                        </style>
+                    </head>
+                    <body>
+                    <table role="presentation" cellspacing="0" cellpadding="0">
+                        <!-- Header -->
+                        <tr>
+                            <td class="header">
+                                <h1>UDRAKALA</h1>
+                                <div class="sub-header">The Art of Odisha</div>
+                            </td>
+                        </tr>
+                        <!-- Content -->
+                        <tr>
+                            <td class="content">
+                                <h2>Verify Your Login</h2>
+                                <p>Hello <strong>User</strong>,</p>
+                                <p>Please use the following One-Time Password (OTP) to continue:</p>
+                                <!-- OTP -->
+                                <div class="otp-box">
+                                    %s
+                                </div>
+                                <p class="info-text">
+                                    This OTP is valid for <strong>5 minutes</strong>.
+                                </p>
+                                <p class="warning">
+                                    Do not share this OTP with anyone.
+                                    UdraKala team will never ask for your OTP.
+                                </p>
+                            </td>
+                        </tr>
+                        <!-- Footer -->
+                        <tr>
+                            <td class="footer">
+                                <p>&copy; 2025 UdraKala. All rights reserved.</p>
+                                <p>If you didn’t request this OTP, you can safely ignore this email.</p>
+                            </td>
+                        </tr>
+                    </table>
+                    </body>
+                    </html>
+                    """
+                    .formatted(otp);
+
+            helper.setText(htmlContent, true); // true = HTML
+
+            mailSender.send(message);
+            System.out.println("✅ OTP Email sent successfully to " + to);
+
+        } catch (MessagingException e) {
+            System.err.println("❌ Failed to send OTP email to " + to + ": " + e.getMessage());
+            throw new RuntimeException("Failed to send OTP email", e);
+        } catch (Exception e) {
+            System.err.println("❌ Unexpected error sending OTP email: " + e.getMessage());
+            throw new RuntimeException("Unexpected error sending OTP email", e);
+        }
+    }
+
+    // Deprecated Async OTP method - keeping for legacy code ensuring it calls new
+    // one or is removed
+    // Removing @Async to force synchronous behavior if called
+    public void sendOtpEmail(String to, String name, String otp) {
+        sendOtpEmail(to, otp);
+    }
+
+    @Value("${app.otp.mode:DEV}")
+    private String otpMode;
+
+    @org.springframework.context.event.EventListener(org.springframework.boot.context.event.ApplicationReadyEvent.class)
+    public void sendStartupTestEmail() {
+        if ("PROD".equalsIgnoreCase(otpMode)) {
+            System.out.println("🚀 Sending Startup Test Email (PROD Mode)...");
+            try {
+                sendOtpEmail(fromEmail, "TEST-STARTUP");
+                System.out.println("✅ Startup Test Email PASSED.");
+            } catch (Exception e) {
+                System.err.println("❌ Startup Test Email FAILED: " + e.getMessage());
+            }
+        } else {
+            System.out.println("🚀 Startup Test Email skipped in DEV. Set app.otp.mode=PROD to test.");
+        }
+    }
+
+    @Async
+    public void sendThankYouInvoiceEmail(String to, String customerName, String orderId, byte[] invoicePdf) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject("Thank you for your UdraKala order – Invoice attached");
+
+            String content = """
+                    <p>Dear <strong>%s</strong>,</p>
+                    <p>Thank you for shopping with <strong>UdraKala</strong>!</p>
+                    <p>We are pleased to inform you that your order <strong>#%s</strong> is being processed and will be shipped soon.</p>
+                    <p>Please find the attached invoice for your reference.</p>
+
+                    <div class="info-box">
+                        <p>If you have any questions, feel free to reply to this email or contact us at <a href="mailto:support@udrakala.com">support@udrakala.com</a>.</p>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <a href="http://localhost:5173/orders/%s" class="button">View Order Details</a>
+                    </div>
+                    """
+                    .formatted(customerName, orderId, orderId);
+
+            helper.setText(getHtmlTemplate("Invoice for Order #" + orderId, content), true);
+
+            // Add Attachment
+            helper.addAttachment("Invoice_" + orderId + ".pdf",
+                    new jakarta.mail.util.ByteArrayDataSource(invoicePdf, "application/pdf"));
+
+            mailSender.send(message);
+            System.out.println("✅ Invoice Email sent successfully to " + to);
+
+        } catch (MessagingException e) {
+            System.err.println("❌ Failed to send invoice email to " + to + ": " + e.getMessage());
+            e.printStackTrace(); // Log full trace for debugging
+        } catch (Exception e) {
+            System.err.println("❌ Unexpected error sending invoice email: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

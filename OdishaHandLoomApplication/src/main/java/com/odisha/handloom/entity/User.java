@@ -32,6 +32,11 @@ public class User {
 
     private String address; // Simple address for now, can be an entity later
 
+    // Profile Fields
+    private String profilePictureUrl;
+    private String bio;
+    private String gender;
+
     // Seller fields
     private String gstNumber;
     private String shopName;
@@ -42,6 +47,18 @@ public class User {
     private String bankAccountNumber;
     private String ifscCode;
     private String bankName;
+    private String accountHolderName;
+    private boolean isBankVerified = false; // Default false until Admin verifies
+
+    private boolean isDeleted = false;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<Address> addresses;
@@ -56,6 +73,7 @@ public class User {
     }
 
     public User(UUID id, String email, String password, String fullName, String phoneNumber, Role role, String address,
+            String profilePictureUrl, String bio, String gender,
             String gstNumber, String shopName, boolean isApproved, Boolean isBlocked, String panNumber,
             String bankAccountNumber,
             String ifscCode, String bankName, LocalDateTime createdAt, LocalDateTime updatedAt) {
@@ -66,6 +84,9 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.role = role;
         this.address = address;
+        this.profilePictureUrl = profilePictureUrl;
+        this.bio = bio;
+        this.gender = gender;
         this.gstNumber = gstNumber;
         this.shopName = shopName;
         this.isApproved = isApproved;
@@ -139,6 +160,30 @@ public class User {
         this.address = address;
     }
 
+    public String getProfilePictureUrl() {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
     public String getGstNumber() {
         return gstNumber;
     }
@@ -203,6 +248,22 @@ public class User {
         this.bankName = bankName;
     }
 
+    public String getAccountHolderName() {
+        return accountHolderName;
+    }
+
+    public void setAccountHolderName(String accountHolderName) {
+        this.accountHolderName = accountHolderName;
+    }
+
+    public boolean isBankVerified() {
+        return isBankVerified;
+    }
+
+    public void setBankVerified(boolean bankVerified) {
+        isBankVerified = bankVerified;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -228,6 +289,9 @@ public class User {
         private String phoneNumber;
         private Role role;
         private String address;
+        private String profilePictureUrl;
+        private String bio;
+        private String gender;
         private String gstNumber;
         private String shopName;
         private boolean isApproved;
@@ -274,6 +338,21 @@ public class User {
 
         public UserBuilder address(String address) {
             this.address = address;
+            return this;
+        }
+
+        public UserBuilder profilePictureUrl(String profilePictureUrl) {
+            this.profilePictureUrl = profilePictureUrl;
+            return this;
+        }
+
+        public UserBuilder bio(String bio) {
+            this.bio = bio;
+            return this;
+        }
+
+        public UserBuilder gender(String gender) {
+            this.gender = gender;
             return this;
         }
 
@@ -328,9 +407,9 @@ public class User {
         }
 
         public User build() {
-            return new User(id, email, password, fullName, phoneNumber, role, address, gstNumber, shopName, isApproved,
-                    isBlocked,
-                    panNumber, bankAccountNumber, ifscCode, bankName, createdAt, updatedAt);
+            return new User(id, email, password, fullName, phoneNumber, role, address, profilePictureUrl, bio, gender,
+                    gstNumber, shopName, isApproved,
+                    isBlocked, panNumber, bankAccountNumber, ifscCode, bankName, createdAt, updatedAt);
         }
     }
 }

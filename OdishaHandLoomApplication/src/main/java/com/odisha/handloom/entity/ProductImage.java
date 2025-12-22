@@ -1,9 +1,6 @@
 package com.odisha.handloom.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.UUID;
 
 @Entity

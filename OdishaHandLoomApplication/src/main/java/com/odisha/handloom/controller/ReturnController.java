@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile; // For future use if image implementation changes to cloud
 
-import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 

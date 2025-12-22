@@ -33,6 +33,9 @@ public class ReturnService {
     @Autowired
     private EmailService emailService;
 
+    @Autowired
+    private AdminNotificationService adminNotificationService;
+
     @Transactional
     public ReturnRequest createReturnRequest(UUID orderItemId, String reason, String description,
             ReturnRequest.ReturnType type, String proofImageUrl, UUID customerId) {
@@ -98,6 +101,10 @@ public class ReturnService {
             notificationService.createNotification(admin, "New Return Request",
                     "Return request #" + savedRequest.getId().toString().substring(0, 8) + " needs attention.");
         }
+
+        // Notify Admin (New System)
+        adminNotificationService.notifyReturnRequest(savedRequest.getId(),
+                savedRequest.getOrderItem().getOrder().getId().toString().substring(0, 8));
 
         // Send Email to Customer
         try {

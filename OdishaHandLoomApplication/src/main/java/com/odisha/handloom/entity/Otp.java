@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,8 +20,14 @@ public class Otp {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String email;
+
+    @Column(nullable = true)
+    private String mobile;
+
+    @Column(nullable = true)
+    private String type; // EMAIL or MOBILE
 
     @Column(nullable = false, length = 6)
     private String otp;
@@ -31,7 +36,8 @@ public class Otp {
     private LocalDateTime expiryTime;
 
     @Column(nullable = false)
-    private boolean used;
+    @Builder.Default
+    private boolean used = false;
 
     @Column(nullable = false)
     @Builder.Default
@@ -40,6 +46,24 @@ public class Otp {
     @Column(nullable = false)
     private LocalDateTime lastSentAt;
 
-    @CreationTimestamp
+    @Column(nullable = true)
+    private LocalDateTime resendAt;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void onCreate() {
+        if (this.createdAt == null) {
+            this.createdAt = LocalDateTime.now(java.time.ZoneId.systemDefault());
+        }
+        // Ensure used is false by default if not set
+        if (!this.used) {
+            this.used = false;
+        }
+        // Ensure attemptCount is 0
+        if (this.attemptCount < 0) {
+            this.attemptCount = 0;
+        }
+    }
 }

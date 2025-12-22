@@ -40,6 +40,11 @@ public class Product {
     private String origin; // e.g. Sambalpuri, Pipili
     private String packOf;
 
+    private String reelUrl;
+
+    @Column(columnDefinition = "TEXT")
+    private String reelCaption;
+
     @lombok.Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("position ASC")
@@ -171,5 +176,61 @@ public class Product {
 
     public void setApproved(boolean approved) {
         isApproved = approved;
+    }
+
+    public String getReelCaption() {
+        return reelCaption;
+    }
+
+    public void setReelCaption(String reelCaption) {
+        this.reelCaption = reelCaption;
+    }
+
+    public String getReelUrl() {
+        return reelUrl;
+    }
+
+    public void setReelUrl(String reelUrl) {
+        this.reelUrl = reelUrl;
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        this.material = material;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getPackOf() {
+        return packOf;
+    }
+
+    public void setPackOf(String packOf) {
+        this.packOf = packOf;
     }
 }

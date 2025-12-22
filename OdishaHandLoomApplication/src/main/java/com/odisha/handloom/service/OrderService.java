@@ -6,6 +6,7 @@ import com.odisha.handloom.repository.OrderRepository;
 import com.odisha.handloom.repository.ProductRepository;
 import com.odisha.handloom.repository.UserRepository;
 import com.odisha.handloom.repository.AddressRepository;
+import com.odisha.handloom.repository.SellerEarningsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +38,15 @@ public class OrderService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private SellerEarningsRepository sellerEarningsRepository;
+
+    @Autowired
+    private com.odisha.handloom.repository.PlatformConfigRepository platformConfigRepository;
+
+    @Autowired
+    private AdminNotificationService adminNotificationService;
 
     @Transactional
     public List<Order> createOrder(User customer, List<OrderItemRequest> items, String address, String paymentMethod,
@@ -123,10 +133,48 @@ public class OrderService {
             createdOrders.add(savedOrder);
             System.out.println("[OrderService] Order saved with ID: " + savedOrder.getId());
 
+            // Calculate and Save Seller Earnings (Dynamic Commission + GST)
+            com.odisha.handloom.entity.PlatformConfig config = platformConfigRepository.findById("DEFAULT")
+                    .orElse(com.odisha.handloom.entity.PlatformConfig.createDefault());
+
+            for (OrderItem item : savedOrder.getOrderItems()) {
+                BigDecimal gross = item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
+
+                // Commission
+                BigDecimal commission = gross.multiply(config.getCommissionPercentage());
+
+                // GST on Commission
+                BigDecimal gst = commission.multiply(config.getGstPercentage());
+
+                // Net Amount
+                BigDecimal net = gross.subtract(commission).subtract(gst);
+
+                SellerEarnings earnings = SellerEarnings.builder()
+                        .seller(seller)
+                        .order(savedOrder)
+                        .orderItem(item)
+                        .grossAmount(gross)
+                        .commission(commission)
+                        .gstAmount(gst)
+                        .netAmount(net)
+                        .payoutStatus(SellerEarnings.PayoutStatus.PENDING)
+                        .build();
+
+                sellerEarningsRepository.save(earnings);
+            }
+
             // Notify Seller
-            notificationService.createNotification(seller, "New Order Received",
-                    "You have received a new order #" + savedOrder.getId().toString().substring(0, 8) + " from "
-                            + customer.getFullName());
+            // Notify Seller
+            notificationService.createNotification(seller,
+                    "New order received from " + customer.getFullName(),
+                    Notification.NotificationType.ORDER,
+                    customer,
+                    savedOrder.getId(),
+                    null,
+                    null);
+
+            // Notify Admin
+            adminNotificationService.notifyOrderCreated(savedOrder.getId(), savedOrder.getTotalAmount().doubleValue());
 
             // Send Order Confirmation Email to Customer
             emailService.sendOrderConfirmationEmail(

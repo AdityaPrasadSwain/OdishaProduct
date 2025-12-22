@@ -37,7 +37,7 @@ public class AdminController {
     @GetMapping("/sellers")
     public List<User> getAllSellers() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole() == Role.SELLER)
+                .filter(user -> user.getRole() == Role.SELLER && !user.isDeleted())
                 .collect(Collectors.toList());
     }
 
@@ -204,14 +204,23 @@ public class AdminController {
     public ResponseEntity<?> deleteSeller(@PathVariable UUID id) {
         User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
 
-        // Delete all products by this seller first to avoid FK constraints
+        // Soft Delete Logic (Per User Request: "delete from frontend only not delete
+        // permanently")
+        seller.setDeleted(true);
+        seller.setBlocked(true); // Also block to be safe
+        userRepository.save(seller);
+
+        // Deactivate full inventory
         List<Product> sellerProducts = productRepository.findAll().stream()
                 .filter(p -> p.getSeller().getId().equals(id))
                 .collect(Collectors.toList());
-        productRepository.deleteAll(sellerProducts);
 
-        userRepository.delete(seller);
-        return ResponseEntity.ok(new MessageResponse("Seller and their products deleted successfully!"));
+        for (Product p : sellerProducts) {
+            p.setApproved(false); // Hide products from store
+            productRepository.save(p);
+        }
+
+        return ResponseEntity.ok(new MessageResponse("Seller has been soft deleted (removed from frontend view)."));
     }
 
     @PostMapping("/test-email")
