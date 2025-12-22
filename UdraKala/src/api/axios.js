@@ -51,16 +51,23 @@ api.interceptors.response.use(
 
     /* 🔴 3. Handle Unauthorized (401) */
     if (error.response.status === 401) {
-      localStorage.removeItem("token");
+      const token = localStorage.getItem("token");
 
-      Swal.fire({
-        icon: "warning",
-        title: "Session Expired",
-        text: "Please login again",
-        confirmButtonText: "OK",
-      }).then(() => {
-        window.location.href = "/login";
-      });
+      // Only trigger logout if we actually had a token (otherwise it's just a failed public request that shouldn't crash the app)
+      // OR if we are in a protected route. For public routes returning 401 unexpectedly, we just reject.
+
+      if (token) {
+        localStorage.removeItem("token");
+        Swal.fire({
+          icon: "warning",
+          title: "Session Expired",
+          text: "Please login again",
+          confirmButtonText: "OK",
+          timer: 3000 // Close auto after 3s
+        }).then(() => {
+          window.location.href = "/login";
+        });
+      }
 
       return Promise.reject(error);
     }

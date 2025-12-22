@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
     CheckCircle,
@@ -22,6 +23,7 @@ import Input from '../../components/ui/Input';
 import StatsCard from '../../components/admin/StatsCard';
 import AdminTable from '../../components/admin/AdminTable';
 import ScrollReveal from '../../components/ui/ScrollReveal';
+import { getUnreadNotificationCount } from '../../api/adminNotificationApi'; // Import API
 
 const AdminDashboard = () => {
     // Local state for admin data
@@ -30,6 +32,29 @@ const AdminDashboard = () => {
     const [categories, setCategories] = useState([]);
     const [features, setFeatures] = useState([]);
     const [activeTab, setActiveTab] = useState('overview');
+    const navigate = useNavigate();
+
+    // Check for alerts on mount
+    useEffect(() => {
+        const checkAlerts = async () => {
+            const count = await getUnreadNotificationCount();
+            if (count > 0) {
+                Swal.fire({
+                    title: 'Pending Actions',
+                    text: `You have ${count} unread notifications requiring attention.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Go to Notifications',
+                    cancelButtonText: 'Close'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate('/admin/notifications');
+                    }
+                });
+            }
+        };
+        checkAlerts();
+    }, [navigate]);
 
     // Initial Data Fetch
     useEffect(() => {

@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion as Motion } from 'motion/react';
-import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useWishlist } from '../context/WishlistContext';
 import Badge from '../components/ui/Badge';
 import API from '../api/axios';
 import Swal from 'sweetalert2';
+import FollowButton from '../components/FollowButton';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -286,6 +287,12 @@ const ProductDetails = () => {
                             >
                                 <Zap size={20} /> BUY NOW
                             </button>
+                            <button
+                                onClick={() => navigate(`/reels?productId=${product.id}`)}
+                                className="col-span-2 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-pink-600 text-white hover:bg-pink-700 transition active:scale-95 shadow-lg shadow-pink-100 dark:shadow-none"
+                            >
+                                <Film size={20} /> WATCH REEL
+                            </button>
                         </div>
                     </div>
 
@@ -349,9 +356,12 @@ const ProductDetails = () => {
                             <div>
                                 <h3 className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-wider mb-4">Seller</h3>
                                 <div className="space-y-1">
-                                    <p className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                                        {product.seller?.shopName || 'Odisha Handloom'}
-                                        <Badge variant="success" className="text-[10px] px-1.5 h-4">4.8 ★</Badge>
+                                    <p className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 justify-between">
+                                        <span className="flex items-center gap-2">
+                                            {product.seller?.shopName || 'Odisha Handloom'}
+                                            <Badge variant="success" className="text-[10px] px-1.5 h-4">4.8 ★</Badge>
+                                        </span>
+                                        {product.seller?.id && <FollowButton sellerId={product.seller.id} sellerName={product.seller.shopName} />}
                                     </p>
                                     <p className="text-sm text-gray-500">7 Days Service Policy</p>
                                 </div>
@@ -446,6 +456,12 @@ const ProductDetails = () => {
                     className="py-4 font-bold text-white bg-[#fb641b] hover:bg-[#e65a18] transition uppercase tracking-tight text-sm"
                 >
                     {isOutOfStock ? 'Sold Out' : 'Buy Now'}
+                </button>
+                <button
+                    onClick={() => navigate(`/reels?productId=${product.id}`)}
+                    className="col-span-2 py-4 font-bold text-white bg-pink-600 hover:bg-pink-700 transition uppercase tracking-tight text-sm flex items-center justify-center gap-2"
+                >
+                    <Film size={16} /> Watch Reel
                 </button>
             </div>
         </div>

@@ -4,11 +4,14 @@ import { useData } from '../../context/DataContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { getMyOrders } from '../../api/orderApi';
 import { motion as Motion } from 'motion/react';
-import { Package, MapPin, User, Heart, Star, Sparkles, LogOut, Eye, Calendar, Clock, ShoppingCart, Trash2 } from 'lucide-react';
+import { Package, MapPin, User, Heart, Star, Sparkles, LogOut, Eye, Calendar, Clock, ShoppingCart, Trash2, Film } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
+
 import Button from '../../components/ui/Button';
+import WatchReels from '../WatchReels';
+import Profile from '../Profile';
 
 const CustomerDashboard = () => {
     const { user } = useAuth();
@@ -47,9 +50,34 @@ const CustomerDashboard = () => {
         return p ? p.name : 'Unknown Product';
     };
 
+    const getOrderStatus = (order) => {
+        // If order is delivered, check for return requests
+        if (order.status === 'DELIVERED') {
+            const returnItem = order.orderItems?.find(item => item.returnRequest);
+            if (returnItem) {
+                const status = returnItem.returnRequest.status; // PENDING, APPROVED, etc.
+                let variant = 'info';
+                if (status === 'PENDING') variant = 'warning';
+                if (status === 'APPROVED') variant = 'primary';
+                if (status === 'REJECTED') variant = 'danger';
+                if (status === 'COMPLETED') variant = 'success';
+
+                return { label: `RETURN ${status}`, variant: variant };
+            }
+        }
+
+        // Default Order Status
+        let variant = 'info';
+        if (order.status === 'DELIVERED') variant = 'success';
+        if (order.status === 'CANCELLED') variant = 'danger';
+
+        return { label: order.status, variant: variant };
+    };
+
     const recommendedProducts = products.filter(p => p.approved).slice(0, 3);
 
     const tabs = [
+        { id: 'reels', label: 'Watch Reel', icon: Film },
         { id: 'orders', label: 'My Orders', icon: Package },
         { id: 'wishlist', label: 'Wishlist', icon: Heart },
         { id: 'profile', label: 'My Profile', icon: User },
@@ -84,6 +112,13 @@ const CustomerDashboard = () => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 {/* Main Content */}
                 <div className="lg:col-span-3 space-y-6">
+                    {activeTab === 'reels' && (
+                        <div className="fixed inset-0 z-50 bg-black">
+                            {/* Force full screen overlay for reels when tab is active */}
+                            <WatchReels isEmbedded={true} onClose={() => setActiveTab('orders')} />
+                        </div>
+                    )}
+
                     {activeTab === 'orders' && (
                         <Motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             {myOrders.length === 0 ? (
@@ -107,7 +142,10 @@ const CustomerDashboard = () => {
                                                 <div>
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-bold text-gray-900 dark:text-white">Order #{order.id.toString().slice(0, 8)}</span>
-                                                        <Badge variant={order.status === 'DELIVERED' ? 'success' : order.status === 'CANCELLED' ? 'danger' : 'info'}>{order.status}</Badge>
+                                                        {(() => {
+                                                            const statusObj = getOrderStatus(order);
+                                                            return <Badge variant={statusObj.variant}>{statusObj.label}</Badge>;
+                                                        })()}
                                                     </div>
                                                     <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                         <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(order.createdAt).toLocaleDateString()}</span>
@@ -210,44 +248,7 @@ const CustomerDashboard = () => {
 
                     {activeTab === 'profile' && (
                         <Motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                            <Card title="My Profile">
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-20 w-20 rounded-full bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold">
-                                            {user?.fullName?.charAt(0).toUpperCase()}
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-dark dark:text-white">{user?.fullName}</h3>
-                                            <p className="text-muted">{user?.email}</p>
-                                            <Badge variant="success" className="mt-2">Customer Account</Badge>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-border dark:border-dark-light">
-                                        <div>
-                                            <label className="text-sm font-medium text-muted block mb-1">Full Name</label>
-                                            <div className="p-3 bg-gray-50 dark:bg-dark-light rounded-md text-dark dark:text-white font-medium border border-border dark:border-dark-light">
-                                                {user?.fullName}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="text-sm font-medium text-muted block mb-1">Email Address</label>
-                                            <div className="p-3 bg-gray-50 dark:bg-dark-light rounded-md text-dark dark:text-white font-medium border border-border dark:border-dark-light">
-                                                {user?.email}
-                                            </div>
-                                        </div>
-                                        <div className="md:col-span-2">
-                                            <label className="text-sm font-medium text-muted block mb-1">Shipping Address</label>
-                                            <div className="p-3 bg-gray-50 dark:bg-dark-light rounded-md text-dark dark:text-white font-medium border border-border dark:border-dark-light min-h-[80px]">
-                                                {user?.address || 'No address saved.'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-end">
-                                        <Button variant="outline" onClick={() => window.location.href = '/profile/edit'}>Edit Profile</Button>
-                                    </div>
-                                </div>
-                            </Card>
+                            <Profile />
                         </Motion.div>
                     )}
                 </div>

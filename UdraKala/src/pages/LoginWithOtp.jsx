@@ -7,14 +7,13 @@ import API from '../api/axios'; // Direct API for OTP requests
 
 const LoginWithOtp = () => {
     const navigate = useNavigate();
-    const { login } = useAuth(); // We might need a custom login function for OTP token handling
-    // If 'login' expects username/password, we might need to manually handle token storage here
-    // But assuming useAuth can handle "set token" or we do it manual.
-    // Let's implement manual token set here for now to be safe or check AuthContext.
+    const { login } = useAuth(); // Keeping for context, though manual token set is used below per previous logic
 
+    const [loginType, setLoginType] = useState('EMAIL'); // EMAIL or MOBILE
     const [email, setEmail] = useState('');
+    const [mobile, setMobile] = useState('');
     const [otp, setOtp] = useState('');
-    const [step, setStep] = useState(1); // 1: Email, 2: OTP
+    const [step, setStep] = useState(1); // 1: Request, 2: Verify
     const [loading, setLoading] = useState(false);
     const [cooldown, setCooldown] = useState(0);
 
@@ -30,24 +29,41 @@ const LoginWithOtp = () => {
     }, [cooldown]);
 
     const handleRequestOtp = async (e) => {
-        e.preventDefault();
-        if (!email.trim()) {
-            Swal.fire({ text: 'Please enter your email', icon: 'warning', confirmButtonColor: '#ea580c' });
-            return;
+        if (e) e.preventDefault();
+
+        let identifier;
+        if (loginType === 'EMAIL') {
+            if (!email.trim()) {
+                Swal.fire({ text: 'Please enter your email', icon: 'warning', confirmButtonColor: '#ea580c' });
+                return;
+            }
+            identifier = email;
+        } else {
+            if (!mobile.trim() || mobile.length < 10) {
+                Swal.fire({ text: 'Please enter a valid mobile number', icon: 'warning', confirmButtonColor: '#ea580c' });
+                return;
+            }
+            identifier = mobile;
         }
 
         setLoading(true);
         try {
-            await API.post('/auth/login/request-otp', { email });
+            await API.post('/auth/login/request-otp', {
+                loginType,
+                email: loginType === 'EMAIL' ? email : undefined,
+                mobile: loginType === 'MOBILE' ? mobile : undefined
+            });
             setStep(2);
-            setCooldown(60); // Start 60s cooldown
+            setCooldown(30); // 30s cooldown as per requirements
             Swal.fire({
-                text: 'If this email is registered, an OTP has been sent.',
+                text: `OTP sent to your ${loginType === 'EMAIL' ? 'email' : 'mobile number'}`,
                 icon: 'success',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#ea580c',
+                timer: 1500
             });
         } catch (err) {
             const msg = err.response?.data?.message || 'Failed to send OTP';
+            // Check for cooldown message to update timer if needed, though server checks it too
             Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#ea580c' });
         } finally {
             setLoading(false);
@@ -57,34 +73,39 @@ const LoginWithOtp = () => {
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         if (!otp.trim() || otp.length !== 6) {
-            Swal.fire({ text: 'Please enter a valid 6-digit OTP', icon: 'warning', confirmButtonColor: '#ea580c' });
+            Swal.fire({ text: 'Invalid OTP', icon: 'warning', confirmButtonColor: '#ea580c' });
             return;
         }
 
         setLoading(true);
         try {
-            const res = await API.post('/auth/login/otp', { email, otp });
+            const res = await API.post('/auth/login/verify-otp', {
+                loginType,
+                email: loginType === 'EMAIL' ? email : undefined,
+                mobile: loginType === 'MOBILE' ? mobile : undefined,
+                otp
+            });
 
             // Login Success
-            // Assuming res.data contains access_token / user data similar to normal login
-            // We need to store it. 
+            const rawRoles = res.data.roles || [];
+            const normalizedRoles = rawRoles.map(r => r.startsWith('ROLE_') ? r : `ROLE_${r}`);
+
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('user', JSON.stringify({
                 id: res.data.id,
                 email: res.data.email,
-                roles: res.data.roles,
+                roles: normalizedRoles,
                 fullName: res.data.fullName,
                 shopName: res.data.shopName,
                 isApproved: res.data.isApproved
             }));
 
-            // Force reload or use context method if available to update state
+            // Force reload to update AuthContext state from localStorage
             window.location.href = '/';
 
         } catch (err) {
             const msg = err.response?.data?.message || 'Invalid OTP';
             Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#ea580c' });
-            // If attempts exceeded, maybe redirect or reset
             if (msg.includes('exceeded')) {
                 setStep(1);
                 setOtp('');
@@ -111,31 +132,73 @@ const LoginWithOtp = () => {
                         <p className="text-gray-600 dark:text-gray-300 text-sm">Secure passwordless access</p>
                     </div>
 
+                    {/* Tabs */}
+                    {step === 1 && (
+                        <div className="flex p-1 mb-6 bg-gray-100 dark:bg-white/5 rounded-xl">
+                            <button
+                                onClick={() => setLoginType('EMAIL')}
+                                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${loginType === 'EMAIL'
+                                        ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                    }`}
+                            >
+                                Email Login
+                            </button>
+                            <button
+                                onClick={() => setLoginType('MOBILE')}
+                                className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${loginType === 'MOBILE'
+                                        ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                                    }`}
+                            >
+                                Mobile Login
+                            </button>
+                        </div>
+                    )}
+
                     {step === 1 ? (
                         <form onSubmit={handleRequestOtp} className="space-y-6">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all placeholder-gray-400"
-                                    placeholder="Enter your registered email"
-                                    required
-                                />
-                            </div>
+                            {loginType === 'EMAIL' ? (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all placeholder-gray-400"
+                                        placeholder="Enter your registered email"
+                                        required
+                                    />
+                                </div>
+                            ) : (
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mobile Number</label>
+                                    <input
+                                        type="tel"
+                                        value={mobile}
+                                        onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                                        className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all placeholder-gray-400"
+                                        placeholder="Enter your 10-digit mobile number"
+                                        required
+                                        maxLength={10}
+                                    />
+                                </div>
+                            )}
+
                             <button
                                 type="submit"
                                 disabled={loading || cooldown > 0}
                                 className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
-                                {loading ? 'Sending...' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Send OTP'}
+                                {loading ? 'Sending...' : cooldown > 0 ? `Resend OTP in ${cooldown}s` : 'Send OTP'}
                             </button>
                         </form>
                     ) : (
                         <form onSubmit={handleVerifyOtp} className="space-y-6">
                             <div className="text-center mb-4">
-                                <span className="text-sm text-gray-500">Sent to {email}</span>
+                                <span className="text-sm text-gray-500">
+                                    Sent to {loginType === 'EMAIL' ? email : mobile}
+                                </span>
                                 <button type="button" onClick={() => setStep(1)} className="ml-2 text-orange-600 text-sm hover:underline">Change</button>
                             </div>
                             <div>

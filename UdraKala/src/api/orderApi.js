@@ -44,3 +44,15 @@ export const updateReturnStatus = async (id, status, comment) => {
     const response = await axios.put(`/returns/${id}/status`, { status, comment });
     return response.data;
 };
+
+export const sendSellerInvoice = async (orderId) => {
+    const response = await axios.post(`/seller/orders/${orderId}/send-invoice`);
+    return response.data;
+};
+
+export const downloadCustomerInvoice = async (orderId) => {
+    const response = await axios.get(`/customer/orders/${orderId}/invoice`, {
+        responseType: 'blob' // Important for PDF download
+    });
+    return response.data;
+};

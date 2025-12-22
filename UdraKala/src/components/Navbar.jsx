@@ -1,5 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, User, Menu, X, LogOut, Package, BarChart, Settings, Heart, LayoutDashboard, Sun, Moon } from 'lucide-react';
+import NotificationBell from './NotificationBell';
+import AdminNotificationBell from './admin/AdminNotificationBell'; // Import Admin Bell
 import udraKalaLogo from '../assets/logo.jpg';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -17,10 +19,11 @@ const AdminNavbar = ({ logout }) => {
                     </Link>
                     <div className="flex items-center space-x-6">
                         <Link to="/admin/dashboard" className="hover:text-orange-400">Dashboard</Link>
-                        <Link to="#" className="text-gray-400 hover:text-white cursor-not-allowed">Settings</Link>
+                        <Link to="/profile" className="hover:text-orange-400">Profile</Link>
                         <button onClick={toggleTheme} className="text-gray-400 hover:text-yellow-400">
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
+                        <AdminNotificationBell />
                         <button onClick={logout} className="flex items-center gap-2 hover:text-red-400"><LogOut size={16} /> Logout</button>
                     </div>
                 </div>
@@ -41,6 +44,7 @@ const SellerNavbar = ({ user, logout }) => {
                         </Link>
                         <div className="hidden md:flex space-x-6">
                             <Link to="/seller/dashboard" className="font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400">Dashboard</Link>
+                            <Link to="/profile" className="font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400">Profile</Link>
                             <Link to="#" className="font-medium text-gray-400 hover:text-orange-600 cursor-not-allowed">Analytics</Link>
                         </div>
                     </div>
@@ -49,6 +53,7 @@ const SellerNavbar = ({ user, logout }) => {
                         <button onClick={toggleTheme} className="text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400">
                             {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                         </button>
+                        <NotificationBell />
                         <button onClick={logout} className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">Logout</button>
                     </div>
                 </div>
@@ -76,9 +81,13 @@ const CustomerNavbar = ({ logout, cart, isOpen, setIsOpen }) => {
                             <button onClick={toggleTheme} className="text-gray-800 dark:text-gray-200 hover:text-orange-700 dark:hover:text-orange-400">
                                 {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                             </button>
-                            <Link to="/customer/dashboard" className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:text-orange-700 dark:hover:text-orange-400 font-medium">
-                                <User size={20} /> My Account
+                            <Link to="/profile" className="text-gray-800 dark:text-gray-200 hover:text-orange-700 dark:hover:text-orange-400 font-medium" title="Profile">
+                                <User size={20} />
                             </Link>
+                            <Link to="/customer/dashboard" className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:text-orange-700 dark:hover:text-orange-400 font-medium">
+                                Dashboard
+                            </Link>
+                            <NotificationBell />
                             <Link to="/wishlist" className="text-gray-800 dark:text-gray-200 hover:text-orange-700 dark:hover:text-orange-400 font-medium relative">
                                 <Heart size={22} />
                             </Link>
@@ -108,6 +117,7 @@ const CustomerNavbar = ({ logout, cart, isOpen, setIsOpen }) => {
             </div>
             {isOpen && (
                 <div className="md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 space-y-3">
+                    <Link to="/profile" className="block text-gray-800 dark:text-gray-200 font-bold" onClick={() => setIsOpen(false)}>My Profile</Link>
                     <Link to="/customer/dashboard" className="block text-gray-800 dark:text-gray-200 font-bold" onClick={() => setIsOpen(false)}>My Dashboard</Link>
                     <Link to="/products" className="block text-gray-800 dark:text-gray-200" onClick={() => setIsOpen(false)}>Shop</Link>
                     <button onClick={logout} className="block text-red-600 w-full text-left">Logout</button>

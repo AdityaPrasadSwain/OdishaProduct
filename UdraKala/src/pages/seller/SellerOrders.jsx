@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { getSellerOrders, updateOrderStatus } from '../../api/orderApi';
+import { getSellerOrders, updateOrderStatus, sendSellerInvoice } from '../../api/orderApi';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
-import { Edit2, Package, Truck, Check, AlertTriangle } from 'lucide-react';
+import { Edit2, Package, Truck, Check, AlertTriangle, FileText } from 'lucide-react';
 import { sendStatusUpdateEmail } from '../../utils/emailService';
 
 const SellerOrders = () => {
@@ -54,6 +54,18 @@ const SellerOrders = () => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        // Validation: Cannot ship without invoice
+        if (updateForm.status === 'OUT_FOR_DELIVERY' && !selectedOrder.invoiceSent) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invoice Not Sent',
+                text: 'You must send the invoice to the customer before marking as Out for Delivery.',
+                confirmButtonColor: '#ea580c'
+            });
+            return;
+        }
+
         try {
             await updateOrderStatus(selectedOrder.id, updateForm.status, updateForm.courierName, updateForm.trackingId);
 
@@ -93,6 +105,30 @@ const SellerOrders = () => {
         }
     };
 
+    const handleSendInvoice = async (order) => {
+        const result = await Swal.fire({
+            title: 'Send Invoice?',
+            text: "Invoice with thank you message will be sent to customer's registered email.",
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#ea580c',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, send it!'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                Swal.showLoading();
+                await sendSellerInvoice(order.id);
+                Swal.fire('Sent!', 'Invoice has been sent successfully.', 'success');
+                fetchOrders(); // Refresh to update status/badge
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Error', error.response?.data || 'Failed to send invoice', 'error');
+            }
+        }
+    };
+
     return (
         <div className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Order Management</h2>
@@ -110,8 +146,8 @@ const SellerOrders = () => {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order ID</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Invoice</th>
                                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
@@ -127,19 +163,37 @@ const SellerOrders = () => {
                                             <div className="text-sm text-gray-900 dark:text-white">
                                                 {order.orderItems.length} Items
                                             </div>
-                                            <div className="text-xs text-gray-500 truncate max-w-xs">{order.orderItems.map(i => i.product.name).join(', ')}</div>
+                                            <div className="text-xs text-gray-500 truncate max-w-xs text-nowrap">{order.orderItems.map(i => i.product.name).join(', ')}</div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">₹{order.totalAmount}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
                                                 order.status === 'CONFIRMED' ? 'bg-blue-100 text-blue-800' :
-                                                    order.status === 'PACKED' ? 'bg-purple-100 text-purple-800' :
-                                                        order.status === 'SHIPPED' ? 'bg-indigo-100 text-indigo-800' :
-                                                            order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                                                'bg-red-100 text-red-800'
+                                                    order.status === 'INVOICE_SENT' ? 'bg-purple-100 text-purple-800' :
+                                                        order.status === 'PACKED' ? 'bg-cyan-100 text-cyan-800' :
+                                                            order.status === 'SHIPPED' ? 'bg-indigo-100 text-indigo-800' :
+                                                                order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                                                                    'bg-red-100 text-red-800'
                                                 }`}>
                                                 {order.status}
                                             </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {order.invoiceSent ? (
+                                                <span className="flex items-center text-green-600 text-xs font-bold">
+                                                    <Check size={14} className="mr-1" /> SENT
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => handleSendInvoice(order)}
+                                                    disabled={order.status === 'PENDING' || order.status === 'CANCELLED'}
+                                                    className={`flex items-center gap-1 px-3 py-1 rounded border text-xs font-semibold ${order.status === 'PENDING' || order.status === 'CANCELLED'
+                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                            : 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+                                                        }`}
+                                                >
+                                                    <FileText size={12} /> Send
+                                                </button>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button onClick={() => openUpdateModal(order)} className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
@@ -175,6 +229,7 @@ const SellerOrders = () => {
                                     <option value="CONFIRMED">Confirmed</option>
                                     <option value="PACKED">Packed</option>
                                     <option value="SHIPPED">Shipped</option>
+                                    <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
                                     <option value="DELIVERED">Delivered</option>
                                 </select>
                             </div>

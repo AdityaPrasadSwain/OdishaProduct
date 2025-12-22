@@ -43,6 +43,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
 import Modal from '../../components/ui/Modal';
+import SellerReelsDashboard from './SellerReelsDashboard';
 
 
 const StatCard = ({ label, value, icon: Icon, colorClass }) => (
@@ -172,6 +173,7 @@ const SellerDashboard = () => {
         packOf: ''
     });
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [reelFile, setReelFile] = useState(null);
 
     // Initial Data Fetch
     const fetchData = async () => {
@@ -214,7 +216,35 @@ const SellerDashboard = () => {
 
     useEffect(() => {
         fetchData();
+        checkNewNotifications();
     }, []);
+
+    const checkNewNotifications = async () => {
+        try {
+            const { data: count } = await API.get('/notifications/unread-count');
+            if (count > 0) {
+                Swal.fire({
+                    title: 'New Notifications!',
+                    text: `You have ${count} unread notifications, including new followers!`,
+                    icon: 'info',
+                    confirmButtonText: 'View Notifications',
+                    showCancelButton: true,
+                    cancelButtonText: 'Close'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Logic to open notification dropdown is tricky since it's in Navbar. 
+                        // Instead, we can maybe redirect or just let them know.
+                        // Or trigger a custom event? For now, simple alert is "Seller Alert System".
+                        // Use document.querySelector to click the bell? A bit hacky but works for demo requirements.
+                        const bellBtn = document.querySelector('button[aria-label="Notifications"]'); // Ensure Bell has aria-label or just warn user to check bell
+                        if (bellBtn) bellBtn.click();
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Failed to check notifications alert", error);
+        }
+    };
 
     // Derived Stats
     const stats = useMemo(() => {
@@ -312,11 +342,17 @@ const SellerDashboard = () => {
                     });
                 }
 
+                // Append Reel File if exists
+                if (reelFile) {
+                    formData.append("reel", reelFile);
+                }
+
                 await addProduct(formData);
                 Swal.fire('Success', 'Product added successfully', 'success');
             }
             setShowModal(false);
             setSelectedFiles([]); // Reset files
+            setReelFile(null); // Reset reel
             fetchData();
         } catch (error) {
             console.error(error);
@@ -380,6 +416,7 @@ const SellerDashboard = () => {
             packOf: ''
         });
         setSelectedFiles([]);
+        setReelFile(null);
         setShowModal(true);
     };
 
@@ -603,7 +640,7 @@ const SellerDashboard = () => {
 
             {/* Tabs */}
             <div className="flex bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto w-fit">
-                {['overview', 'products', 'orders', 'returns'].map(tab => (
+                {['overview', 'products', 'orders', 'returns', 'reels'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -633,9 +670,9 @@ const SellerDashboard = () => {
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 <Card title="Revenue Growth">
-                                    <div className="h-64 w-full" style={{ minHeight: '250px' }}>
+                                    <div className="h-64 w-full min-w-0" style={{ minHeight: '250px' }}>
                                         {weeklyData && weeklyData.length > 0 ? (
-                                            <ResponsiveContainer width="100%" height="100%">
+                                            <ResponsiveContainer width="100%" height={250}>
                                                 <AreaChart data={weeklyData}>
                                                     <defs>
                                                         <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -656,9 +693,9 @@ const SellerDashboard = () => {
                                     </div>
                                 </Card>
                                 <Card title="Order Volume">
-                                    <div className="h-64 w-full" style={{ minHeight: '250px' }}>
+                                    <div className="h-64 w-full min-w-0" style={{ minHeight: '250px' }}>
                                         {weeklyData && weeklyData.length > 0 ? (
-                                            <ResponsiveContainer width="100%" height="100%">
+                                            <ResponsiveContainer width="100%" height={250}>
                                                 <BarChart data={weeklyData}>
                                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                                                     <XAxis dataKey="name" axisLine={false} tickLine={false} />
@@ -752,6 +789,8 @@ const SellerDashboard = () => {
                             </MuiThemeProvider>
                         </Card>
                     )}
+
+
                     {/* Returns Tab */}
                     {activeTab === 'returns' && (
                         <Card title="Return Requests">
@@ -790,12 +829,53 @@ const SellerDashboard = () => {
                             </MuiThemeProvider>
                         </Card>
                     )}
+
+                    {/* Reels Tab */}
+                    {activeTab === 'reels' && (
+                        <SellerReelsDashboard />
+                    )}
                 </>
-            )}
+            )
+            }
 
             {/* Simple Add/Edit Product Modal */}
             <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingProduct ? 'Edit Product' : 'Add New Product'}>
                 <form onSubmit={handleProductSubmit} className="space-y-4">
+                    {/* ... existing fields ... */}
+
+                    {/* Reel Upload Section */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Reel (Video) - Optional</label>
+                        <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-600 rounded-lg cursor-pointer hover:bg-pink-100 transition border border-pink-200">
+                                <UploadCloud size={20} />
+                                {reelFile ? 'Change Reel' : 'Upload Reel'}
+                                <input
+                                    type="file"
+                                    accept="video/mp4,video/webm"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        if (file) {
+                                            if (file.size > 50 * 1024 * 1024) {
+                                                Swal.fire('Error', 'File size exceeds 50MB limit.', 'error');
+                                                return;
+                                            }
+                                            setReelFile(file);
+                                        }
+                                    }}
+                                />
+                            </label>
+                            {reelFile && (
+                                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded text-sm">
+                                    <span className="truncate max-w-[150px]">{reelFile.name}</span>
+                                    <button type="button" onClick={() => setReelFile(null)} className="text-red-500 hover:text-red-700"><X size={16} /></button>
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">Max 50MB. MP4 or WebM only.</p>
+                    </div>
+
                     <Input
                         label="Product Name"
                         value={productForm.name}

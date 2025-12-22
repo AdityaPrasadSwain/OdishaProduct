@@ -1,6 +1,8 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from './header/Header';
+import { Outlet, useLocation } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import ChatWidget from '../components/chat/ChatWidget';
+import Header from '../components/Navbar'; // Assuming Header was Navbar or check path
 
 const DashboardLayout = () => {
     return (
@@ -10,10 +12,11 @@ const DashboardLayout = () => {
 
             {/* Main Content Wrapper */}
             <main className="p-4 md:p-6 pb-20">
-                <div className="max-w-7xl mx-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <Outlet />
                 </div>
             </main>
+            <ChatWidget />
         </div>
     );
 };

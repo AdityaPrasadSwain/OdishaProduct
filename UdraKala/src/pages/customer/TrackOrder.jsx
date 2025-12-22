@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getOrderDetails, cancelOrder } from '../../api/orderApi';
+import { getOrderDetails, cancelOrder, downloadCustomerInvoice } from '../../api/orderApi';
 import { requestReturn } from '../../api/returnApi';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
-import { Check, Truck, RotateCw, AlertTriangle, XCircle } from 'lucide-react';
+import { Check, Truck, RotateCw, AlertTriangle, XCircle, FileText, Download } from 'lucide-react';
 import { sendReturnRequestEmail } from '../../utils/emailService';
 
-const steps = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+const steps = ['PENDING', 'CONFIRMED', 'INVOICE_SENT', 'PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
 
 const TrackOrder = () => {
     const { id } = useParams();
@@ -23,6 +23,7 @@ const TrackOrder = () => {
     const [proofFile, setProofFile] = useState(null);
 
     useEffect(() => {
+        // ... (existing fetch logic)
         const fetchDetails = async () => {
             try {
                 const data = await getOrderDetails(id);
@@ -38,6 +39,7 @@ const TrackOrder = () => {
     }, [id]);
 
     const handleCancel = async () => {
+        // ... (existing cancel logic)
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -65,6 +67,23 @@ const TrackOrder = () => {
         }
     };
 
+    const handleDownloadInvoice = async () => {
+        try {
+            const blob = await downloadCustomerInvoice(order.id);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Invoice_${order.id}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } catch (error) {
+            console.error("Download failed", error);
+            Swal.fire('Error', 'Failed to download invoice. It might not be ready yet.', 'error');
+        }
+    };
+
+    // ... (return logic same as before)
     const openReturnModal = (item) => {
         setSelectedItem(item);
         setReturnModalOpen(true);
@@ -114,6 +133,7 @@ const TrackOrder = () => {
         }
     };
 
+    // ... (Render logic)
     if (loading) return <div className="p-8 text-center dark:text-white">Loading...</div>;
     if (!order) return <div className="p-8 text-center text-red-500">Order not found</div>;
 
@@ -138,13 +158,24 @@ const TrackOrder = () => {
                 {/* 1. Page Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Track Order <span className="text-gray-500 font-normal">#{order.id}</span></h1>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Ordered on {new Date(order.createdAt).toLocaleDateString()}
+                    <div className="flex items-center gap-4">
+                        {order.invoiceSent && (
+                            <button
+                                onClick={handleDownloadInvoice}
+                                className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-700 transition shadow-sm"
+                            >
+                                <Download size={16} /> Download Invoice
+                            </button>
+                        )}
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                            Ordered on {new Date(order.createdAt).toLocaleDateString()}
+                        </div>
                     </div>
                 </div>
 
                 {/* 2. Order Summary Card (Top) */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden p-6">
+                    {/* ... (Existing Summary content) */}
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Order Summary</h3>
                     <div className="divide-y divide-gray-100 dark:divide-gray-700">
                         {order.orderItems.map((item) => (
@@ -186,7 +217,15 @@ const TrackOrder = () => {
                             <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full hidden md:block" />
 
                             <div className="flex flex-col md:flex-row justify-between relative z-10 gap-8 md:gap-0">
-                                {steps.map((step, index) => {
+                                {steps.filter(s => s !== 'INVOICE_SENT' || order.invoiceSent).map((step, index) => { // Filter out Invoice Sent if not relevant in timeline or keep it? 
+                                    // Actually, let's keep it simple. If we want to show INVOICE_SENT in timeline, we need to map it.
+                                    // The prompt asked for BackEnd enum. It didn't strictly say it MUST replace a status in the timeline visualisation, 
+                                    // but usually it's an intermediate event. 
+                                    // Let's hide 'INVOICE_SENT' from the visual timeline to avoid clutter, 
+                                    // OR include it. The user requirement said "Seller CANNOT proceed... unless invoice sent".
+                                    // It's a checkpoint. Let's include it in the visual steps array defined at top.
+                                    // I updated `steps` array at line 10.
+
                                     const isCompleted = index <= currentStepIndex;
                                     const isCurrent = index === currentStepIndex;
 
