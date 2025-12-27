@@ -150,11 +150,20 @@ public class ApiHealthTest {
             category.setName("Handloom Sarees");
             category.setDescription("Authentic Odisha Handloom");
 
-            ResponseEntity<Category> catResponse = categoryController.addCategory(category);
+            org.springframework.mock.web.MockMultipartFile catImage = new org.springframework.mock.web.MockMultipartFile(
+                    "image", "cat.jpg", "image/jpeg", "dummy content".getBytes());
+
+            ResponseEntity<?> catResponse = categoryController.addCategory(
+                    "Handloom Sarees",
+                    "Authentic Odisha Handloom",
+                    catImage,
+                    true);
             assertEquals(200, catResponse.getStatusCode().value());
             assertNotNull(catResponse.getBody());
 
-            UUID categoryId = catResponse.getBody().getId();
+            // Since return type is now generic ResponseEntity<?>, we cast body to Category
+            Category savedCat = (Category) catResponse.getBody();
+            UUID categoryId = savedCat.getId();
             System.out.println("STEP 1 SUCCESS: Category Added (ID: " + categoryId + ")");
 
             // 2. Seller Adds Product
@@ -255,10 +264,17 @@ public class ApiHealthTest {
         try {
             // Setup: Create Product
             mockLogin("admin@test.com");
-            Category category = new Category();
-            category.setName("TestCat");
-            categoryController.addCategory(category);
-            UUID categoryId = categoryRepository.findAll().get(0).getId();
+            org.springframework.mock.web.MockMultipartFile catImg = new org.springframework.mock.web.MockMultipartFile(
+                    "image", "cat.jpg", "image/jpeg", "dummy".getBytes());
+
+            categoryController.addCategory("TestCat", "Desc", catImg, true);
+
+            // Retrieve created category
+            UUID categoryId = categoryRepository.findAll().stream()
+                    .filter(c -> c.getName().equals("TestCat"))
+                    .findFirst()
+                    .orElseThrow()
+                    .getId();
 
             mockLogin("seller@test.com");
             ProductRequest p = new ProductRequest();

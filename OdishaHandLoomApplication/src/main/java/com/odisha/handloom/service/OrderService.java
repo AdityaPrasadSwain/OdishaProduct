@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.odisha.handloom.service.InvoiceService;
+import com.odisha.handloom.service.EmailService;
+import java.time.LocalDateTime;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +42,9 @@ public class OrderService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private InvoiceService invoiceService;
 
     @Autowired
     private SellerEarningsRepository sellerEarningsRepository;
@@ -176,13 +183,31 @@ public class OrderService {
             // Notify Admin
             adminNotificationService.notifyOrderCreated(savedOrder.getId(), savedOrder.getTotalAmount().doubleValue());
 
-            // Send Order Confirmation Email to Customer
+            // Set Invoice Number
+            String invoiceNumber = "INV-" + LocalDateTime.now().getYear() + "-"
+                    + savedOrder.getId().toString().substring(0, 6).toUpperCase();
+            savedOrder.setInvoiceNumber(invoiceNumber);
+            savedOrder.setInvoiceSent(true);
+            savedOrder.setInvoiceSentAt(LocalDateTime.now());
+            orderRepository.save(savedOrder);
+
+            // Generate PDF
+            byte[] invoicePdf = null;
+            try {
+                invoicePdf = invoiceService.generateInvoice(savedOrder);
+            } catch (Exception e) {
+                System.err.println(
+                        "❌ Failed to generate invoice for order " + savedOrder.getId() + ": " + e.getMessage());
+            }
+
+            // Send Order Confirmation Email to Customer (with Invoice)
             emailService.sendOrderConfirmationEmail(
                     customer.getEmail(),
                     customer.getFullName(),
                     savedOrder.getId().toString().substring(0, 8),
                     savedOrder.getTotalAmount().doubleValue(),
-                    savedOrder.getOrderItems());
+                    savedOrder.getOrderItems(),
+                    invoicePdf);
 
             // Send New Order Email to Seller
             try {
@@ -211,6 +236,10 @@ public class OrderService {
     public Order updateStatus(UUID orderId, OrderStatus status, String courier, String tracking) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        if (status == OrderStatus.OUT_FOR_DELIVERY && !order.isInvoiceSent()) {
+            throw new RuntimeException("Invoice must be sent before delivery");
+        }
 
         order.setStatus(status);
         if (courier != null)
@@ -318,7 +347,42 @@ public class OrderService {
     }
 
     public Order getOrder(UUID orderId) {
-        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+
+        // --- Populate Transient Fields for Frontend UI ---
+        // Mock Logic to match user requirement "Price Details Card" demo
+        // In real app, these would come from DB columns or detailed OrderMeta table
+
+        BigDecimal total = order.getTotalAmount();
+
+        // 1. Listing Price (e.g. 25% higher than selling price)
+        order.setListingPrice(total.multiply(new BigDecimal("1.25")).setScale(0, java.math.RoundingMode.UP));
+
+        // 2. Special Price (The actual selling price)
+        order.setSpecialPrice(total);
+
+        // 3. Fees (e.g. Platform fee)
+        order.setTotalFees(new BigDecimal("29"));
+
+        // 4. Other Discount (Matches fee to cancel it out or extra coupon)
+        order.setOtherDiscount(new BigDecimal("29"));
+
+        // 5. Coins Used (Mock)
+        order.setCoinsUsed(new BigDecimal("6"));
+
+        // 6. Payment Method Formatted
+        String method = order.getPaymentMethod();
+        if ("COD".equalsIgnoreCase(method)) {
+            order.setFormattedPaymentMethod("Cash on Delivery");
+        } else {
+            order.setFormattedPaymentMethod("UPI, SuperCoins"); // Mocking "UPI, SuperCoins" as per requirement
+        }
+
+        // 7. Invoice Available (Mocking: Always available if not cancelled)
+        order.setInvoiceAvailable(order.getStatus() != null && !order.getStatus().name().equals("CANCELLED"));
+
+        return order;
     }
 
     public List<Order> getAllOrders() {

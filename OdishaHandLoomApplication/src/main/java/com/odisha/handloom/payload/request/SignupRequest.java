@@ -3,6 +3,7 @@ package com.odisha.handloom.payload.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 public class SignupRequest {
     @NotBlank(message = "Full Name is required.")
@@ -30,6 +31,8 @@ public class SignupRequest {
     @NotBlank(message = "Please select an account type.")
     @jakarta.validation.constraints.Pattern(regexp = "^(?i)(customer|seller|admin)$", message = "Invalid account type selected.")
     private String role; // "admin", "seller", "customer"
+
+    private MultipartFile profileImage;
 
     public String getFullName() {
         return fullName;
@@ -85,5 +88,13 @@ public class SignupRequest {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public MultipartFile getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(MultipartFile profileImage) {
+        this.profileImage = profileImage;
     }
 }

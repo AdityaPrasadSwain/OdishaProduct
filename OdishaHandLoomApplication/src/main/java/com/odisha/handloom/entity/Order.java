@@ -49,6 +49,28 @@ public class Order {
     private LocalDateTime invoiceSentAt;
     private String invoiceNumber;
 
+    // Transient fields for Frontend UI (Not stored in DB)
+    @Transient
+    private BigDecimal listingPrice;
+
+    @Transient
+    private BigDecimal specialPrice;
+
+    @Transient
+    private BigDecimal totalFees;
+
+    @Transient
+    private BigDecimal otherDiscount;
+
+    @Transient
+    private BigDecimal coinsUsed;
+
+    @Transient
+    private String formattedPaymentMethod; // e.g. "UPI, SuperCoins"
+
+    @Transient
+    private boolean invoiceAvailable;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -328,5 +350,63 @@ public class Order {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    // Getters and Setters for Transient Fields
+
+    public BigDecimal getListingPrice() {
+        return listingPrice;
+    }
+
+    public void setListingPrice(BigDecimal listingPrice) {
+        this.listingPrice = listingPrice;
+    }
+
+    public BigDecimal getSpecialPrice() {
+        return specialPrice;
+    }
+
+    public void setSpecialPrice(BigDecimal specialPrice) {
+        this.specialPrice = specialPrice;
+    }
+
+    public BigDecimal getTotalFees() {
+        return totalFees;
+    }
+
+    public void setTotalFees(BigDecimal totalFees) {
+        this.totalFees = totalFees;
+    }
+
+    public BigDecimal getOtherDiscount() {
+        return otherDiscount;
+    }
+
+    public void setOtherDiscount(BigDecimal otherDiscount) {
+        this.otherDiscount = otherDiscount;
+    }
+
+    public BigDecimal getCoinsUsed() {
+        return coinsUsed;
+    }
+
+    public void setCoinsUsed(BigDecimal coinsUsed) {
+        this.coinsUsed = coinsUsed;
+    }
+
+    public String getFormattedPaymentMethod() {
+        return formattedPaymentMethod;
+    }
+
+    public void setFormattedPaymentMethod(String formattedPaymentMethod) {
+        this.formattedPaymentMethod = formattedPaymentMethod;
+    }
+
+    public boolean isInvoiceAvailable() {
+        return invoiceAvailable;
+    }
+
+    public void setInvoiceAvailable(boolean invoiceAvailable) {
+        this.invoiceAvailable = invoiceAvailable;
     }
 }

@@ -68,7 +68,7 @@ const SellerReelsDashboard = () => {
 
     const fetchOverview = async () => {
         try {
-            const res = await API.get('/seller/analytics/overview');
+            const res = await API.get('/seller/analytics/summary');
             setStats(res.data);
         } catch (e) { console.error(e); }
     };
@@ -152,7 +152,7 @@ const SellerReelsDashboard = () => {
         },
         {
             field: 'createdAt', headerName: 'Posted On', width: 150,
-            valueFormatter: (params) => params.value ? new Date(params.value).toLocaleDateString() : 'N/A'
+            valueFormatter: (value) => value ? new Date(value).toLocaleDateString() : 'N/A'
         },
         {
             field: 'actions', headerName: 'Actions', width: 150,
@@ -181,7 +181,7 @@ const SellerReelsDashboard = () => {
                 </Card>
                 <Card className="flex items-center gap-4 bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-none">
                     <div className="p-3 bg-white/20 rounded-full"><Eye size={24} /></div> {/* Icon reuse but represents followers */}
-                    <div><p className="text-xs opacity-80">Followers</p><h3 className="text-2xl font-bold">{stats.followers}</h3></div>
+                    <div><p className="text-xs opacity-80">Followers</p><h3 className="text-2xl font-bold">{stats.totalFollowers}</h3></div>
                 </Card>
             </div>
 
@@ -195,6 +195,7 @@ const SellerReelsDashboard = () => {
                                 rows={reels}
                                 columns={columns}
                                 pageSizeOptions={[5, 10]}
+                                getRowId={(row) => row.reelId || row.id}
                                 initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
                                 disableRowSelectionOnClick
                                 rowHeight={90}

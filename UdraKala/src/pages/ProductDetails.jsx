@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion as Motion } from 'motion/react';
-import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film, AlertTriangle, XCircle, RefreshCcw } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useWishlist } from '../context/WishlistContext';
 import Badge from '../components/ui/Badge';
 import API from '../api/axios';
+import reviewApi from '../api/reviewApi';
 import Swal from 'sweetalert2';
 import FollowButton from '../components/FollowButton';
+import ReviewModal from '../components/customer/ReviewModal';
+import ProductDetailsSkeleton from '../components/skeletons/ProductDetailsSkeleton';
 
 // Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -30,10 +33,26 @@ const ProductDetails = () => {
     const [isZoomed, setIsZoomed] = useState(false);
     const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
     const containerRef = useRef(null);
+    const [reviews, setReviews] = useState([]);
+    const [reviewModalOpen, setReviewModalOpen] = useState(false);
+    const [eligibleOrderItemId, setEligibleOrderItemId] = useState(null);
 
     useEffect(() => {
         fetchProductDetails();
+        checkReviewEligibility();
     }, [productId]);
+
+    const checkReviewEligibility = async () => {
+        try {
+            // Only check if user is logged in
+            if (localStorage.getItem('token')) {
+                const orderItemId = await reviewApi.checkProductEligibility(productId);
+                setEligibleOrderItemId(orderItemId);
+            }
+        } catch (error) {
+            console.error("Eligibility check failed", error);
+        }
+    };
 
     const fetchProductDetails = async () => {
         try {
@@ -42,6 +61,14 @@ const ProductDetails = () => {
             setProduct(response.data);
             if (response.data.images && response.data.images.length > 0) {
                 setActiveImage(response.data.images[0].imageUrl);
+            }
+
+            // Fetch Reviews
+            try {
+                const reviewsData = await reviewApi.getProductReviews(productId);
+                setReviews(reviewsData);
+            } catch (err) {
+                console.error("Failed to load reviews", err);
             }
         } catch (error) {
             console.error("Error fetching product details:", error);
@@ -92,20 +119,7 @@ const ProductDetails = () => {
     };
 
     if (loading) {
-        return (
-            <div className="max-w-7xl mx-auto px-4 py-12 animate-pulse">
-                <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-8"></div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="h-[500px] bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
-                    <div className="space-y-6">
-                        <div className="h-10 w-3/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-6 w-1/4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-24 w-full bg-gray-200 dark:bg-gray-700 rounded"></div>
-                        <div className="h-12 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    </div>
-                </div>
-            </div>
-        );
+        return <ProductDetailsSkeleton />;
     }
 
     if (!product) return (
@@ -132,9 +146,49 @@ const ProductDetails = () => {
         setZoomPos({ x, y });
     };
 
+    const handleNotifyMe = async () => {
+        try {
+            if (!localStorage.getItem('token')) {
+                // Determine logic for guest. Prompt says "Peaceful user communication", 
+                // but stockController requires login currently.
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Please Log In',
+                    text: 'You need to be logged in to subscribe for notifications.',
+                    confirmButtonText: 'Log In',
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.isConfirmed) navigate('/login');
+                });
+                return;
+            }
+
+            const response = await API.post(`/stock/${product.id}/notify-me`);
+
+            Swal.fire({
+                title: "You’re All Set 😊",
+                html: `
+                  <p>Thank you for your interest.</p>
+                  <p>This product is currently out of stock.</p>
+                  <p>We will notify you as soon as it becomes available again.</p>
+                  <p class="mt-2 text-sm text-gray-500">We truly appreciate your patience and your choice to shop with us.</p>
+                `,
+                icon: 'success',
+                confirmButtonColor: '#ea580c'
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error.response?.data?.message || 'Something went wrong.',
+            });
+        }
+    };
+
     return (
         <div className="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
             {/* Breadcrumbs */}
+
             <div className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-700">
                 <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
                     <nav className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -265,28 +319,37 @@ const ProductDetails = () => {
                                     </button>
                                 </div>
                             ) : (
+                                <>
+                                    {!isOutOfStock ? (
+                                        <button
+                                            onClick={() => addToCart(product)}
+                                            className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-[#ff9f00] text-white hover:bg-[#f39700] transition active:scale-95 shadow-lg shadow-orange-100 dark:shadow-none"
+                                        >
+                                            <ShoppingBag size={20} /> ADD TO CART
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleNotifyMe}
+                                            className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-100 dark:shadow-none col-span-2"
+                                        >
+                                            <AlertTriangle size={20} /> NOTIFY ME
+                                        </button>
+                                    )}
+                                </>
+                            )}
+
+                            {!isOutOfStock && (
                                 <button
                                     onClick={() => {
-                                        if (!isOutOfStock) addToCart(product);
-                                    }}
-                                    disabled={isOutOfStock}
-                                    className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-[#ff9f00] text-white hover:bg-[#f39700] transition active:scale-95 shadow-lg shadow-orange-100 dark:shadow-none"
-                                >
-                                    <ShoppingBag size={20} /> ADD TO CART
-                                </button>
-                            )}
-                            <button
-                                onClick={() => {
-                                    if (!isOutOfStock) {
                                         addToCart(product);
                                         navigate('/checkout');
-                                    }
-                                }}
-                                disabled={isOutOfStock}
-                                className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-[#fb641b] text-white hover:bg-[#e65a18] transition active:scale-95 shadow-lg shadow-orange-100 dark:shadow-none"
-                            >
-                                <Zap size={20} /> BUY NOW
-                            </button>
+                                    }}
+                                    className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-[#fb641b] text-white hover:bg-[#e65a18] transition active:scale-95 shadow-lg shadow-orange-100 dark:shadow-none"
+                                >
+                                    <Zap size={20} /> BUY NOW
+                                </button>
+                            )}
+
                             <button
                                 onClick={() => navigate(`/reels?productId=${product.id}`)}
                                 className="col-span-2 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-pink-600 text-white hover:bg-pink-700 transition active:scale-95 shadow-lg shadow-pink-100 dark:shadow-none"
@@ -299,7 +362,11 @@ const ProductDetails = () => {
                     {/* RIGHT: PRODUCT INFO */}
                     <div className="lg:w-[52%] space-y-8">
                         <div>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">{product.seller?.shopName || 'Odisha Handloom'}</p>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">
+                                <Link to={product.seller?.id ? `/seller/${product.seller.id}` : '#'} className="hover:text-orange-600 transition">
+                                    {product.seller?.shopName || 'Odisha Handloom'}
+                                </Link>
+                            </p>
                             <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 dark:text-white mb-3">
                                 {product.name}
                             </h1>
@@ -342,15 +409,22 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        {/* Highlights Toggle/List */}
+                        {/* Highlights & Services Toggle/List */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-y border-gray-100 dark:border-gray-800 py-8">
                             <div>
-                                <h3 className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-wider mb-4">Highlights</h3>
-                                <ul className="space-y-2 text-sm text-gray-800 dark:text-gray-200">
-                                    <li className="flex gap-2 items-center"><Award size={14} className="text-orange-600" /> 100% Authentic Handloom</li>
-                                    <li className="flex gap-2 items-center"><Truck size={14} className="text-orange-600" /> Free Delivery across India</li>
-                                    <li className="flex gap-2 items-center"><ShieldCheck size={14} className="text-orange-600" /> 7 Days Replacement Policy</li>
-                                    <li className="flex gap-2 items-center"><Zap size={14} className="text-orange-600" /> Traditionally Woven by Artisans</li>
+                                <h3 className="text-gray-500 dark:text-gray-400 font-bold text-sm uppercase tracking-wider mb-4">Highlights & Services</h3>
+                                <ul className="space-y-3 text-sm text-gray-800 dark:text-gray-200">
+                                    <li className="flex gap-2 items-center"><Award size={16} className="text-orange-600 shrink-0" /> 100% Authentic Handloom</li>
+                                    <li className="flex gap-2 items-center"><Truck size={16} className="text-orange-600 shrink-0" /> Free Delivery across India</li>
+                                    <li className="flex gap-2 items-center">
+                                        <RefreshCcw size={16} className="text-orange-600 shrink-0" />
+                                        <span>7 Days <span className="font-semibold">Return & Exchange</span></span>
+                                    </li>
+                                    <li className="flex gap-2 items-center">
+                                        <XCircle size={16} className="text-orange-600 shrink-0" />
+                                        <span>Cancel anytime before <span className="font-semibold">Delivery</span></span>
+                                    </li>
+                                    <li className="flex gap-2 items-center"><Zap size={16} className="text-orange-600 shrink-0" /> Traditionally Woven by Artisans</li>
                                 </ul>
                             </div>
                             <div>
@@ -358,7 +432,9 @@ const ProductDetails = () => {
                                 <div className="space-y-1">
                                     <p className="font-bold text-blue-600 dark:text-blue-400 flex items-center gap-2 justify-between">
                                         <span className="flex items-center gap-2">
-                                            {product.seller?.shopName || 'Odisha Handloom'}
+                                            <Link to={`/seller/${product.seller?.id}`} className="hover:underline">
+                                                {product.seller?.shopName || 'Odisha Handloom'}
+                                            </Link>
                                             <Badge variant="success" className="text-[10px] px-1.5 h-4">4.8 ★</Badge>
                                         </span>
                                         {product.seller?.id && <FollowButton sellerId={product.seller.id} sellerName={product.seller.shopName} />}
@@ -406,6 +482,82 @@ const ProductDetails = () => {
                                 </table>
                             </div>
                         </div>
+
+
+
+                        {/* RATINGS & REVIEWS SECTION */}
+                        <div className="border-t border-gray-100 dark:border-gray-800 pt-8 mt-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                                    Ratings & Reviews
+                                    <span className="text-sm font-normal text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full">
+                                        {reviews.length}
+                                    </span>
+                                </h3>
+                                {eligibleOrderItemId && (
+                                    <button
+                                        onClick={() => setReviewModalOpen(true)}
+                                        className="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-orange-700 transition shadow-sm flex items-center gap-2"
+                                    >
+                                        <Star size={16} /> Write a Review
+                                    </button>
+                                )}
+                            </div>
+
+                            {reviews.length === 0 ? (
+                                <div className="text-center py-10 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
+                                    <Star size={32} className="mx-auto text-gray-300 mb-2" />
+                                    <p className="text-gray-500">No reviews yet. Be the first to rate this product!</p>
+                                    {eligibleOrderItemId && (
+                                        <button
+                                            onClick={() => setReviewModalOpen(true)}
+                                            className="mt-4 text-orange-600 font-bold hover:underline"
+                                        >
+                                            Write a usage Review
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-6">
+                                    {reviews.map((review) => (
+                                        <div key={review.id} className="border-b border-gray-100 dark:border-gray-700 pb-6 last:border-0">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <div className={`px-2 py-0.5 rounded text-xs font-bold text-white flex items-center gap-1 ${review.rating >= 4 ? 'bg-green-600' : review.rating >= 3 ? 'bg-yellow-500' : 'bg-red-500'
+                                                    }`}>
+                                                    {review.rating} <Star size={10} fill="currentColor" />
+                                                </div>
+                                                <p className="font-semibold text-sm text-gray-900 dark:text-gray-200">
+                                                    {review.customerName}
+                                                </p>
+                                            </div>
+
+                                            <p className="text-gray-700 dark:text-gray-300 text-sm mb-3">
+                                                {review.reviewText}
+                                            </p>
+
+                                            {/* Review Images */}
+                                            {review.imageUrls && review.imageUrls.length > 0 && (
+                                                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none mb-3">
+                                                    {review.imageUrls.map((url, idx) => (
+                                                        <img
+                                                            key={idx}
+                                                            src={url}
+                                                            alt={`Review ${idx}`}
+                                                            className="w-20 h-20 object-cover rounded-lg border border-gray-100 dark:border-gray-700 cursor-pointer hover:opacity-90 transition"
+                                                            onClick={() => window.open(url, '_blank')}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            <p className="text-xs text-gray-400">
+                                                {new Date(review.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -435,28 +587,35 @@ const ProductDetails = () => {
                         </button>
                     </div>
                 ) : (
-                    <button
-                        onClick={() => {
-                            if (!isOutOfStock) addToCart(product);
-                        }}
-                        disabled={isOutOfStock}
-                        className="py-4 font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-50 transition border-r border-gray-100 dark:border-gray-800 uppercase tracking-tight text-sm"
-                    >
-                        {isOutOfStock ? 'Sold Out' : 'Add to Cart'}
-                    </button>
+                    <>
+                        {!isOutOfStock ? (
+                            <>
+                                <button
+                                    onClick={() => addToCart(product)}
+                                    className="py-4 font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-900 hover:bg-gray-50 transition border-r border-gray-100 dark:border-gray-800 uppercase tracking-tight text-sm"
+                                >
+                                    Add to Cart
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        addToCart(product);
+                                        navigate('/checkout');
+                                    }}
+                                    className="py-4 font-bold text-white bg-[#fb641b] hover:bg-[#e65a18] transition uppercase tracking-tight text-sm"
+                                >
+                                    Buy Now
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                onClick={handleNotifyMe}
+                                className="col-span-2 py-4 font-bold text-white bg-blue-600 hover:bg-blue-700 transition uppercase tracking-tight text-sm flex items-center justify-center gap-2"
+                            >
+                                <AlertTriangle size={16} /> Notify Me
+                            </button>
+                        )}
+                    </>
                 )}
-                <button
-                    onClick={() => {
-                        if (!isOutOfStock) {
-                            addToCart(product);
-                            navigate('/checkout');
-                        }
-                    }}
-                    disabled={isOutOfStock}
-                    className="py-4 font-bold text-white bg-[#fb641b] hover:bg-[#e65a18] transition uppercase tracking-tight text-sm"
-                >
-                    {isOutOfStock ? 'Sold Out' : 'Buy Now'}
-                </button>
                 <button
                     onClick={() => navigate(`/reels?productId=${product.id}`)}
                     className="col-span-2 py-4 font-bold text-white bg-pink-600 hover:bg-pink-700 transition uppercase tracking-tight text-sm flex items-center justify-center gap-2"
@@ -464,9 +623,20 @@ const ProductDetails = () => {
                     <Film size={16} /> Watch Reel
                 </button>
             </div>
+
+            {/* Review Modal */}
+            <ReviewModal
+                isOpen={reviewModalOpen}
+                onClose={() => setReviewModalOpen(false)}
+                product={product}
+                orderItemId={eligibleOrderItemId}
+                onReviewSubmitted={() => {
+                    setEligibleOrderItemId(null); // Hide button after submission
+                    fetchProductDetails(); // Refresh reviews
+                }}
+            />
         </div>
     );
 };
 
 export default ProductDetails;
-

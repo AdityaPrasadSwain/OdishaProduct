@@ -1,35 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from 'react';
 import Swal from 'sweetalert2';
 import { UserPlus, UserCheck } from 'lucide-react';
-import api from '../api/api';
+import { useFollow } from '../context/FollowContext';
+import { useAuth } from '../context/AuthContext';
 
-const FollowButton = ({ sellerId, sellerName }) => {
-    const [isFollowing, setIsFollowing] = useState(false);
+const FollowButton = (props) => {
+    const { sellerId, sellerName } = props;
+    const { isFollowing, follow, unfollow } = useFollow();
+    const { user } = useAuth();
     const [loading, setLoading] = useState(false);
     const [hover, setHover] = useState(false);
 
-    useEffect(() => {
-        if (sellerId) {
-            checkFollowStatus();
-        }
-    }, [sellerId]);
+    const following = isFollowing(sellerId);
 
-    const checkFollowStatus = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) return; // Not logged in
+    const handleFollowToggle = async (e) => {
+        e.preventDefault(); // Prevent navigation if inside a link
+        e.stopPropagation();
 
-            const response = await api.get(`/follow/${sellerId}/status`);
-            setIsFollowing(response.data);
-        } catch (error) {
-            console.error("Failed to check follow status", error);
-        }
-    };
-
-    const handleFollowToggle = async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        if (!user) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Login Required',
@@ -39,18 +27,14 @@ const FollowButton = ({ sellerId, sellerName }) => {
             return;
         }
 
-        // Optimistic UI Update
-        const previousState = isFollowing;
-        setIsFollowing(!isFollowing);
+        const previousState = following;
         setLoading(true);
 
         try {
             if (previousState) {
-                // Unfollow
-                await api.delete(`/follow/${sellerId}`);
+                await unfollow(sellerId);
             } else {
-                // Follow
-                await api.post(`/follow/${sellerId}`);
+                await follow(sellerId, sellerName, props.source, props.sourceReelId);
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
@@ -61,9 +45,7 @@ const FollowButton = ({ sellerId, sellerName }) => {
                 });
             }
         } catch (error) {
-            // Revert on error
-            setIsFollowing(previousState);
-            console.error("Follow/Unfollow failed", error);
+            console.error("Follow action failed", error);
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -84,13 +66,13 @@ const FollowButton = ({ sellerId, sellerName }) => {
             onMouseLeave={() => setHover(false)}
             disabled={loading}
             className={`
-                flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300
-                ${isFollowing
+                flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 z-10 relative
+                ${following
                     ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 dark:bg-gray-800 dark:text-gray-300'
                     : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-200 dark:shadow-none'}
             `}
         >
-            {isFollowing ? (
+            {following ? (
                 hover ? <><UserPlus size={16} className="rotate-45" /> Unfollow</> : <><UserCheck size={16} /> Following</>
             ) : (
                 <><UserPlus size={16} /> Follow</>

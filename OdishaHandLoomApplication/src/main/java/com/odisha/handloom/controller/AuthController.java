@@ -22,10 +22,7 @@ import com.odisha.handloom.entity.Otp;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import java.security.SecureRandom;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -55,6 +52,9 @@ public class AuthController {
 
     @Autowired
     com.odisha.handloom.service.AdminNotificationService adminNotificationService;
+
+    @Autowired
+    com.odisha.handloom.service.CloudinaryService cloudinaryService;
 
     @GetMapping("/login/otp-status")
     public ResponseEntity<?> getOtpStatus(@RequestParam String email) {
@@ -144,154 +144,194 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         return ResponseEntity.ok(new JwtResponse(jwt, user.getId(), user.getEmail(), List.of(user.getRole().name()),
-                user.getFullName(), user.getShopName(), user.isApproved()));
+                user.getFullName(), user.getShopName(), user.isApproved(), user.getProfilePictureUrl()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        // Stateless logout: Client clears token. Server just clears context for this
+        // request thread.
+        SecurityContextHolder.clearContext();
+        System.out.println("DEBUG: User logged out successfully.");
+        return ResponseEntity.ok(new MessageResponse("Log out successful!"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getIdentifier(), loginRequest.getPassword()));
+        System.out.println("DEBUG: Login attempt for: " + loginRequest.getIdentifier());
+        System.out.println("DEBUG: Raw password provided: " + loginRequest.getPassword());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getIdentifier(), loginRequest.getPassword()));
 
-        org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) authentication
-                .getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+            System.out.println("DEBUG: Authentication successful for: " + loginRequest.getIdentifier());
 
-        User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
 
-        // Check if user is blocked
-        if (user.isBlocked()) {
-            return ResponseEntity.status(401)
-                    .body(new MessageResponse("Your account has been blocked. Please contact support."));
+            org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) authentication
+                    .getPrincipal();
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
+
+            User user = userRepository.findByEmail(userDetails.getUsername()).orElseThrow();
+
+            // Check if user is blocked
+            if (user.isBlocked()) {
+                return ResponseEntity.status(401)
+                        .body(new MessageResponse("Your account has been blocked. Please contact support."));
+            }
+
+            return ResponseEntity.ok(new JwtResponse(jwt,
+                    user.getId(),
+                    user.getEmail(),
+                    roles,
+                    user.getFullName(),
+                    user.getShopName(),
+                    user.isApproved(),
+                    user.getProfilePictureUrl()));
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            System.out.println("DEBUG: BadCredentialsException occurred. Message: " + e.getMessage());
+            throw e;
         }
-
-        return ResponseEntity.ok(new JwtResponse(jwt,
-                user.getId(),
-                user.getEmail(),
-                roles,
-                user.getFullName(),
-                user.getShopName(),
-                user.isApproved()));
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        // 1. Check Uniqueness
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(java.util.Map.of(
-                    "status", 400,
-                    "field", "email",
-                    "message", "This email is already registered."));
-        }
-
-        if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            return ResponseEntity.badRequest().body(java.util.Map.of(
-                    "status", 400,
-                    "field", "phoneNumber",
-                    "message", "This phone number is already registered."));
-        }
-
-        // 2. Validate Account Type
-        String strRole = signUpRequest.getRole();
-        Role role;
-
-        if (strRole == null) {
-            return ResponseEntity.badRequest().body(java.util.Map.of(
-                    "status", 400,
-                    "field", "role",
-                    "message", "Please select an account type."));
-        }
-
+    @PostMapping(value = "/signup", consumes = { "multipart/form-data" })
+    public ResponseEntity<?> registerUser(@Valid @ModelAttribute SignupRequest signUpRequest) {
         try {
-            // Basic role parsing logic already in annotations, but logical check:
-            String roleLower = strRole.toLowerCase();
-            if ("admin".equals(roleLower))
-                role = Role.ADMIN;
-            else if ("seller".equals(roleLower))
-                role = Role.SELLER;
-            else if ("customer".equals(roleLower))
-                role = Role.CUSTOMER;
-            else
-                throw new IllegalArgumentException();
+            // 1. Check Uniqueness
+            if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+                return ResponseEntity.badRequest().body(java.util.Map.of(
+                        "status", 400,
+                        "field", "email",
+                        "message", "This email is already registered."));
+            }
+
+            if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
+                return ResponseEntity.badRequest().body(java.util.Map.of(
+                        "status", 400,
+                        "field", "phoneNumber",
+                        "message", "This phone number is already registered."));
+            }
+
+            // 2. Validate Account Type
+            String strRole = signUpRequest.getRole();
+            Role role;
+
+            if (strRole == null) {
+                return ResponseEntity.badRequest().body(java.util.Map.of(
+                        "status", 400,
+                        "field", "role",
+                        "message", "Please select an account type."));
+            }
+
+            try {
+                // Basic role parsing logic already in annotations, but logical check:
+                String roleLower = strRole.toLowerCase();
+                if ("admin".equals(roleLower))
+                    role = Role.ADMIN;
+                else if ("seller".equals(roleLower))
+                    role = Role.SELLER;
+                else if ("customer".equals(roleLower))
+                    role = Role.CUSTOMER;
+                else
+                    throw new IllegalArgumentException();
+            } catch (Exception e) {
+                return ResponseEntity.badRequest().body(java.util.Map.of(
+                        "status", 400,
+                        "field", "role",
+                        "message", "Invalid account type selected."));
+            }
+
+            // 3. Conditional Seller Validation
+            if (role == Role.SELLER) {
+                if (signUpRequest.getShopName() == null || signUpRequest.getShopName().isBlank()) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of(
+                            "status", 400,
+                            "field", "shopName",
+                            "message", "Shop Name is required for seller accounts."));
+                }
+                if (signUpRequest.getGstNumber() == null || signUpRequest.getGstNumber().isBlank()) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of(
+                            "status", 400,
+                            "field", "gstNumber",
+                            "message", "GST Number is required for seller accounts."));
+                }
+                if (signUpRequest.getShopName().length() < 3) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of(
+                            "status", 400,
+                            "field", "shopName",
+                            "message", "Shop Name must be at least 3 characters long."));
+                }
+                if (signUpRequest.getGstNumber().length() != 15) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of(
+                            "status", 400,
+                            "field", "gstNumber",
+                            "message", "Please enter a valid GST Number."));
+                }
+                if (userRepository.existsByGstNumber(signUpRequest.getGstNumber())) {
+                    return ResponseEntity.badRequest().body(java.util.Map.of(
+                            "status", 400,
+                            "field", "gstNumber",
+                            "message", "This GST Number is already registered."));
+                }
+            }
+
+            // Create new user's account
+            User user = User.builder()
+                    .fullName(signUpRequest.getFullName())
+                    .email(signUpRequest.getEmail())
+                    .password(encoder.encode(signUpRequest.getPassword()))
+                    .phoneNumber(signUpRequest.getPhoneNumber())
+                    .role(role)
+                    .build();
+
+            // Handle Profile Image Upload
+            if (signUpRequest.getProfileImage() != null && !signUpRequest.getProfileImage().isEmpty()) {
+                try {
+                    String imageUrl = cloudinaryService.uploadImage(signUpRequest.getProfileImage(), "users/profiles");
+                    user.setProfilePictureUrl(imageUrl);
+                } catch (Exception e) {
+                    System.err.println("Failed to upload profile image: " + e.getMessage());
+                    // Proceed without image or return error? Proceeding is safer for UX, user can
+                    // update later.
+                }
+            }
+
+            if (role == Role.SELLER) {
+                user.setShopName(signUpRequest.getShopName());
+                user.setGstNumber(signUpRequest.getGstNumber());
+                user.setApproved(false);
+
+                userRepository.save(user);
+
+                // Notify Admin
+                adminNotificationService.notifySellerRegistration(user.getId(), user.getFullName());
+            } else {
+                user.setApproved(true);
+                userRepository.save(user);
+            }
+
+            // Send Welcome Email
+            try {
+                if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+                    emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to send welcome email: " + e.getMessage());
+            }
+
+            return ResponseEntity.ok(new MessageResponse(role == Role.SELLER ? "Seller account created successfully."
+                    : "Account created successfully. Please login."));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(java.util.Map.of(
-                    "status", 400,
-                    "field", "role",
-                    "message", "Invalid account type selected."));
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(java.util.Map.of(
+                    "status", 500,
+                    "message", "Registration failed: " + e.getMessage(),
+                    "trace", e.toString()));
         }
-
-        // 3. Conditional Seller Validation
-        if (role == Role.SELLER) {
-            if (signUpRequest.getShopName() == null || signUpRequest.getShopName().isBlank()) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "shopName",
-                        "message", "Shop Name is required for seller accounts."));
-            }
-            if (signUpRequest.getGstNumber() == null || signUpRequest.getGstNumber().isBlank()) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "gstNumber",
-                        "message", "GST Number is required for seller accounts."));
-            }
-            if (signUpRequest.getShopName().length() < 3) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "shopName",
-                        "message", "Shop Name must be at least 3 characters long."));
-            }
-            if (signUpRequest.getGstNumber().length() != 15) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "gstNumber",
-                        "message", "Please enter a valid GST Number."));
-            }
-            if (userRepository.existsByGstNumber(signUpRequest.getGstNumber())) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "gstNumber",
-                        "message", "This GST Number is already registered."));
-            }
-        }
-
-        // Create new user's account
-        User user = User.builder()
-                .fullName(signUpRequest.getFullName())
-                .email(signUpRequest.getEmail())
-                .password(encoder.encode(signUpRequest.getPassword()))
-                .phoneNumber(signUpRequest.getPhoneNumber())
-                .role(role)
-                .build();
-
-        if (role == Role.SELLER) {
-            user.setShopName(signUpRequest.getShopName());
-            user.setGstNumber(signUpRequest.getGstNumber());
-            user.setApproved(false);
-
-            userRepository.save(user);
-
-            // Notify Admin
-            adminNotificationService.notifySellerRegistration(user.getId(), user.getFullName());
-        } else {
-            user.setApproved(true);
-            userRepository.save(user);
-        }
-
-        // Send Welcome Email
-        try {
-            if (user.getEmail() != null && !user.getEmail().isEmpty()) {
-                emailService.sendWelcomeEmail(user.getEmail(), user.getFullName());
-            }
-        } catch (Exception e) {
-            System.err.println("Failed to send welcome email: " + e.getMessage());
-        }
-
-        return ResponseEntity.ok(new MessageResponse(role == Role.SELLER ? "Seller account created successfully."
-                : "Account created successfully. Please login."));
     }
 
     @GetMapping("/me")
@@ -316,7 +356,8 @@ public class AuthController {
                 roles,
                 user.getFullName(),
                 user.getShopName(),
-                user.isApproved()));
+                user.isApproved(),
+                user.getProfilePictureUrl()));
     }
 
     @Transactional

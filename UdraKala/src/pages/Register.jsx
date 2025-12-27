@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 const Register = () => {
     const navigate = useNavigate();
-    const { register } = useAuth();
+    const { register, login } = useAuth();
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -16,13 +16,23 @@ const Register = () => {
         phoneNumber: '',
         role: 'CUSTOMER',
         shopName: '',
-        gstNumber: ''
+        gstNumber: '',
+        profileImage: null
     });
+    const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === 'profileImage') {
+            const file = e.target.files[0];
+            setFormData({ ...formData, profileImage: file });
+            if (file) {
+                setPreview(URL.createObjectURL(file));
+            }
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
     };
 
     const validateForm = () => {
@@ -109,18 +119,39 @@ const Register = () => {
         setLoading(true);
 
         try {
-            await register(formData);
+            // Use FormData for file upload
+            const data = new FormData();
+            data.append('fullName', formData.fullName);
+            data.append('email', formData.email);
+            data.append('password', formData.password);
+            data.append('phoneNumber', formData.phoneNumber);
+            data.append('role', formData.role);
+            if (formData.profileImage) {
+                data.append('profileImage', formData.profileImage);
+            }
+
+            await register(data);
 
             // Success Message
             await Swal.fire({
                 title: 'Success!',
-                text: 'Your Account Created succefully.',
+                text: 'Account created! Logging you in...',
                 icon: 'success',
-                confirmButtonColor: '#ea580c',
-                confirmButtonText: 'OK'
+                timer: 1500,
+                showConfirmButton: false
             });
 
-            navigate('/login');
+            // Auto Login
+            const userData = await login(formData.email, formData.password);
+
+            // Redirect based on role
+            if (userData.roles.includes('ROLE_ADMIN')) {
+                navigate('/admin/dashboard');
+            } else if (userData.roles.includes('ROLE_SELLER')) {
+                navigate('/seller/dashboard');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             // Backend Error Handling
             const backendMessage = err.response?.data?.message || err.message || "Something went wrong. Please try again later.";
@@ -154,6 +185,34 @@ const Register = () => {
                     </div>
 
                     <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+                        {/* Profile Photo - New Section */}
+                        <div className="flex justify-center mb-6">
+                            <div className="relative group">
+                                <label htmlFor="profileImage" className="cursor-pointer">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                        {preview ? (
+                                            <img src={preview} alt="Profile Preview" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-sm text-gray-500 text-center px-2">Add Photo</span>
+                                        )}
+                                    </div>
+                                    <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-white text-xs font-bold">Change</span>
+                                    </div>
+                                </label>
+                                <input
+                                    type="file"
+                                    id="profileImage"
+                                    name="profileImage"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    className="hidden"
+                                />
+                            </div>
+                            <div className="ml-4 flex flex-col justify-center text-sm text-gray-500">
+                                <p className="font-medium dark:text-gray-300">Upload a profile photo (optional)</p>
+                            </div>
+                        </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Full Name</label>
@@ -164,6 +223,8 @@ const Register = () => {
                                 <input name="email" type="email" value={formData.email} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="john@example.com" />
                             </div>
                         </div>
+
+
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -197,7 +258,7 @@ const Register = () => {
                             <div className="relative">
                                 <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all appearance-none cursor-pointer">
                                     <option value="CUSTOMER" className="text-gray-900 dark:text-black">Customer</option>
-                                    <option value="SELLER" className="text-gray-900 dark:text-black">Seller</option>
+                                    {/* Seller registration moved to dedicated page */}
                                     <option value="ADMIN" className="text-gray-900 dark:text-black">Admin (Testing)</option>
                                 </select>
                                 <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500 dark:text-gray-400">
@@ -206,27 +267,7 @@ const Register = () => {
                             </div>
                         </div>
 
-                        {formData.role === 'SELLER' && (
-                            <Motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="space-y-6 overflow-hidden"
-                            >
-                                <div className="p-4 bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-xl transition-colors">
-                                    <h3 className="text-orange-600 dark:text-orange-400 font-bold mb-4 text-sm uppercase tracking-wider transition-colors">Seller Details</h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Shop Name</label>
-                                            <input name="shopName" type="text" value={formData.shopName} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="My Handicrafts" />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">GST Number</label>
-                                            <input name="gstNumber" type="text" value={formData.gstNumber} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="22AAAAA0000A1Z5" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Motion.div>
-                        )}
+                        {/* Seller Details removed - moved to separate flow */}
 
                         <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
                             {loading ? 'Creating Account...' : 'Create Account'}

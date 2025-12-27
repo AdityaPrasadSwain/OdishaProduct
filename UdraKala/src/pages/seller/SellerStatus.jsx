@@ -40,7 +40,7 @@ const SellerStatus = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        window.location.href = '/login';
     };
 
     return (

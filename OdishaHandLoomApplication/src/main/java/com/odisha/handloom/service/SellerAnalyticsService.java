@@ -1,79 +1,79 @@
 package com.odisha.handloom.service;
 
-import com.odisha.handloom.entity.Product;
-import com.odisha.handloom.entity.ReelComment;
-import com.odisha.handloom.entity.User;
-import com.odisha.handloom.payload.response.SellerCommentAnalyticsResponse;
-import com.odisha.handloom.repository.CommentLikeRepository;
-import com.odisha.handloom.repository.ReelCommentRepository;
-import com.odisha.handloom.repository.UserRepository;
+import com.odisha.handloom.entity.*;
+import com.odisha.handloom.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SellerAnalyticsService {
 
-    private final ReelCommentRepository reelCommentRepository;
-    private final CommentLikeRepository commentLikeRepository;
+    private final ReelAnalyticsRepository reelAnalyticsRepository;
+    private final ReelViewLogRepository reelViewLogRepository;
+    private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    @Transactional(readOnly = true)
-    public SellerCommentAnalyticsResponse getCommentAnalytics(String sellerEmail) {
-        User seller = userRepository.findByEmail(sellerEmail)
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
+    @Transactional
+    public void recordView(UUID reelId, String email, String sessionId) {
+        Product reel = productRepository.findById(reelId)
+                .orElseThrow(() -> new RuntimeException("Reel not found"));
 
-        UUID sellerId = seller.getId();
+        ReelAnalytics analytics = reelAnalyticsRepository.findByReel(reel)
+                .orElseGet(() -> {
+                    ReelAnalytics ra = new ReelAnalytics();
+                    ra.setReel(reel);
+                    return reelAnalyticsRepository.save(ra);
+                });
 
-        // 1. Total Comments
-        long totalComments = reelCommentRepository.countAllCommentsBySeller(sellerId);
+        // Increment Views (always)
+        analytics.setTotalViews(analytics.getTotalViews() + 1);
 
-        // 2. Total Replies
-        long totalReplies = reelCommentRepository.countRepliesBySeller(sellerId);
+        // Check Reach (Distinct Viewer)
+        boolean isNewViewer = false;
+        User viewer = null;
 
-        // 3. Total Comment Likes
-        long totalLikes = commentLikeRepository.countTotalLikesBySeller(sellerId);
-
-        // 4. Top Reel
-        SellerCommentAnalyticsResponse.TopReelStats topReelStats = null;
-        List<Object[]> topReelResults = reelCommentRepository.findTopCommentedReel(sellerId, PageRequest.of(0, 1));
-        if (!topReelResults.isEmpty()) {
-            Object[] row = topReelResults.get(0);
-            Product reel = (Product) row[0];
-            Long count = (Long) row[1];
-            topReelStats = SellerCommentAnalyticsResponse.TopReelStats.builder()
-                    .reelId(reel.getId())
-                    .caption(reel.getReelCaption())
-                    .commentsCount(count)
-                    .build();
+        if (email != null) {
+            viewer = userRepository.findByEmail(email).orElse(null);
+            if (viewer != null && !reelViewLogRepository.existsByReelAndViewer(reel, viewer)) {
+                isNewViewer = true;
+            }
+        } else if (sessionId != null) {
+            if (!reelViewLogRepository.existsByReelAndSessionId(reel, sessionId)) {
+                isNewViewer = true;
+            }
         }
 
-        // 5. Most Liked Comment
-        SellerCommentAnalyticsResponse.MostLikedCommentStats topCommentStats = null;
-        List<Object[]> topCommentResults = commentLikeRepository.findMostLikedComment(sellerId, PageRequest.of(0, 1));
-        if (!topCommentResults.isEmpty()) {
-            Object[] row = topCommentResults.get(0);
-            ReelComment comment = (ReelComment) row[0];
-            Long count = (Long) row[1];
-            topCommentStats = SellerCommentAnalyticsResponse.MostLikedCommentStats.builder()
-                    .commentId(comment.getId())
-                    .content(comment.getContent())
-                    .userName(comment.getUser().getFullName())
-                    .likesCount(count)
-                    .build();
+        if (isNewViewer) {
+            analytics.setTotalReach(analytics.getTotalReach() + 1);
+
+            ReelViewLog log = new ReelViewLog();
+            log.setReel(reel);
+            log.setViewer(viewer);
+            log.setSessionId(sessionId);
+            reelViewLogRepository.save(log);
         }
 
-        return SellerCommentAnalyticsResponse.builder()
-                .totalComments(totalComments)
-                .totalReplies(totalReplies)
-                .totalCommentLikes(totalLikes)
-                .topReel(topReelStats)
-                .mostLikedComment(topCommentStats)
-                .build();
+        reelAnalyticsRepository.save(analytics);
+    }
+
+    // Called when a like happens
+    @Transactional
+    public void updateLikeCount(Product reel, long delta) {
+        ReelAnalytics analytics = reelAnalyticsRepository.findByReel(reel)
+                .orElseGet(() -> {
+                    ReelAnalytics ra = new ReelAnalytics();
+                    ra.setReel(reel);
+                    return reelAnalyticsRepository.save(ra);
+                });
+
+        long newLikes = analytics.getTotalLikes() + delta;
+        if (newLikes < 0)
+            newLikes = 0;
+        analytics.setTotalLikes(newLikes);
+        reelAnalyticsRepository.save(analytics);
     }
 }

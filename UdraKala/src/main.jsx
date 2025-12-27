@@ -10,6 +10,7 @@ import { initEmailjs } from './utils/emailService';
 import './index.css';
 
 import { WishlistProvider } from './context/WishlistContext';
+import { FollowProvider } from './context/FollowContext';
 
 initEmailjs();
 
@@ -20,7 +21,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <ThemeProvider>
           <DataProvider>
             <WishlistProvider>
-              <App />
+              <FollowProvider>
+                <App />
+              </FollowProvider>
             </WishlistProvider>
           </DataProvider>
         </ThemeProvider>

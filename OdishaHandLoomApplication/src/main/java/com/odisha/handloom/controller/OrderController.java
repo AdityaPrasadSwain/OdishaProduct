@@ -125,6 +125,34 @@ public class OrderController {
         }
     }
 
+    @Autowired
+    private com.odisha.handloom.service.InvoiceService invoiceService;
+
+    @GetMapping("/{id}/invoice")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('SELLER')")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable UUID id) {
+        Order order = orderService.getOrder(id);
+
+        // Security Check: ensure user owns order or is seller
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        boolean isOwner = order.getUser().getId().equals(currentUser.getId());
+        boolean isSeller = order.getSeller().getId().equals(currentUser.getId());
+
+        if (!isOwner && !isSeller) {
+            return ResponseEntity.status(403).build();
+        }
+
+        byte[] pdfBytes = invoiceService.generateInvoice(order);
+
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=invoice_" + id + ".pdf")
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, "application/pdf")
+                .body(pdfBytes);
+    }
+
     // Helper class for payload
     public static class StatusUpdateRequest {
         private OrderStatus status;

@@ -1,6 +1,8 @@
 package com.odisha.handloom.repository;
 
 import com.odisha.handloom.entity.ReturnRequest;
+import com.odisha.handloom.entity.User;
+import com.odisha.handloom.enums.ReturnStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,9 +11,11 @@ import java.util.UUID;
 
 @Repository
 public interface ReturnRequestRepository extends JpaRepository<ReturnRequest, UUID> {
-    List<ReturnRequest> findBySellerId(UUID sellerId);
+    List<ReturnRequest> findByCustomer(User customer);
 
-    List<ReturnRequest> findByCustomerId(UUID customerId);
+    List<ReturnRequest> findBySeller(User seller);
+
+    List<ReturnRequest> findByStatus(ReturnStatus status);
 
     boolean existsByOrderItemId(UUID orderItemId);
 }

@@ -34,4 +34,9 @@ public class SellerFollower {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    // Analytics Fields
+    private String followSource; // PROFILE, REEL
+
+    private UUID sourceReelId; // If source is REEL
 }

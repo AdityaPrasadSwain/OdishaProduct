@@ -45,6 +45,9 @@ public class SellerController {
     @Autowired
     com.odisha.handloom.service.CloudinaryService cloudinaryService;
 
+    @Autowired
+    private com.odisha.handloom.service.StockService stockService;
+
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SellerController.class);
 
     @PostMapping(value = "/products", consumes = { "multipart/form-data" })
@@ -237,11 +240,16 @@ public class SellerController {
                     .body(new MessageResponse("You are not authorized to update this product"));
         }
 
+        // Check for stock refill logic
+        boolean wasOutOfStock = product.getStockQuantity() <= 0;
+
+        product.setStockQuantity(productRequest.getStockQuantity());
+
+        // Update other fields
         product.setName(productRequest.getName());
         product.setDescription(productRequest.getDescription());
         product.setPrice(productRequest.getPrice());
         product.setDiscountPrice(productRequest.getDiscountPrice());
-        product.setStockQuantity(productRequest.getStockQuantity());
         product.setMaterial(productRequest.getMaterial());
         product.setColor(productRequest.getColor());
         product.setSize(productRequest.getSize());
@@ -252,7 +260,20 @@ public class SellerController {
                 .orElseThrow(() -> new RuntimeException("Error: Category not found"));
         product.setCategory(category);
 
-        productRepository.save(product);
+        // Update isOutOfStock status
+        if (product.getStockQuantity() > 0) {
+            product.setOutOfStock(false);
+        } else {
+            product.setOutOfStock(true);
+        }
+
+        Product savedProduct = productRepository.save(product);
+
+        // Trigger notifications if restocked
+        if (wasOutOfStock && savedProduct.getStockQuantity() > 0) {
+            stockService.notifySubscribers(savedProduct);
+        }
+
         return ResponseEntity.ok(new MessageResponse("Product updated successfully!"));
     }
 

@@ -14,4 +14,7 @@ public interface ReelLikeRepository extends JpaRepository<ReelLike, UUID> {
     long countByReel(Product reel);
 
     boolean existsByReelAndUser(Product reel, User user);
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(l) FROM ReelLike l WHERE l.reel.seller.id = :sellerId")
+    long countAllLikesBySeller(@org.springframework.data.repository.query.Param("sellerId") java.util.UUID sellerId);
 }

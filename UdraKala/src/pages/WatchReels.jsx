@@ -1,52 +1,100 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import API from '../api/axios';
-import { X, VolumeX, Volume2, Heart, MessageCircle, Share2, UserPlus, ShoppingBag, Eye, Send, Check } from 'lucide-react';
+import { X, VolumeX, Volume2, Heart, MessageCircle, Share2, ShoppingBag, Send, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Swal from 'sweetalert2';
+import FollowButton from '../components/FollowButton';
 
-const WatchReels = ({ isEmbedded, onClose }) => {
+const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
+    // Helper to access props consistently if logic uses them
+    const props = { filterSellerId, initialReelId };
     const [searchParams] = useSearchParams();
     const productId = searchParams.get('productId');
     const navigate = useNavigate();
 
     const [reels, setReels] = useState([]);
+    // Use initialReelId to find index later, but default to 0
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [isMuted, setIsMuted] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(true);
 
     const videoRefs = useRef([]);
-    const containerRef = useRef(null);
 
     // --- Social State (Optimistic) ---
-    // Map of reelId -> { liked, likeCount, comments[], commentCount, followed, isMe }
+    // Map of reelId -> { liked, likeCount, comments[], commentCount }
     const [socialData, setSocialData] = useState({});
     const [activeCommentReelId, setActiveCommentReelId] = useState(null); // For modal
 
     useEffect(() => {
         fetchReels();
-    }, [productId]);
+    }, [productId, props.filterSellerId]); // Re-fetch if filter changes
 
     const fetchReels = async () => {
         try {
             setLoading(true);
-            const url = productId ? `/customer/reels?productId=${productId}` : `/customer/reels`;
+            let url = `/customer/reels`;
+
+            // If filtering by seller (Profile View)
+            if (props.filterSellerId) {
+                // Correct endpoint for public seller reels
+                url = `/public/sellers/${props.filterSellerId}/reels`;
+            } else if (productId) {
+                url = `/customer/reels?productId=${productId}`;
+            }
+
             const response = await API.get(url);
-            if (response.data && response.data.length > 0) {
-                setReels(response.data);
+
+            let fetchedReels = [];
+
+            if (props.filterSellerId) {
+                // PublicSellerController returns List<Map<String, Object>> directly
+                const reelsList = response.data; // It's an array, not an object with .reels
+                fetchedReels = reelsList.map(r => ({
+                    id: r.id, // backend 'id' is the UUID here
+                    productId: r.id, // Map 'id' to 'productId' for consistency
+                    videoUrl: r.videoUrl,
+                    thumbnailUrl: r.thumbnail, // 'thumbnail' vs 'thumbnailUrl'
+                    productName: r.name,
+                    price: r.price,
+                    sellerId: props.filterSellerId, // We know the seller
+                    sellerName: "", // Might be missing in this concise DTO
+                    caption: r.name // Fallback
+                }));
+            } else {
+                fetchedReels = response.data;
+            }
+
+            if (fetchedReels && fetchedReels.length > 0) {
+                setReels(fetchedReels);
+
                 // Initialize social data 
                 const initialSocial = {};
-                response.data.forEach(r => {
+                fetchedReels.forEach(r => {
                     initialSocial[r.productId] = {
                         liked: false,
                         likeCount: 0,
                         commentCount: 0,
-                        followed: false,
                         sellerId: r.sellerId
                     };
-                    fetchSocialCounts(r.productId, r.sellerId);
+                    fetchSocialCounts(r.productId);
                 });
                 setSocialData(prev => ({ ...prev, ...initialSocial }));
+
+                // Scroll to initial reel if specified
+                if (props.initialReelId) {
+                    const index = fetchedReels.findIndex(r => r.productId === props.initialReelId);
+                    if (index !== -1) {
+                        setCurrentIndex(index);
+                        // Use setTimeout to allow DOM to render before scrolling
+                        setTimeout(() => {
+                            const element = document.getElementById(`reel-${index}`);
+                            if (element) element.scrollIntoView();
+                        }, 100);
+                    }
+                }
+
             } else {
                 if (productId && !isEmbedded) {
                     Swal.fire({ icon: 'info', text: 'No reels available.' }).then(() => navigate(-1));
@@ -59,21 +107,21 @@ const WatchReels = ({ isEmbedded, onClose }) => {
         }
     };
 
-    const fetchSocialCounts = async (productId, sellerId) => {
+    // Helper for UUID validation
+    const isValidUUID = (uuid) => {
+        return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+    };
+
+    const fetchSocialCounts = async (productId) => {
+        if (!productId || productId === 'undefined' || !isValidUUID(productId)) {
+            // console.warn("Skipping social counts for invalid ID:", productId);
+            return;
+        }
         try {
             const [likesRes, commentsRes] = await Promise.all([
                 API.get(`/reels/${productId}/likes/count`).catch(() => ({ data: { count: 0, isLiked: false } })),
                 API.get(`/reels/${productId}/comments/count`).catch(() => ({ data: { count: 0 } }))
             ]);
-
-            // Separate fetch for follow status if sellerId exists
-            let followData = { count: 0, isFollowing: false };
-            if (sellerId) {
-                try {
-                    const fRes = await API.get(`/sellers/${sellerId}/followers/count`);
-                    followData = fRes.data;
-                } catch (e) { }
-            }
 
             setSocialData(prev => ({
                 ...prev,
@@ -81,8 +129,7 @@ const WatchReels = ({ isEmbedded, onClose }) => {
                     ...prev[productId],
                     likeCount: likesRes.data.count,
                     liked: likesRes.data.isLiked,
-                    commentCount: commentsRes.data.count,
-                    followed: followData.isFollowing
+                    commentCount: commentsRes.data.count
                 }
             }));
         } catch (e) {
@@ -94,6 +141,12 @@ const WatchReels = ({ isEmbedded, onClose }) => {
 
     const handleLike = async (reel) => {
         const id = reel.productId;
+
+        if (!id || !isValidUUID(id)) {
+            console.error("Invalid reel ID for like:", id);
+            return;
+        }
+
         const current = socialData[id] || { liked: false, likeCount: 0 };
         const newLiked = !current.liked;
         const newCount = newLiked ? current.likeCount + 1 : Math.max(0, current.likeCount - 1);
@@ -138,76 +191,93 @@ const WatchReels = ({ isEmbedded, onClose }) => {
         }
     };
 
-    const toggleFollow = async (reel) => {
-        const id = reel.productId;
-        const sellerId = reel.sellerId;
-
-        if (!sellerId) return;
-
-        const current = socialData[id] || { followed: false };
-        const newFollowed = !current.followed;
-
-        // Optimistic
-        setSocialData(prev => ({
-            ...prev,
-            [id]: { ...current, followed: newFollowed }
-        }));
-
-        try {
-            if (newFollowed) await API.post(`/sellers/${sellerId}/follow`);
-            else await API.delete(`/sellers/${sellerId}/follow`);
-        } catch (error) {
-            setSocialData(prev => ({
-                ...prev,
-                [id]: current
-            }));
-            if (error.response?.status === 400 && error.response.data.message === "Cannot follow yourself") {
-                Swal.fire("Info", "You cannot follow yourself", "info");
-            } else if (error.response?.status === 401) {
-                Swal.fire("Login Required", "Please login to follow sellers", "warning");
-            }
-        }
-    };
-
-    // --- VIDEO OBSERVER ---
+    // --- VIDEO OBSERVER & VIEW TRACKING ---
     useEffect(() => {
         const options = { threshold: 0.6 };
+        // Store timeouts to clear them if user scrolls away quickly
+        const viewTimers = {};
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const index = parseInt(entry.target.dataset.index);
                 const video = videoRefs.current[index];
+                const reelId = entry.target.dataset.reelid; // Needed for API call
 
                 if (entry.isIntersecting) {
                     if (video) {
-                        // Only play if ready to avoid errors
                         if (video.readyState >= 2) {
                             const playPromise = video.play();
                             if (playPromise !== undefined) {
-                                playPromise.catch(error => {
-                                    console.log("Autoplay prevented:", error);
-                                });
+                                playPromise.catch(console.error);
                             }
                         }
                         setCurrentIndex(index);
+                        setIsPlaying(true);
+
+                        // Start View Timer (2 seconds)
+                        if (reelId && !viewTimers[reelId]) {
+                            viewTimers[reelId] = setTimeout(() => {
+                                trackView(reelId);
+                                delete viewTimers[reelId]; // Prevent double counting in this session logic if needed, 
+                                // though backend also dedups. Frontend dedup per scroll session is good too.
+                            }, 2000);
+                        }
                     }
                 } else {
                     if (video) {
                         video.pause();
-                        // Optional: Reset time logic if needed (disabled to keep state)
-                        // video.currentTime = 0; 
+                        video.currentTime = 0; // Reset video when scrolled away
+                    }
+                    // Cancel view timer if scrolled away before 2s
+                    if (reelId && viewTimers[reelId]) {
+                        clearTimeout(viewTimers[reelId]);
+                        delete viewTimers[reelId];
                     }
                 }
             });
         }, options);
 
         videoRefs.current.forEach(v => v && observer.observe(v));
-        return () => videoRefs.current.forEach(v => v && observer.unobserve(v));
+        return () => {
+            videoRefs.current.forEach(v => v && observer.unobserve(v));
+            // Clear all pending timers on unmount
+            Object.values(viewTimers).forEach(clearTimeout);
+        };
     }, [reels]);
+
+    const trackView = async (reelId) => {
+        try {
+            // Log view
+            // Generate simple session ID if not logged in? 
+            // For now rely on backend handling auth user or implementing anon logic later
+            // We'll pass a random session string for now if needed
+            const sessionId = localStorage.getItem('reel_session_id') || Math.random().toString(36).substring(7);
+            localStorage.setItem('reel_session_id', sessionId);
+
+            await API.post(`/reels/${reelId}/view?sessionId=${sessionId}`);
+            console.log(`View recorded for ${reelId}`);
+        } catch (e) {
+            // Ignore view tracking errors silently
+        }
+    };
+
+    const togglePlayPause = (e) => {
+        e?.stopPropagation();
+        const video = videoRefs.current[currentIndex];
+        if (video) {
+            if (video.paused) {
+                video.play();
+                setIsPlaying(true);
+            } else {
+                video.pause();
+                setIsPlaying(false);
+            }
+        }
+    };
 
     const toggleMute = (e) => {
         e?.stopPropagation();
         if (isMuted) {
-            // Unmuting: Set volume 1 explicitly for cross-browser safety
             const currentVideo = videoRefs.current[currentIndex];
             if (currentVideo) {
                 currentVideo.muted = false;
@@ -234,18 +304,19 @@ const WatchReels = ({ isEmbedded, onClose }) => {
             </button>
 
             {reels.map((reel, index) => {
-                const social = socialData[reel.productId] || { liked: false, likeCount: 0, commentCount: 0, followed: false };
+                const social = socialData[reel.productId] || { liked: false, likeCount: 0, commentCount: 0 };
 
                 // Safety check for video URL
                 const isValidVideo = reel.videoUrl && reel.videoUrl.includes('/video/upload/'); // Basic Cloudinary check
                 if (!isValidVideo && reel.videoUrl) console.warn("Potential invalid video URL:", reel.videoUrl);
 
                 return (
-                    <div key={reel.id} className="h-screen w-full snap-start relative flex items-center justify-center bg-gray-900">
+                    <div key={reel.id} id={`reel-${index}`} className="h-screen w-full snap-start relative flex items-center justify-center bg-gray-900">
                         {/* Video */}
                         <video
                             ref={el => videoRefs.current[index] = el}
                             data-index={index}
+                            data-reelid={reel.productId}
                             src={reel.videoUrl}
                             poster={reel.thumbnailUrl}
                             className="h-full w-full object-cover md:max-w-md mx-auto"
@@ -258,8 +329,19 @@ const WatchReels = ({ isEmbedded, onClose }) => {
                             webkit-playsinline="true" // iOS Safari fix
                             preload="metadata" // Performance
 
-                            onClick={toggleMute}
+                            onClick={togglePlayPause}
+                            onPlay={() => setIsPlaying(true)}
+                            onPause={() => setIsPlaying(false)}
                         />
+
+                        {/* Play/Pause Overlay Icon */}
+                        {!isPlaying && index === currentIndex && (
+                            <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+                                <div className="bg-black/40 p-4 rounded-full backdrop-blur-sm">
+                                    <Play fill="white" size={48} className="text-white ml-1" />
+                                </div>
+                            </div>
+                        )}
 
                         {/* Mute Overlay */}
                         <button onClick={toggleMute} className="absolute top-4 left-4 z-40 p-2 bg-black/40 rounded-full text-white">
@@ -303,22 +385,20 @@ const WatchReels = ({ isEmbedded, onClose }) => {
                             <div className="pointer-events-auto flex flex-col gap-3">
                                 {/* Seller Info Row */}
                                 <div className="flex items-center gap-3 mb-1">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold border-2 border-white text-xs">
-                                        {reel.sellerName ? reel.sellerName.charAt(0).toUpperCase() : 'S'}
-                                    </div>
+                                    <Link to={`/seller/${reel.sellerId}`} className="block">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold border-2 border-white text-xs">
+                                            {reel.sellerName ? reel.sellerName.charAt(0).toUpperCase() : 'S'}
+                                        </div>
+                                    </Link>
                                     <div className="flex flex-col items-start">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-white font-bold text-sm shadow-sm">{reel.sellerName || 'Seller'}</span>
+                                            <Link to={`/seller/${reel.sellerId}`} className="text-white font-bold text-sm shadow-sm hover:underline">
+                                                {reel.sellerName || 'Seller'}
+                                            </Link>
                                             {reel.sellerId && (
-                                                <button
-                                                    onClick={() => toggleFollow(reel)}
-                                                    className={`text-[10px] px-2 py-0.5 rounded font-bold transition flex items-center gap-1 ${social.followed
-                                                        ? "border border-white/40 text-white bg-transparent"
-                                                        : "bg-white text-black hover:bg-white/90"
-                                                        }`}
-                                                >
-                                                    {social.followed ? "Following" : "Follow"}
-                                                </button>
+                                                <div className="scale-90 origin-left">
+                                                    <FollowButton sellerId={reel.sellerId} sellerName={reel.sellerName} source="REEL" sourceReelId={reel.productId} />
+                                                </div>
                                             )}
                                         </div>
                                         <span className="text-[10px] text-white/80 flex items-center gap-1">
@@ -362,6 +442,8 @@ const CommentSheet = ({ reelId, onClose }) => {
     }, [reelId]);
 
     const fetchComments = async () => {
+        if (!reelId || reelId === 'undefined') return;
+        // Simple regex check if needed, but 'undefined' check is main fix
         try {
             const res = await API.get(`/reels/${reelId}/comments`);
             setComments(res.data);

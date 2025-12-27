@@ -9,9 +9,7 @@ import Swal from "sweetalert2";
 const API = axios.create({
   baseURL: "http://localhost:8085/api",
   timeout: 60000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: { "Content-Type": "application/json" } // Removed to allow auto-detection (JSON vs Multipart)
 });
 
 // =======================

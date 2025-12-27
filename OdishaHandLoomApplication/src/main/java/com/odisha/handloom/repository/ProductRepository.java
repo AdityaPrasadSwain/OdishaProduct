@@ -16,4 +16,12 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByNameContainingIgnoreCase(String name);
 
     List<Product> findByIsApprovedTrue(); // Only show approved products to customers
+
+    List<Product> findBySeller(com.odisha.handloom.entity.User seller);
+
+    long countBySeller(com.odisha.handloom.entity.User seller);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("SELECT p FROM Product p WHERE p.id = :id")
+    java.util.Optional<Product> findWithLockingById(@org.springframework.data.repository.query.Param("id") UUID id);
 }

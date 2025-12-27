@@ -41,6 +41,13 @@ public class AdminController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/customers")
+    public List<User> getAllCustomers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole() == Role.CUSTOMER && !user.isDeleted())
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/products")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
@@ -239,7 +246,7 @@ public class AdminController {
                     item.setQuantity(1);
                     item.setPrice(new java.math.BigDecimal("4999.00"));
 
-                    emailService.sendOrderConfirmationEmail(to, "Test User", "TEST-123", 4999.00, List.of(item));
+                    emailService.sendOrderConfirmationEmail(to, "Test User", "TEST-123", 4999.00, List.of(item), null);
                     break;
                 case "seller-return":
                     emailService.sendSellerReturnRequestEmail(to, "Test Seller", "TEST-123", "Test Sambalpuri Saree",

@@ -44,6 +44,9 @@ import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
 import Modal from '../../components/ui/Modal';
 import SellerReelsDashboard from './SellerReelsDashboard';
+import SellerAnalyticsDashboard from './SellerAnalyticsDashboard';
+import SellerProfileView from './SellerProfileView'; // New Import
+import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton';
 
 
 const StatCard = ({ label, value, icon: Icon, colorClass }) => (
@@ -640,7 +643,7 @@ const SellerDashboard = () => {
 
             {/* Tabs */}
             <div className="flex bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto w-fit">
-                {['overview', 'products', 'orders', 'returns', 'reels'].map(tab => (
+                {['overview', 'analytics', 'products', 'orders', 'returns', 'reels', 'profile'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -653,9 +656,7 @@ const SellerDashboard = () => {
             </div>
 
             {loading ? (
-                <div className="flex justify-center p-12">
-                    <Loader2 className="animate-spin text-primary" size={40} />
-                </div>
+                <DashboardSkeleton />
             ) : (
                 <>
                     {/* Overview Tab */}
@@ -711,6 +712,11 @@ const SellerDashboard = () => {
                                 </Card>
                             </div>
                         </div>
+                    )}
+
+                    {/* Analytics Tab */}
+                    {activeTab === 'analytics' && (
+                        <SellerAnalyticsDashboard />
                     )}
 
                     {/* Products Tab */}
@@ -833,6 +839,13 @@ const SellerDashboard = () => {
                     {/* Reels Tab */}
                     {activeTab === 'reels' && (
                         <SellerReelsDashboard />
+                    )}
+
+                    {/* Profile Tab */}
+                    {activeTab === 'profile' && (
+                        <Card className="p-0 overflow-hidden border-none shadow-none bg-transparent">
+                            <SellerProfileView />
+                        </Card>
                     )}
                 </>
             )

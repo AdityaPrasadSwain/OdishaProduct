@@ -3,16 +3,16 @@ package com.odisha.handloom.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Entity
 @Table(name = "reel_comments")
-@Data
+@jakarta.persistence.Entity
+@lombok.Getter
+@lombok.Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,8 +42,11 @@ public class ReelComment {
 
     @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @lombok.ToString.Exclude
+    @lombok.EqualsAndHashCode.Exclude
     private java.util.List<ReelComment> replies = new java.util.ArrayList<>();
 
+    @Builder.Default
     @Column(name = "seller_response", columnDefinition = "boolean default false")
     private Boolean sellerResponse = false;
 

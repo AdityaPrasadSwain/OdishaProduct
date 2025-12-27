@@ -51,7 +51,7 @@ export const sendSellerInvoice = async (orderId) => {
 };
 
 export const downloadCustomerInvoice = async (orderId) => {
-    const response = await axios.get(`/customer/orders/${orderId}/invoice`, {
+    const response = await axios.get(`/orders/${orderId}/invoice`, {
         responseType: 'blob' // Important for PDF download
     });
     return response.data;

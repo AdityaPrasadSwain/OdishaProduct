@@ -2,7 +2,8 @@ import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import ChatWidget from '../components/chat/ChatWidget';
-import Header from '../components/Navbar'; // Assuming Header was Navbar or check path
+import Header from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const DashboardLayout = () => {
     return (
@@ -17,6 +18,7 @@ const DashboardLayout = () => {
                 </div>
             </main>
             <ChatWidget />
+            <Footer />
         </div>
     );
 };

@@ -13,9 +13,10 @@ public class JwtResponse {
     private String shopName;
 
     private boolean isApproved;
+    private String profileImage;
 
     public JwtResponse(String accessToken, UUID id, String email, List<String> roles, String fullName,
-            String shopName, boolean isApproved) {
+            String shopName, boolean isApproved, String profileImage) {
         this.token = accessToken;
         this.id = id;
         this.email = email;
@@ -23,6 +24,7 @@ public class JwtResponse {
         this.fullName = fullName;
         this.shopName = shopName;
         this.isApproved = isApproved;
+        this.profileImage = profileImage;
     }
 
     public String getToken() {
@@ -87,5 +89,13 @@ public class JwtResponse {
 
     public void setApproved(boolean isApproved) {
         this.isApproved = isApproved;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

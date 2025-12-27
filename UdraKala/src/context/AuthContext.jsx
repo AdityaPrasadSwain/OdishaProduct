@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import API from '../api/api';
 
 const AuthContext = createContext(null);
@@ -18,57 +18,57 @@ const isTokenExpired = (token) => {
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    // Validate token on mount and periodically
-    useEffect(() => {
-        const validateSession = () => {
+    // 1. Lazy Initialize User from LocalStorage
+    // This ensures that on refresh, the state is hydrated immediately before the first render
+    const [user, setUser] = useState(() => {
+        try {
             const token = localStorage.getItem('token');
             const savedUser = localStorage.getItem('user');
 
             if (token && savedUser) {
-                // Check if token is expired
                 if (isTokenExpired(token)) {
-                    console.warn('Token expired, logging out');
                     localStorage.clear();
-                    setUser(null);
-                } else {
-                    const parsedUser = JSON.parse(savedUser);
-
-                    // Check if user is blocked
-                    if (parsedUser.isBlocked) {
-                        console.warn('User is blocked, logging out');
-                        localStorage.clear();
-                        setUser(null);
-                    } else {
-                        // Normalize isApproved from storage if needed
-                        if (parsedUser.isApproved === undefined && parsedUser.approved !== undefined) {
-                            parsedUser.isApproved = parsedUser.approved;
-                            // Optionally update localStorage to be clean for next time
-                            localStorage.setItem('user', JSON.stringify(parsedUser));
-                        }
-                        setUser(parsedUser);
-                    }
+                    return null;
                 }
+                return JSON.parse(savedUser);
             }
-            setLoading(false);
-        };
+        } catch (error) {
+            console.error("Failed to parse user from storage", error);
+            localStorage.clear();
+        }
+        return null;
+    });
 
-        validateSession();
+    const [loading, setLoading] = useState(false); // No need for true initial loading with lazy init
 
-        // Check token expiration every minute
+    const logout = useCallback(async () => {
+        try {
+            // Attempt backend logout (stateless, but good practice)
+            await API.post('/auth/logout');
+        } catch (error) {
+            console.warn("Backend logout failed (non-critical):", error);
+        } finally {
+            // Always clear client state
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            setUser(null);
+            // Use replace to prevent back-button navigation to protected pages
+            window.location.replace('/login');
+        }
+    }, []);
+
+    // 2. Periodic Token Check
+    useEffect(() => {
+        // Initial check is done in lazy init, so we just set up the interval here
         const interval = setInterval(() => {
             const token = localStorage.getItem('token');
             if (token && isTokenExpired(token)) {
                 console.warn('Token expired during session, logging out');
-                localStorage.clear();
-                setUser(null);
+                logout();
                 window.location.href = '/login';
             }
         }, 60000); // Check every minute
 
-        // Global 401 Listener
         const handleUnauthorized = () => {
             console.warn('Received global 401/403 event. Logging out.');
             logout();
@@ -80,9 +80,9 @@ export const AuthProvider = ({ children }) => {
             clearInterval(interval);
             window.removeEventListener('auth:unauthorized', handleUnauthorized);
         };
-    }, []);
+    }, [logout]);
 
-    const login = async (identifier, password) => {
+    const login = useCallback(async (identifier, password) => {
         const res = await API.post('/auth/login', { identifier, password });
 
         const token = res.data?.token;
@@ -120,19 +120,17 @@ export const AuthProvider = ({ children }) => {
         setUser(userData);
 
         return userData;
-    };
+    }, []);
 
-    const register = async (userData) => {
+    const register = useCallback(async (userData) => {
+        // API instance will now automatically handle Content-Type:
+        // - application/json for objects
+        // - multipart/form-data; boundary=... for FormData
         const res = await API.post('/auth/signup', userData);
         return res.data;
-    };
+    }, []);
 
-    const logout = () => {
-        localStorage.clear();
-        setUser(null);
-    };
-
-    const refreshUser = async () => {
+    const refreshUser = useCallback(async () => {
         try {
             const token = localStorage.getItem('token');
             if (token && !isTokenExpired(token)) {
@@ -152,6 +150,8 @@ export const AuthProvider = ({ children }) => {
                         return null;
                     }
 
+                    // Only update state if data actually changed to verify strict equality downstream
+                    // But for now, stable function reference is the key.
                     localStorage.setItem('user', JSON.stringify(userData));
                     setUser(userData);
                     return userData;
@@ -165,7 +165,12 @@ export const AuthProvider = ({ children }) => {
             }
         }
         return null;
-    };
+    }, [logout]);
+
+    // 3. Refresh user on mount
+    useEffect(() => {
+        refreshUser();
+    }, []);
 
     return (
         <AuthContext.Provider value={{ user, authenticated: !!user, login, register, logout, loading, refreshUser }}>

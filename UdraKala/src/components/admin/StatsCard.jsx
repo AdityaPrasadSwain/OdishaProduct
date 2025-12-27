@@ -10,14 +10,21 @@ const StatsCard = ({ title, value, prefix = "", suffix = "", icon: Icon, trend, 
     const [displayValue, setDisplayValue] = useState(0);
 
     useEffect(() => {
-        const controls = animate(count, value, { duration: 1.5, ease: "easeOut" });
-        return controls.stop;
+        if (typeof value === 'number') {
+            const controls = animate(count, value, { duration: 1.5, ease: "easeOut" });
+            return controls.stop;
+        } else {
+            setDisplayValue(value);
+        }
     }, [value]);
 
     useEffect(() => {
-        const unsubscribe = rounded.on("change", v => setDisplayValue(v));
-        return unsubscribe;
-    }, [rounded]);
+        // Only safely subscribe if we are actually animating a number
+        if (typeof value === 'number') {
+            const unsubscribe = rounded.on("change", v => setDisplayValue(v));
+            return unsubscribe;
+        }
+    }, [rounded, value]);
 
     const colorClasses = {
         blue: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",

@@ -4,6 +4,7 @@ import { motion as Motion } from 'motion/react';
 import { useWishlist } from '../context/WishlistContext';
 import { useData } from '../context/DataContext';
 import { ShoppingCart, Trash2, Heart } from 'lucide-react';
+import ProductCardSkeleton from '../components/skeletons/ProductCardSkeleton';
 
 const Wishlist = () => {
     const { wishlistItems, loading, removeFromWishlist } = useWishlist();
@@ -11,8 +12,16 @@ const Wishlist = () => {
 
     if (loading) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-600"></div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="flex items-center justify-between mb-8">
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 w-48 rounded animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 w-24 rounded animate-pulse"></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <ProductCardSkeleton key={i} />
+                    ))}
+                </div>
             </div>
         );
     }

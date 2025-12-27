@@ -13,4 +13,6 @@ public interface SellerFollowerRepository extends JpaRepository<SellerFollower, 
     long countBySeller(User seller);
 
     boolean existsBySellerAndUser(User seller, User user);
+
+    java.util.List<SellerFollower> findAllByUser(User user);
 }

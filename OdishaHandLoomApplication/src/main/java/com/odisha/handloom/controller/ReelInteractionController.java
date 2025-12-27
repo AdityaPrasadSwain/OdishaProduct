@@ -1,18 +1,22 @@
 package com.odisha.handloom.controller;
 
-import com.odisha.handloom.entity.*;
-import com.odisha.handloom.repository.*;
+import com.odisha.handloom.entity.Product;
+import com.odisha.handloom.entity.ReelLike;
+import com.odisha.handloom.entity.SellerFollower;
+import com.odisha.handloom.entity.User;
+import com.odisha.handloom.repository.ProductRepository;
+import com.odisha.handloom.repository.ReelLikeRepository;
+import com.odisha.handloom.repository.SellerFollowerRepository;
+import com.odisha.handloom.repository.UserRepository;
 import com.odisha.handloom.payload.response.MessageResponse;
-import com.odisha.handloom.payload.request.ReplyCommentRequest;
-import com.odisha.handloom.payload.response.CommentResponse;
 import com.odisha.handloom.service.ReelInteractionService;
+import com.odisha.handloom.service.SellerAnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -24,9 +28,11 @@ public class ReelInteractionController {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ReelLikeRepository reelLikeRepository;
-    // reelCommentRepository removed, using service instead
     private final SellerFollowerRepository sellerFollowerRepository;
+    private final com.odisha.handloom.repository.ReelCommentRepository reelCommentRepository;
+    private final SellerAnalyticsService sellerAnalyticsService;
     private final ReelInteractionService reelInteractionService;
+    private final com.odisha.handloom.service.NotificationService notificationService;
 
     private User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,10 +43,25 @@ public class ReelInteractionController {
 
     // --- REEL LIKES ---
 
+    private UUID parseUUID(String id) {
+        try {
+            return UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid UUID format: " + id);
+            return null;
+        }
+    }
+
+    // --- REEL LIKES ---
+
     @PostMapping("/reels/{id}/like")
-    public ResponseEntity<?> likeReel(@PathVariable UUID id) {
+    public ResponseEntity<?> likeReel(@PathVariable String id) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid UUID"));
+
         User user = getAuthenticatedUser();
-        Product reel = productRepository.findById(id)
+        Product reel = productRepository.findById(reelId)
                 .orElseThrow(() -> new RuntimeException("Reel not found"));
 
         if (reelLikeRepository.existsByReelAndUser(reel, user)) {
@@ -53,13 +74,30 @@ public class ReelInteractionController {
                 .build();
         reelLikeRepository.save(like);
 
+        // Update Analytics
+        sellerAnalyticsService.updateLikeCount(reel, 1);
+
+        // Trigger Notification
+        notificationService.createNotification(
+                reel.getSeller(),
+                user.getFullName() + " liked your reel",
+                com.odisha.handloom.entity.Notification.NotificationType.LIKE,
+                user,
+                null,
+                reel.getId(),
+                null);
+
         return ResponseEntity.ok(new MessageResponse("Reel liked"));
     }
 
     @DeleteMapping("/reels/{id}/like")
-    public ResponseEntity<?> unlikeReel(@PathVariable UUID id) {
+    public ResponseEntity<?> unlikeReel(@PathVariable String id) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid UUID"));
+
         User user = getAuthenticatedUser();
-        Product reel = productRepository.findById(id)
+        Product reel = productRepository.findById(reelId)
                 .orElseThrow(() -> new RuntimeException("Reel not found"));
 
         ReelLike like = reelLikeRepository.findByReelAndUser(reel, user)
@@ -67,17 +105,22 @@ public class ReelInteractionController {
 
         reelLikeRepository.delete(like);
 
+        // Update Analytics
+        sellerAnalyticsService.updateLikeCount(reel, -1);
+
         return ResponseEntity.ok(new MessageResponse("Reel unliked"));
     }
 
     @GetMapping("/reels/{id}/likes/count")
-    public ResponseEntity<?> getLikeCount(@PathVariable UUID id) {
-        Product reel = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reel not found"));
+    public ResponseEntity<?> getLikeCount(@PathVariable String id) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid UUID"));
 
+        Product reel = productRepository.findById(reelId)
+                .orElseThrow(() -> new RuntimeException("Reel not found"));
         long count = reelLikeRepository.countByReel(reel);
 
-        // Check if current user liked
         boolean isLiked = false;
         try {
             User user = getAuthenticatedUser();
@@ -89,92 +132,73 @@ public class ReelInteractionController {
         return ResponseEntity.ok(Map.of("count", count, "isLiked", isLiked));
     }
 
-    // --- REEL COMMENTS ---
-
-    @GetMapping("/reels/{id}/comments")
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable UUID id) {
-        String email = null;
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
-                email = auth.getName();
-            }
-        } catch (Exception e) {
-            // ignore
-        }
-        return ResponseEntity.ok(reelInteractionService.getCommentsForReel(id, email));
-    }
-
     @GetMapping("/reels/{id}/comments/count")
-    public ResponseEntity<?> getCommentCount(@PathVariable UUID id) {
-        Product reel = productRepository.findById(id)
+    public ResponseEntity<?> getCommentCount(@PathVariable String id) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid UUID"));
+
+        Product reel = productRepository.findById(reelId)
                 .orElseThrow(() -> new RuntimeException("Reel not found"));
-        // We can use the service or repository directly.
-        // Service would be cleaner but repository is already used in controller for
-        // counts (e.g. like count).
-        // But wait, the controller has `reelLikeRepository` injected but
-        // `ReelCommentRepository` was removed in favor of service.
-        // I should add `getCommentCount` to `ReelInteractionService` OR re-inject
-        // repository?
-        // Let's check imports. Repository IS imported. But variable was removed?
-        // Line 27: `// reelCommentRepository removed, using service instead`
-        // So I should use `reelInteractionService`.
         long count = reelInteractionService.getReelCommentCount(reel);
         return ResponseEntity.ok(Map.of("count", count));
     }
 
-    @PostMapping("/reels/{id}/comments")
-    public ResponseEntity<?> addComment(@PathVariable UUID id, @RequestBody ReplyCommentRequest request) {
-        // Authenticated user email from context
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+    @GetMapping("/reels/{id}/comments")
+    public ResponseEntity<?> getComments(@PathVariable String id) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid UUID"));
 
-        // Backward compatibility: If request comes from legacy frontend logic sending
-        // map,
-        // it might fail if we enforce strict ReplyCommentRequest without careful
-        // frontend alignment.
-        // However, we updated ReplyCommentRequest to match frontend JSON structure
-        // (comment, parentId).
-        // So this should bind correctly.
-
-        CommentResponse response;
-        if (request.getParentId() != null) {
-            // Treat as reply if parentId is present in body
-            response = reelInteractionService.replyToComment(id, request.getParentId(), request, email);
-        } else {
-            response = reelInteractionService.addComment(id, request, email);
+        User user = null;
+        try {
+            user = getAuthenticatedUser();
+        } catch (Exception e) {
+            // Allow public viewing
         }
-
-        return ResponseEntity.ok(response);
+        var comments = reelInteractionService.getCommentsForReel(reelId, user != null ? user.getEmail() : null);
+        System.out.println("Fetching comments for reel " + reelId + ": found " + comments.size());
+        return ResponseEntity.ok(comments);
     }
 
-    // STRICT ENDPOINT requested by prompt
-    @PostMapping("/reels/{reelId}/comments/{commentId}/reply")
-    public ResponseEntity<CommentResponse> replyToComment(
-            @PathVariable UUID reelId,
-            @PathVariable UUID commentId,
-            @RequestBody ReplyCommentRequest request) {
+    @PostMapping("/reels/{id}/comments")
+    public ResponseEntity<?> addComment(@PathVariable String id,
+            @jakarta.validation.Valid @RequestBody com.odisha.handloom.payload.request.ReplyCommentRequest request) {
+        UUID reelId = parseUUID(id);
+        if (reelId == null)
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid UUID"));
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
-
-        CommentResponse response = reelInteractionService.replyToComment(reelId, commentId, request, email);
-        return ResponseEntity.ok(response);
+        User user = getAuthenticatedUser();
+        return ResponseEntity.ok(reelInteractionService.addComment(reelId, request, user.getEmail()));
     }
 
-    // COMMENT LIKE ENDPOINT
-    @PostMapping("/comments/{commentId}/like")
-    public ResponseEntity<?> toggleCommentLike(@PathVariable UUID commentId) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+    @PostMapping("/comments/{commentId}/reply")
+    public ResponseEntity<?> replyToComment(@PathVariable String commentId,
+            @jakarta.validation.Valid @RequestBody com.odisha.handloom.payload.request.ReplyCommentRequest request) {
+        UUID parentId = parseUUID(commentId);
+        if (parentId == null)
+            return ResponseEntity.badRequest().body(new MessageResponse("Invalid UUID"));
 
-        return ResponseEntity.ok(reelInteractionService.toggleCommentLike(commentId, email));
+        User user = getAuthenticatedUser();
+
+        com.odisha.handloom.entity.ReelComment parentComment = reelCommentRepository.findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+
+        UUID reelId = parentComment.getReel().getId();
+
+        return ResponseEntity.ok(reelInteractionService.replyToComment(reelId, parentId, request, user.getEmail()));
     }
+
+    // ... (rest of the file until followSeller) ...
 
     // --- SELLER FOLLOWS ---
 
     @PostMapping("/sellers/{id}/follow")
-    public ResponseEntity<?> followSeller(@PathVariable UUID id) {
+    public ResponseEntity<?> followSeller(
+            @PathVariable UUID id,
+            @RequestParam(required = false) String source, // "REEL" or "PROFILE"
+            @RequestParam(required = false) UUID reelId) { // If source is REEL
+
         User user = getAuthenticatedUser();
         User seller = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
@@ -190,8 +214,27 @@ public class ReelInteractionController {
         SellerFollower follower = SellerFollower.builder()
                 .seller(seller)
                 .user(user)
+                .followSource(source != null ? source : "PROFILE")
+                .sourceReelId(reelId)
                 .build();
         sellerFollowerRepository.save(follower);
+
+        // Update Counts
+        seller.setFollowersCount(seller.getFollowersCount() + 1);
+        userRepository.save(seller);
+
+        user.setFollowingCount(user.getFollowingCount() + 1);
+        userRepository.save(user);
+
+        // Trigger Notification
+        notificationService.createNotification(
+                seller,
+                user.getFullName() + " started following you",
+                com.odisha.handloom.entity.Notification.NotificationType.FOLLOW,
+                user,
+                null,
+                null,
+                null);
 
         return ResponseEntity.ok(new MessageResponse("Followed successfully"));
     }
@@ -206,6 +249,17 @@ public class ReelInteractionController {
                 .orElseThrow(() -> new RuntimeException("Not following"));
 
         sellerFollowerRepository.delete(follower);
+
+        // Update Counts
+        if (seller.getFollowersCount() > 0) {
+            seller.setFollowersCount(seller.getFollowersCount() - 1);
+            userRepository.save(seller);
+        }
+
+        if (user.getFollowingCount() > 0) {
+            user.setFollowingCount(user.getFollowingCount() - 1);
+            userRepository.save(user);
+        }
 
         return ResponseEntity.ok(new MessageResponse("Unfollowed successfully"));
     }

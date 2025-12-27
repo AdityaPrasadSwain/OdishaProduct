@@ -128,7 +128,7 @@ public class EmailService {
 
     @Async
     public void sendOrderConfirmationEmail(String to, String name, String orderId, double amount,
-            List<OrderItem> items) {
+            List<OrderItem> items, byte[] invoicePdf) {
         String subject = "Order Confirmed! Order #" + orderId;
 
         StringBuilder itemsHtml = new StringBuilder();
@@ -157,13 +157,33 @@ public class EmailService {
                 </div>
 
                 <p>We will notify you once your items are shipped.</p>
+                <p><strong>Please find your invoice attached.</strong></p>
 
                 <div style="text-align: center;">
                     <a href="http://localhost:5173/orders" class="button">Track Your Order</a>
                 </div>
                 """.formatted(name, orderId, amount, itemsHtml.toString());
 
-        sendHtmlEmail(to, subject, getHtmlTemplate("Order Confirmation", content));
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom(fromEmail);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(getHtmlTemplate("Order Confirmation", content), true);
+
+            if (invoicePdf != null) {
+                helper.addAttachment("Invoice_" + orderId + ".pdf",
+                        new jakarta.mail.util.ByteArrayDataSource(invoicePdf, "application/pdf"));
+            }
+
+            mailSender.send(message);
+            System.out.println("✅ Order Confirmation Email (with Invoice) sent to " + to);
+        } catch (MessagingException e) {
+            System.err.println("❌ Failed to send order confirmation email to " + to + ": " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Async
@@ -449,5 +469,43 @@ public class EmailService {
             System.err.println("❌ Unexpected error sending invoice email: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Async
+    public void sendOutOfStockAcknowledgementEmail(String to, String productName) {
+        String subject = "Product Currently Unavailable – We’ll Keep You Updated";
+        String content = """
+                <p>Dear Customer,</p>
+                <p>Thank you for your interest in <strong>%s</strong>.</p>
+                <div class="info-box">
+                    <p>This product is currently out of stock.</p>
+                    <p>As soon as it becomes available again, we will notify you.</p>
+                </div>
+                <p>Thank you for choosing us.</p>
+                """.formatted(productName);
+
+        sendHtmlEmail(to, subject, getHtmlTemplate("We’ll Keep You Updated", content));
+    }
+
+    @Async
+    public void sendProductAvailableTodayEmail(String to, String productName, String productId) {
+        String subject = "Good News! Your Product Is Available Today";
+        String content = """
+                <p>Dear Customer,</p>
+                <p>We’re happy to let you know that the product you were waiting for, <strong>%s</strong>, is now available today.</p>
+
+                <div class="info-box" style="background-color: #f0fdf4; border-left-color: #16a34a;">
+                   <strong>Available Now!</strong>
+                </div>
+
+                <p>Thank you for your patience and for choosing us.</p>
+
+                <div style="text-align: center;">
+                    <a href="http://localhost:5173/product/%s" class="button">Shop Now</a>
+                </div>
+                """
+                .formatted(productName, productId);
+
+        sendHtmlEmail(to, subject, getHtmlTemplate("Good News!", content));
     }
 }

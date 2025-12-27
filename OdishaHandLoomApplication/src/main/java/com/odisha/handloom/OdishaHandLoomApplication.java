@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @org.springframework.scheduling.annotation.EnableAsync
 @org.springframework.boot.context.properties.EnableConfigurationProperties({
-        com.odisha.handloom.security.jwt.JwtProperties.class, com.odisha.handloom.config.OtpProperties.class })
+        com.odisha.handloom.security.jwt.JwtProperties.class })
 public class OdishaHandLoomApplication {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(OdishaHandLoomApplication.class);

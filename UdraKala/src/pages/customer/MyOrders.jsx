@@ -4,6 +4,8 @@ import { getMyOrders } from '../../api/orderApi';
 import { motion as Motion } from 'motion/react';
 import { Package, ChevronRight, Clock } from 'lucide-react';
 
+import OrderSkeleton from '../../components/skeletons/OrderSkeleton';
+
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -30,7 +32,7 @@ const MyOrders = () => {
     };
 
     if (loading) {
-        return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white">Loading orders...</div>;
+        return <OrderSkeleton />;
     }
 
     return (

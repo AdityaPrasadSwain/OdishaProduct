@@ -49,7 +49,8 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -62,7 +63,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration
+                .setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -82,22 +84,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/signup", "/api/auth/login/request-otp",
-                                "/api/auth/login/verify-otp")
+                                "/api/auth/login/verify-otp", "/api/auth/logout") // Explicitly permit logout
                         .permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/auth/**", "/api/public/**", "/api/products/public/**", "/api/cart/**",
-                                "/api/seller/registration/**", "/api/reels/public/**", "/api/user/profile/**",
-                                "/api/help/chat/**", "/api/categories/**", "/api/customer/products/**",
-                                "/api/products/search") // Added categories and customer products
+                                "/api/sellers/register/**", "/api/reels/public/**", "/api/user/profile/**",
+                                "/api/help/chat/**", "/api/categories", "/api/categories/**",
+                                "/api/customer/products/**",
+                                "/api/products/search", "/api/reviews/product/**",
+                                "/uploads/**") // Allow access to uploaded files
                         .permitAll()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
-                        .requestMatchers("/api/returns/**").hasAnyRole("CUSTOMER", "ADMIN")
+                        .requestMatchers("/api/returns/**").hasAnyRole("CUSTOMER", "ADMIN", "SELLER")
                         .requestMatchers("/api/notifications/**").authenticated()
 
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .logout(logout -> logout.disable()); // Disable default Spring logout to handle it manually/statelessly
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);

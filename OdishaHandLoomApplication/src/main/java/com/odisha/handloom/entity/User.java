@@ -1,7 +1,6 @@
 package com.odisha.handloom.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,7 +9,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Data
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,6 +48,9 @@ public class User {
     private String accountHolderName;
     private boolean isBankVerified = false; // Default false until Admin verifies
 
+    private Long followersCount = 0L;
+    private Long followingCount = 0L;
+
     private boolean isDeleted = false;
 
     public boolean isDeleted() {
@@ -69,6 +70,23 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Enumerated(EnumType.STRING)
+    private RegistrationStatus registrationStatus;
+
+    public RegistrationStatus getRegistrationStatus() {
+        return registrationStatus;
+    }
+
+    public void setRegistrationStatus(RegistrationStatus registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+
+    // New Business Details
+    private String businessType;
+    private String state;
+    private String city;
+    private String pincode;
+
     public User() {
     }
 
@@ -76,7 +94,9 @@ public class User {
             String profilePictureUrl, String bio, String gender,
             String gstNumber, String shopName, boolean isApproved, Boolean isBlocked, String panNumber,
             String bankAccountNumber,
-            String ifscCode, String bankName, LocalDateTime createdAt, LocalDateTime updatedAt) {
+            String ifscCode, String bankName, LocalDateTime createdAt, LocalDateTime updatedAt,
+            RegistrationStatus registrationStatus,
+            String businessType, String state, String city, String pincode) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -97,7 +117,64 @@ public class User {
         this.bankName = bankName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.registrationStatus = registrationStatus;
+
+        this.businessType = businessType;
+        this.state = state;
+        this.city = city;
+        this.pincode = pincode;
     }
+
+    // ... Standard Getters and Setters for new fields ...
+    public String getBusinessType() {
+        return businessType;
+    }
+
+    public void setBusinessType(String businessType) {
+        this.businessType = businessType;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public void setPincode(String pincode) {
+        this.pincode = pincode;
+    }
+
+    // ... Existing Getters and Setters ...
+    // (Ensure I didn't break existing ones)
+    // I will replace only from Constructor start down to Builder to allow inserting
+    // new ones safely.
+    // Wait, the replace tool requires exact match.
+    // I'll append fields after `RegistrationStatus` property and add
+    // getters/setters before Builder.
+    // Then update Builder.
+
+    // Actually, to be safe with smaller chunks:
+    // 1. Add fields.
+    // 2. Add Getters/Setters.
+    // 3. Update Builder/Constructor if heavily used, or just let JPA use default
+    // constructor + setters.
+    // The Builder is used in UserDetailsServiceImpl probably. Ideally I update it.
+
+    // Let's do a large replace of the class body parts.
 
     public static UserBuilder builder() {
         return new UserBuilder();
@@ -280,7 +357,22 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    // Builder inner class (same as existing UserBuilder)
+    public Long getFollowersCount() {
+        return followersCount;
+    }
+
+    public void setFollowersCount(Long followersCount) {
+        this.followersCount = followersCount;
+    }
+
+    public Long getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(Long followingCount) {
+        this.followingCount = followingCount;
+    }
+
     public static class UserBuilder {
         private UUID id;
         private String email;
@@ -302,6 +394,12 @@ public class User {
         private String bankName;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
+        private RegistrationStatus registrationStatus;
+
+        private String businessType;
+        private String state;
+        private String city;
+        private String pincode;
 
         UserBuilder() {
         }
@@ -406,10 +504,36 @@ public class User {
             return this;
         }
 
+        public UserBuilder registrationStatus(RegistrationStatus registrationStatus) {
+            this.registrationStatus = registrationStatus;
+            return this;
+        }
+
+        public UserBuilder businessType(String businessType) {
+            this.businessType = businessType;
+            return this;
+        }
+
+        public UserBuilder state(String state) {
+            this.state = state;
+            return this;
+        }
+
+        public UserBuilder city(String city) {
+            this.city = city;
+            return this;
+        }
+
+        public UserBuilder pincode(String pincode) {
+            this.pincode = pincode;
+            return this;
+        }
+
         public User build() {
             return new User(id, email, password, fullName, phoneNumber, role, address, profilePictureUrl, bio, gender,
                     gstNumber, shopName, isApproved,
-                    isBlocked, panNumber, bankAccountNumber, ifscCode, bankName, createdAt, updatedAt);
+                    isBlocked, panNumber, bankAccountNumber, ifscCode, bankName, createdAt, updatedAt,
+                    registrationStatus, businessType, state, city, pincode); // Updated constructor call
         }
     }
 }

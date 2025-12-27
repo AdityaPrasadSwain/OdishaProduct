@@ -5,10 +5,13 @@ import Hero3D from '../components/hero/Hero3D';
 import FeatureGrid from '../components/FeatureGrid';
 import ScrollReveal from '../components/ui/ScrollReveal';
 import Button from '../components/ui/Button';
+import CategoryNavbar from '../components/category/CategoryNavbar';
 
 const Home = () => {
     return (
-        <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white transition-colors duration-200 overflow-x-hidden">
+        <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-200 overflow-x-hidden">
+            {/* Category Navigation Bar (Flipkart Style) */}
+            <CategoryNavbar />
 
             {/* Section 1: Hero with 3D Background */}
             <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
@@ -48,7 +51,7 @@ const Home = () => {
             </section>
 
             {/* Section 2: Cultural Storytelling */}
-            <section className="py-24 px-4 bg-gray-50 dark:bg-gray-900/50">
+            <section className="py-24 px-4 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
                     <ScrollReveal variant="fadeInLeft" className="flex-1">
                         <div className="relative rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
@@ -81,6 +84,8 @@ const Home = () => {
                 </div>
             </section>
 
+
+
             {/* Section 3: Products Grid */}
             <section className="py-20 px-4">
                 <ScrollReveal variant="fadeInUp">
@@ -94,7 +99,7 @@ const Home = () => {
             </section>
 
             {/* Minimalist Trust Section */}
-            <div className="py-16 border-t border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-gray-950 transition-colors duration-200">
+            <div className="py-16 border-t border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-gray-900 transition-colors duration-200">
                 <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center opacity-70">
                     <div>
                         <h3 className="text-3xl font-bold text-gray-900 dark:text-white">500+</h3>
@@ -117,5 +122,7 @@ const Home = () => {
         </div>
     );
 };
+
+
 
 export default Home;

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const FeatureGrid = () => {
     return (
-        <div className="bg-gray-50 dark:bg-gray-950 py-24 relative overflow-hidden transition-colors duration-200">
+        <div className="bg-gray-50 dark:bg-gray-900 py-24 relative overflow-hidden transition-colors duration-200">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-16">
                     <h2 className="text-orange-500 font-medium tracking-wide uppercase mb-3">Curated Collections</h2>

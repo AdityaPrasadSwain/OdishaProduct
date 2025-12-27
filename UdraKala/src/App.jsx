@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LoginWithOtp from './pages/LoginWithOtp';
+import SellerRegistrationWizard from './pages/seller-registration/SellerRegistrationWizard';
 import Home from './pages/Home';
 import AnalyticsDashboard from './pages/admin/AnalyticsDashboard';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -10,8 +11,14 @@ import AdminPayoutDashboard from './pages/admin/AdminPayoutDashboard';
 import AdminCommissionSettings from './pages/admin/AdminCommissionSettings';
 import AdminPayoutHistory from './pages/admin/AdminPayoutHistory';
 import AdminNotifications from './pages/admin/AdminNotifications';
+import AdminUserManagement from './pages/admin/AdminUserManagement'; // New Import
+import AdminSellersList from './pages/admin/verification/AdminSellersList';
+import AdminSellerDetails from './pages/admin/verification/AdminSellerDetails';
+import AdminCategories from './pages/admin/AdminCategories';
 import SellerDashboard from './pages/seller/SellerDashboard';
 import SellerStatus from './pages/seller/SellerStatus';
+import SellerAnalyticsDashboard from './pages/seller/SellerAnalyticsDashboard';
+import SellerProfileView from './pages/seller/SellerProfileView'; // New Import
 import SellerKycFlow from './components/kyc/SellerKycFlow'; // Added Import
 import CustomerDashboard from './pages/customer/CustomerDashboard';
 import ProductList from './pages/ProductList';
@@ -30,6 +37,11 @@ import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
 import DashboardLayout from './layouts/DashboardLayout';
 import PublicLayout from './layouts/PublicLayout';
+import SellerProfile from './pages/public/SellerProfile';
+import ReturnRequestForm from './pages/returns/ReturnRequestForm';
+import CustomerReturns from './pages/returns/CustomerReturns';
+import SellerReturnDashboard from './pages/seller/SellerReturnDashboard';
+import AdminReturnManagement from './pages/admin/AdminReturnManagement';
 
 function App() {
   return (
@@ -41,11 +53,13 @@ function App() {
           <Route path="/products" element={<ProductList />} />
           <Route path="/product/:productId" element={<ProductDetails />} />
           <Route path="/reels" element={<WatchReels />} />
+          <Route path="/seller/:id" element={<SellerProfile />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/wishlist" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><Wishlist /></ProtectedRoute>} />
           <Route path="/unauthorized" element={<Unauthorized />} />
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/register/seller" element={<PublicRoute><SellerRegistrationWizard /></PublicRoute>} />
           <Route path="/login-otp" element={<PublicRoute><LoginWithOtp /></PublicRoute>} />
 
           {/* Checkout Flow (Customer only but distinct look, usually keeps Navbar or minimal) */}
@@ -59,6 +73,11 @@ function App() {
           {/* Admin Routes */}
           <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
           <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminNotifications /></ProtectedRoute>} />
+          <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminUserManagement /></ProtectedRoute>} />
+          <Route path="/admin/sellers" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminSellersList /></ProtectedRoute>} />
+          <Route path="/admin/sellers/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminSellerDetails /></ProtectedRoute>} />
+          <Route path="/admin/categories" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCategories /></ProtectedRoute>} />
+          <Route path="/admin/returns" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminReturnManagement /></ProtectedRoute>} />
 
           <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles={['ADMIN']}><AnalyticsDashboard /></ProtectedRoute>} />
           <Route path="/admin/payouts" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminPayoutDashboard /></ProtectedRoute>} />
@@ -67,12 +86,18 @@ function App() {
 
           {/* Seller Routes */}
           <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerDashboard /></ProtectedRoute>} />
+          <Route path="/seller/dashboard/analytics" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerAnalyticsDashboard /></ProtectedRoute>} />
+          <Route path="/seller/dashboard/analytics" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerAnalyticsDashboard /></ProtectedRoute>} />
+          <Route path="/seller/returns" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerReturnDashboard /></ProtectedRoute>} />
           <Route path="/seller/status" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerStatus /></ProtectedRoute>} />
+          <Route path="/seller/profile" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerProfileView /></ProtectedRoute>} />
           <Route path="/seller/kyc" element={<ProtectedRoute allowedRoles={['CUSTOMER', 'SELLER']}><SellerKycFlow /></ProtectedRoute>} />
 
           {/* Customer Routes */}
           <Route path="/customer/dashboard" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><CustomerDashboard /></ProtectedRoute>} />
           <Route path="/customer/orders" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><MyOrders /></ProtectedRoute>} />
+          <Route path="/customer/returns" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><CustomerReturns /></ProtectedRoute>} />
+          <Route path="/customer/returns/create" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><ReturnRequestForm /></ProtectedRoute>} />
 
           {/* Shared Routes */}
           <Route path="/profile" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Profile /></ProtectedRoute>} />

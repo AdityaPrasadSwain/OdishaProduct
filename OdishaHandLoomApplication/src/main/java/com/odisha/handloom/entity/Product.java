@@ -76,6 +76,25 @@ public class Product {
 
     private boolean isApproved;
 
+    @Column(name = "is_out_of_stock", nullable = false)
+    @lombok.Builder.Default
+    private Boolean isOutOfStock = false;
+
+    @PrePersist
+    @PreUpdate
+    public void syncOutOfStock() {
+        this.isOutOfStock = this.stockQuantity <= 0;
+    }
+
+    // Custom getter to return primitive boolean (safe)
+    public boolean isOutOfStock() {
+        return Boolean.TRUE.equals(this.isOutOfStock);
+    }
+
+    public void setOutOfStock(boolean outOfStock) {
+        this.isOutOfStock = outOfStock;
+    }
+
     // Rating cache (optional, but easier for sorting/showing)
     @lombok.Builder.Default
     private Double averageRating = 0.0;

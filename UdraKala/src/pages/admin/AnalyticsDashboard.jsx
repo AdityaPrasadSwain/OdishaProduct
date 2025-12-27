@@ -1,120 +1,425 @@
 import React, { useState, useEffect } from 'react';
-import KpiCard from '../../components/KpiCard';
-import RevenueChart from '../../components/RevenueChart';
-import CountryMap from '../../components/CountryMap';
-import OrdersTable from '../../components/OrdersTable';
-import { motion as Motion } from 'motion/react';
 import API from '../../api/api';
+import { motion } from 'motion/react';
+import { useTheme } from '../../context/ThemeContext';
+import {
+    LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+    PieChart, Pie, Cell, AreaChart, Area
+} from 'recharts';
+import {
+    TrendingUp, TrendingDown, Users, ShoppingBag, DollarSign,
+    Box, Activity, Globe, Smartphone, Monitor, Instagram, ArrowUpRight
+} from 'lucide-react';
+
+// --- Mock Data (for UI Fidelity) ---
+const mockMonthlySales = [
+    { name: 'Week 1', current: 14000, last: 12400 },
+    { name: 'Week 2', current: 33000, last: 21398 },
+    { name: 'Week 3', current: 42000, last: 39800 },
+    { name: 'Week 4', current: 52780, last: 43908 },
+];
+
+const mockOrderVolume = [
+    { time: '10am', orders: 42 }, { time: '11am', orders: 89 },
+    { time: '12pm', orders: 135 }, { time: '1pm', orders: 122 },
+    { time: '2pm', orders: 140 }, { time: '3pm', orders: 155 },
+];
+
+const mockChannels = [
+    { name: 'Marketplace', value: 45, color: '#2DD4BF' }, // Teal
+    { name: 'Store', value: 25, color: '#3B82F6' },       // Blue
+    { name: 'Website', value: 20, color: '#A3E635' },     // Lime
+    { name: 'Social', value: 10, color: '#FACC15' },      // Yellow
+];
+
+const mockReelsTrend = [
+    { day: 'Mon', views: 40000 }, { day: 'Tue', views: 30000 },
+    { day: 'Wed', views: 20000 }, { day: 'Thu', views: 27800 },
+    { day: 'Fri', views: 18900 }, { day: 'Sat', views: 23900 },
+    { day: 'Sun', views: 34900 },
+];
+
+const mockReturns = [
+    { name: 'Defective', value: 400, color: '#F87171' },
+    { name: 'Wrong Item', value: 300, color: '#FBBF24' },
+    { name: 'Changed Mind', value: 300, color: '#34D399' },
+    { name: 'Other', value: 200, color: '#60A5FA' },
+];
 
 const AnalyticsDashboard = () => {
-    const [summary, setSummary] = useState(null);
-    const [revenueData, setRevenueData] = useState(null);
-    const [countryStats, setCountryStats] = useState(null);
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // We can hook up real data later, for now we use state to simulate fetching or defaults
+    const [loading, setLoading] = useState(false); // Set to true if fetching real data
+    const { theme } = useTheme(); // Access current theme
 
-    useEffect(() => {
-        const fetchAnalytics = async () => {
-            try {
-                // Try to fetch from API, fall back to mock data if fails
-                try {
-                    const summaryRes = await API.get('/admin/analytics/summary');
-                    setSummary(summaryRes.data);
-                } catch {
-                    console.log('Using mock summary data');
-                    setSummary({
-                        totalSales: 1234,
-                        salesDelta: 12.5,
-                        newCustomers: 89,
-                        customersDelta: 8.2,
-                        returnedProducts: 12,
-                        returnsDelta: -3.1,
-                        totalRevenue: 45678,
-                        revenueDelta: 15.3
-                    });
-                }
+    // --- Currency Formatter ---
+    const formatINR = (value) =>
+        new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0,
+        }).format(value);
 
-                try {
-                    const revenueRes = await API.get('/admin/analytics/revenue');
-                    setRevenueData(revenueRes.data);
-                } catch {
-                    console.log('Using mock revenue data');
-                    setRevenueData([
-                        { name: 'Jan', value: 4000 },
-                        { name: 'Feb', value: 3000 },
-                        { name: 'Mar', value: 5000 },
-                        { name: 'Apr', value: 2780 },
-                        { name: 'May', value: 6890 },
-                        { name: 'Jun', value: 5390 },
-                        { name: 'Jul', value: 7490 },
-                    ]);
-                }
+    // --- Reusable Card Component ---
+    const DashboardCard = ({ title, children, className = "" }) => (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm dark:shadow-lg border border-gray-100 dark:border-white/5 ${className}`}
+        >
+            {title && <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-4 uppercase tracking-wider">{title}</h3>}
+            {children}
+        </motion.div>
+    );
 
-                try {
-                    const ordersRes = await API.get('/admin/orders');
-                    setOrders(ordersRes.data || []);
-                } catch {
-                    console.log('Using mock orders data');
-                    setOrders([]);
-                }
-
-                try {
-                    const countryRes = await API.get('/admin/analytics/country');
-                    setCountryStats(countryRes.data);
-                } catch {
-                    console.log('Using mock country data');
-                    setCountryStats([
-                        { country: 'India', value: 80 },
-                        { country: 'USA', value: 10 },
-                        { country: 'UK', value: 5 },
-                        { country: 'Others', value: 5 }
-                    ]);
-                }
-            } catch (error) {
-                console.error('Error fetching analytics:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAnalytics();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-600"></div>
-            </div>
-        );
-    }
+    // Helper for chart tooltips based on theme
+    const tooltipStyle = {
+        backgroundColor: theme === 'dark' ? '#1E293B' : '#ffffff',
+        border: theme === 'dark' ? 'none' : '1px solid #e5e7eb',
+        borderRadius: '8px',
+        color: theme === 'dark' ? '#fff' : '#1f2937',
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+    };
 
     return (
-        <div className="p-6 space-y-6">
-            {/* KPI Cards */}
-            <Motion.div
-                className="grid grid-cols-1 md:grid-cols-4 gap-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-            >
-                {summary && (
-                    <>
-                        <KpiCard title="Total Sales" value={summary.totalSales} delta={summary.salesDelta} icon="TrendingUp" />
-                        <KpiCard title="New Customers" value={summary.newCustomers} delta={summary.customersDelta} icon="UserPlus" />
-                        <KpiCard title="Returned Products" value={summary.returnedProducts} delta={summary.returnsDelta} icon="RefreshCcw" />
-                        <KpiCard title="Total Revenue" value={summary.totalRevenue} delta={summary.revenueDelta} icon="DollarSign" />
-                    </>
-                )}
-            </Motion.div>
-
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <RevenueChart data={revenueData} />
-                {countryStats && <CountryMap data={countryStats} />}
+        <div className="font-sans transition-colors duration-300">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500">
+                        Admin Analytics
+                    </h1>
+                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Platform Overview • {new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                </div>
+                <div className="bg-white dark:bg-[#1E293B] px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 shadow-sm">
+                    Currency: <span className="text-teal-600 dark:text-teal-400 font-bold ml-1">INR (₹)</span>
+                </div>
             </div>
 
-            {/* Orders Table */}
-            {orders.length > 0 && <OrdersTable data={orders} />}
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                {/* 1. Total Sales */}
+                <DashboardCard className="relative overflow-hidden group">
+                    <div className="flex justify-between items-start z-10 relative">
+                        <div>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Platform Sales (Today)</p>
+                            <h2 className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{formatINR(1425400)}</h2>
+                            <p className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold mt-2 flex items-center">
+                                <TrendingUp size={14} className="mr-1" />
+                                +{formatINR(125000)} vs last week
+                            </p>
+                        </div>
+                        <div className="p-3 bg-teal-100 dark:bg-teal-500/10 rounded-xl">
+                            <DollarSign className="text-teal-600 dark:text-teal-400" size={24} />
+                        </div>
+                    </div>
+                    {/* Mini Chart Background */}
+                    <div className="h-16 mt-4 -mx-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={mockMonthlySales}>
+                                <defs>
+                                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#2DD4BF" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#2DD4BF" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <Area type="monotone" dataKey="current" stroke="#2DD4BF" fillOpacity={1} fill="url(#colorSales)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </DashboardCard>
+
+                {/* 2. Total Orders */}
+                <DashboardCard>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Orders (Today)</p>
+                            <h2 className="text-3xl font-bold mt-1">1,450</h2>
+                            <p className="text-blue-600 dark:text-blue-400 text-xs font-semibold mt-2 flex items-center">
+                                <TrendingUp size={14} className="mr-1" />
+                                +12% volume
+                            </p>
+                        </div>
+                        <div className="p-3 bg-blue-100 dark:bg-blue-500/10 rounded-xl">
+                            <ShoppingBag className="text-blue-600 dark:text-blue-400" size={24} />
+                        </div>
+                    </div>
+                    <div className="h-16 mt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={mockOrderVolume}>
+                                <Bar dataKey="orders" fill="#3B82F6" radius={[4, 4, 4, 4]} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </DashboardCard>
+
+                {/* 3. Net Profit */}
+                <DashboardCard>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <p className="text-gray-500 dark:text-gray-400 text-sm">Net Commission (Monthly)</p>
+                            <h2 className="text-3xl font-bold mt-1 text-lime-600 dark:text-lime-400">{formatINR(3127000)}</h2>
+                            <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
+                                Growth: <span className="text-gray-900 dark:text-white font-bold">18%</span>
+                            </p>
+                        </div>
+                        <div className="p-3 bg-lime-100 dark:bg-lime-500/10 rounded-xl">
+                            <Activity className="text-lime-600 dark:text-lime-400" size={24} />
+                        </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs">
+                        <span className="text-gray-500 dark:text-gray-400">Previous: {formatINR(2925000)}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 flex items-center"><TrendingUp size={12} className="mr-1" /> +{formatINR(202000)}</span>
+                    </div>
+                </DashboardCard>
+
+                {/* 4. Avg Order Value (Gauge Style Sim) */}
+                <DashboardCard>
+                    <div className="flex justify-between items-start mb-6">
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">Avg Order Value</p>
+                        <div className="p-3 bg-purple-100 dark:bg-purple-500/10 rounded-xl">
+                            <Box className="text-purple-600 dark:text-purple-400" size={24} />
+                        </div>
+                    </div>
+                    <div className="relative flex items-center justify-center py-4">
+                        <div className="w-32 h-16 border-t-[12px] border-r-[12px] border-l-[12px] border-purple-500 rounded-t-full border-b-0 absolute top-0"></div>
+                        <div className="w-32 h-16 border-[12px] border-gray-200 dark:border-gray-700 rounded-t-full border-b-0 opacity-30"></div>
+                        <div className="mt-8 text-center">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{formatINR(2300)}</h3>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Target: {formatINR(2500)}</p>
+                        </div>
+                    </div>
+                </DashboardCard>
+            </div>
+
+            {/* Middle Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {/* 5. Orders By Channel */}
+                <DashboardCard title="Orders By Channel" className="lg:col-span-2">
+                    <div className="space-y-6">
+                        {mockChannels.map((channel) => (
+                            <div key={channel.name}>
+                                <div className="flex justify-between text-sm mb-2">
+                                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                                        {channel.name === 'Marketplace' && <Globe size={16} />}
+                                        {channel.name === 'Store' && <ShoppingBag size={16} />}
+                                        {channel.name === 'Website' && <Monitor size={16} />}
+                                        {channel.name === 'Social' && <Instagram size={16} />}
+                                        {channel.name}
+                                    </span>
+                                    <span className="font-bold text-gray-900 dark:text-white">{channel.value}%</span>
+                                </div>
+                                <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full"
+                                        style={{ width: `${channel.value}%`, backgroundColor: channel.color }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </DashboardCard>
+
+                {/* 6. Sales By Location */}
+                <DashboardCard title="Top Locations" className="lg:col-span-1">
+                    <div className="space-y-4">
+                        {[
+                            { title: 'Mumbai', amount: 4500000, percent: 35 },
+                            { title: 'Delhi', amount: 3200000, percent: 25 },
+                            { title: 'Bangalore', amount: 2800000, percent: 22 },
+                            { title: 'Chennai', amount: 1500000, percent: 12 },
+                            { title: 'Kolkata', amount: 750000, percent: 6 },
+                        ].map((loc, i) => (
+                            <div key={i} className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition-colors cursor-default">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">{loc.title}</span>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-sm font-bold text-gray-900 dark:text-white">{formatINR(loc.amount)}</p>
+                                    <p className="text-xs text-gray-500">{loc.percent}%</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </DashboardCard>
+            </div>
+
+            {/* Third Section: P&L and Reels */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                {/* 7. P&L Statement */}
+                <DashboardCard title="Platform Revenue (Monthly)" className="lg:col-span-1 border-l-4 border-l-teal-500">
+                    <div className="space-y-3">
+                        <div className="flex justify-between text-sm py-2 border-b border-gray-100 dark:border-white/5">
+                            <span className="text-gray-500 dark:text-gray-400">Total GMV</span>
+                            <span className="text-gray-900 dark:text-white font-medium">{formatINR(12540000)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm py-1">
+                            <span className="text-red-500 dark:text-red-400">Seller Payouts</span>
+                            <span className="text-red-500 dark:text-red-400">-{formatINR(10000000)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm py-1">
+                            <span className="text-red-500 dark:text-red-400">Refunds</span>
+                            <span className="text-red-500 dark:text-red-400">-{formatINR(25000)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm py-1">
+                            <span className="text-red-500 dark:text-red-400">Logistics Cost</span>
+                            <span className="text-red-500 dark:text-red-400">-{formatINR(80000)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm py-1">
+                            <span className="text-red-500 dark:text-red-400">Server Costs</span>
+                            <span className="text-red-500 dark:text-red-400">-{formatINR(5000)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm py-1 border-b border-gray-100 dark:border-white/5 pb-2">
+                            <span className="text-red-500 dark:text-red-400">Marketing</span>
+                            <span className="text-red-500 dark:text-red-400">-{formatINR(120000)}</span>
+                        </div>
+                        <div className="flex justify-between text-base font-bold pt-2">
+                            <span className="text-teal-600 dark:text-teal-400">Net Platform Profit</span>
+                            <span className="text-teal-600 dark:text-teal-400">{formatINR(2310000)}</span>
+                        </div>
+                    </div>
+                </DashboardCard>
+
+                {/* 9. Seller Reels Analytics */}
+                <DashboardCard title="Platform Reels Performance" className="lg:col-span-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
+                            <p className="text-xs text-gray-500 mb-1">Total Reels</p>
+                            <p className="text-xl font-bold text-gray-900 dark:text-white">5,400</p>
+                        </div>
+                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
+                            <p className="text-xs text-gray-500 mb-1">Total Views</p>
+                            <p className="text-xl font-bold text-gray-900 dark:text-white">12.5M</p>
+                        </div>
+                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
+                            <p className="text-xs text-gray-500 mb-1">Avg CTR %</p>
+                            <p className="text-xl font-bold text-yellow-500 dark:text-yellow-400">4.1%</p>
+                        </div>
+                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl border border-teal-500/30">
+                            <p className="text-xs text-gray-500 mb-1">Driven Revenue</p>
+                            <p className="text-xl font-bold text-teal-600 dark:text-teal-400">{formatINR(4500000)}</p>
+                        </div>
+                    </div>
+                    {/* Engagement Chart */}
+                    <div className="h-48 w-full bg-gray-50 dark:bg-black/20 rounded-xl p-4 border border-gray-100 dark:border-none">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={mockReelsTrend}>
+                                <defs>
+                                    <linearGradient id="colorReels" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#FACC15" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="#FACC15" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="day" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                                <Tooltip
+                                    contentStyle={tooltipStyle}
+                                    itemStyle={{ color: '#FACC15' }}
+                                />
+                                <Area type="monotone" dataKey="views" stroke="#FACC15" fillOpacity={1} fill="url(#colorReels)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </DashboardCard>
+            </div>
+
+            {/* Bottom Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* 10. Product Performance */}
+                <DashboardCard title="Best Selling Products">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="text-gray-500 text-xs border-b border-gray-200 dark:border-white/10">
+                                    <th className="py-3 font-medium">Product</th>
+                                    <th className="py-3 font-medium">Sold</th>
+                                    <th className="py-3 font-medium text-right">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { name: 'Wireless Earbuds X20', stock: 1500, revenue: 750000, status: 'In Stock' },
+                                    { name: 'Smart Watch Pro', stock: 450, revenue: 620000, status: 'Low Stock' },
+                                    { name: 'Running Shoes Gen 3', stock: 120, revenue: 450000, status: 'Out of Stock' },
+                                    { name: 'Laptop Backpack', stock: 3000, revenue: 320000, status: 'In Stock' },
+                                ].map((product, idx) => (
+                                    <tr key={idx} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                        <td className="py-3 flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-700"></div>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{product.name}</span>
+                                        </td>
+                                        <td className="py-3">
+                                            <span className={`text-xs px-2 py-1 rounded-full ${product.stock === 0 ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' :
+                                                    product.stock < 50 ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400' :
+                                                        'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
+                                                }`}>
+                                                {product.stock} sold
+                                            </span>
+                                        </td>
+                                        <td className="py-3 text-right text-sm font-bold text-teal-600 dark:text-teal-400">
+                                            {formatINR(product.revenue)}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </DashboardCard>
+
+                {/* 11. Returns & Cancellations */}
+                <DashboardCard title="Platform Returns">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                        {/* Donut Chart */}
+                        <div className="w-40 h-40 relative">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={mockReturns}
+                                        innerRadius={40}
+                                        outerRadius={70}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {mockReturns.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip contentStyle={tooltipStyle} />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+                                <span className="text-2xl font-bold text-gray-900 dark:text-white">2.5k</span>
+                                <span className="text-[10px] text-gray-500 uppercase">Returns</span>
+                            </div>
+                        </div>
+
+                        {/* Stats Info */}
+                        <div className="flex-1 w-full">
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                                <div className="bg-gray-100 dark:bg-white/5 p-3 rounded-lg text-center">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Refunded Val</p>
+                                    <p className="text-lg font-bold text-red-500 dark:text-red-400">{formatINR(55000)}</p>
+                                </div>
+                                <div className="bg-gray-100 dark:bg-white/5 p-3 rounded-lg text-center">
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Cancellations</p>
+                                    <p className="text-lg font-bold text-gray-700 dark:text-white">120</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                {mockReturns.map((item) => (
+                                    <div key={item.name} className="flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
+                                            <span className="text-gray-500 dark:text-gray-400">{item.name}</span>
+                                        </div>
+                                        <span className="font-bold text-gray-700 dark:text-white">{Math.round((item.value / 1200) * 100)}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </DashboardCard>
+            </div>
         </div>
     );
 };

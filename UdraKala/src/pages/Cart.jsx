@@ -6,10 +6,12 @@ import { Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
 
+import CartSkeleton from '../components/skeletons/CartSkeleton';
+
 const Cart = () => {
     const navigate = useNavigate();
     const { user } = useAuth();
-    const { cart, removeFromCart } = useData();
+    const { cart, removeFromCart, loading } = useData();
     const total = useMemo(() => cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), [cart]);
 
 
@@ -21,6 +23,8 @@ const Cart = () => {
         }
         navigate('/checkout');
     };
+
+    if (loading) return <CartSkeleton />;
 
     if (cart.length === 0) {
         return (
@@ -59,6 +63,34 @@ const Cart = () => {
                                 </div>
                             </div>
                             <div className="flex items-center space-x-6">
+                                <div className="flex flex-col items-end">
+                                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+                                        <button
+                                            onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                                            disabled={item.quantity <= 1}
+                                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 transition-colors"
+                                        >
+                                            -
+                                        </button>
+                                        <span className="px-4 py-1 font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-800">
+                                            {item.quantity}
+                                        </span>
+                                        <button
+                                            onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                                            disabled={item.quantity >= (item.stockQuantity || 100)} // Fallback 100 if stock logic fails
+                                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300 transition-colors"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                    <div className="text-xs mt-1 text-gray-500 dark:text-gray-400">
+                                        {item.stockQuantity && item.quantity >= item.stockQuantity ? (
+                                            <span className="text-red-500 font-medium">Out of Stock Limit Reached</span>
+                                        ) : (
+                                            <span>Stock Left: {item.stockQuantity ? item.stockQuantity - item.quantity : 'Unknown'}</span>
+                                        )}
+                                    </div>
+                                </div>
                                 <div className="text-lg font-bold text-orange-700 dark:text-orange-400">₹{(item.price * item.quantity).toLocaleString()}</div>
                                 <button
                                     onClick={() => removeFromCart(item.id)}

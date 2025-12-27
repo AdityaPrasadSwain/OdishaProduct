@@ -32,7 +32,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String jwt = parseJwt(request);
+            String headerAuth = request.getHeader("Authorization");
+
+            // 1. Early Exit if no token
+            if (!StringUtils.hasText(headerAuth) || !headerAuth.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // 2. Process Token
+            String jwt = headerAuth.substring(7);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
@@ -46,19 +55,32 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+            // Guarantee: This filter never crashes the request.
+            logger.error("Cannot set user authentication: {}", e.getMessage());
         }
+
+        // Continue chain if not returned earlier (though Early Exit handles the empty
+        // case)
+        // Note: The Early Exit above calls doFilter and returns.
+        // If we passed that check, we processed the token. Now we must continue the
+        // chain.
+        // Wait, if we processed the token, we still need to call doFilter.
+        // So we can't 'return' in the Early Exit AND have a 'doFilter' at the end
+        // unless we structure carefully.
+        // User's snippet:
+        // if (invalid) { filterChain.doFilter; return; }
+        // ... process ...
+        // filterChain.doFilter;
+
+        // My previous code:
+        // try { process } catch {}
+        // filterChain.doFilter
+
+        // This is safe. The user's snippet calls doFilter twice (once in if, once at
+        // end).
+        // I will adapt to that structure to be 100% compliant.
 
         filterChain.doFilter(request, response);
     }
 
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7);
-        }
-
-        return null;
-    }
 }

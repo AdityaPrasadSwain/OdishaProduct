@@ -4,6 +4,7 @@ import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
 import { Edit2, Package, Truck, Check, AlertTriangle, FileText } from 'lucide-react';
 import { sendStatusUpdateEmail } from '../../utils/emailService';
+import OrderSkeleton from '../../components/skeletons/OrderSkeleton';
 
 const SellerOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -134,7 +135,7 @@ const SellerOrders = () => {
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Order Management</h2>
 
             {loading ? (
-                <div className="text-center py-10">Loading orders...</div>
+                <OrderSkeleton />
             ) : orders.length === 0 ? (
                 <div className="text-center py-10 dark:text-gray-400">No orders received yet.</div>
             ) : (
@@ -187,8 +188,8 @@ const SellerOrders = () => {
                                                     onClick={() => handleSendInvoice(order)}
                                                     disabled={order.status === 'PENDING' || order.status === 'CANCELLED'}
                                                     className={`flex items-center gap-1 px-3 py-1 rounded border text-xs font-semibold ${order.status === 'PENDING' || order.status === 'CANCELLED'
-                                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                                            : 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+                                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                                        : 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
                                                         }`}
                                                 >
                                                     <FileText size={12} /> Send

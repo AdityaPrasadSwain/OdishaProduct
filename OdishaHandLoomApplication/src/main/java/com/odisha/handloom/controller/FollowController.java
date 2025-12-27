@@ -37,4 +37,11 @@ public class FollowController {
         boolean isFollowing = followService.isFollowing(sellerId, auth.getName());
         return ResponseEntity.ok(isFollowing);
     }
+
+    @GetMapping("/sellers")
+    public ResponseEntity<java.util.List<UUID>> getFollowedSellers() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        java.util.List<UUID> followedSellers = followService.getFollowedSellerIds(auth.getName());
+        return ResponseEntity.ok(followedSellers);
+    }
 }

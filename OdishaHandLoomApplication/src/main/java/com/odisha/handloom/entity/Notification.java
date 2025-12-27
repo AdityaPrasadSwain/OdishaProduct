@@ -56,6 +56,7 @@ public class Notification {
         ORDER,
         FOLLOW,
         COMMENT,
+        LIKE,
         REEL,
         PAYOUT,
         SYSTEM

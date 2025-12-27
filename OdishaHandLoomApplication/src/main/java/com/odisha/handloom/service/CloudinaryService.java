@@ -1,7 +1,6 @@
 package com.odisha.handloom.service;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,7 +15,15 @@ public class CloudinaryService {
     private Cloudinary cloudinary;
 
     public String uploadImage(MultipartFile file) throws IOException {
-        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+        return uploadImage(file, null);
+    }
+
+    public String uploadImage(MultipartFile file, String folderName) throws IOException {
+        Map<String, Object> options = new java.util.HashMap<>();
+        if (folderName != null && !folderName.isEmpty()) {
+            options.put("folder", folderName);
+        }
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
         return uploadResult.get("secure_url").toString();
     }
 

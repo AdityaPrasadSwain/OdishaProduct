@@ -4,6 +4,7 @@ import API from '../api/api';
 import Swal from 'sweetalert2';
 import { Camera, User, Phone, MapPin, FileText, Save, Edit2, X } from 'lucide-react';
 import { motion } from 'motion/react';
+import ProfileSkeleton from '../components/skeletons/ProfileSkeleton';
 
 const Profile = () => {
     const { user, refreshUser } = useAuth();
@@ -113,11 +114,7 @@ const Profile = () => {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center items-center h-[calc(100vh-80px)]">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
-            </div>
-        );
+        return <ProfileSkeleton />;
     }
 
     return (

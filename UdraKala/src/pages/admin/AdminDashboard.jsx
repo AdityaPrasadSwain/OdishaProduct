@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -6,7 +6,6 @@ import {
     XCircle,
     AlertCircle,
     Trash2,
-    Search,
     ShoppingBag,
     Users,
     Package,
@@ -21,15 +20,22 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
 import StatsCard from '../../components/admin/StatsCard';
-import AdminTable from '../../components/admin/AdminTable';
 import ScrollReveal from '../../components/ui/ScrollReveal';
-import { getUnreadNotificationCount } from '../../api/adminNotificationApi'; // Import API
+import { getUnreadNotificationCount } from '../../api/adminNotificationApi';
+import AdminCategories from './AdminCategories';
+import AdminReturnManagement from './AdminReturnManagement';
+import { useTheme } from '../../context/ThemeContext';
+import { DataGrid } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
+import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 
 const AdminDashboard = () => {
     // Local state for admin data
     const [products, setProducts] = useState([]);
     const [sellers, setSellers] = useState([]);
-    const [categories, setCategories] = useState([]);
+
+    // Categories now handled by AdminCategories component
+
     const [features, setFeatures] = useState([]);
     const [activeTab, setActiveTab] = useState('overview');
     const navigate = useNavigate();
@@ -64,8 +70,9 @@ const AdminDashboard = () => {
                 setProducts(prodRes.data || []);
                 const sellerRes = await API.get('/admin/sellers');
                 setSellers(sellerRes.data || []);
-                const catRes = await API.get('/categories');
-                setCategories(catRes.data || []);
+
+                // Categories fetch removed as AdminCategories handles it
+
                 const featRes = await API.get('/features');
                 setFeatures(featRes.data || []);
             } catch (err) {
@@ -76,8 +83,6 @@ const AdminDashboard = () => {
     }, []);
 
     // Form States
-    const [catName, setCatName] = useState('');
-    const [catDesc, setCatDesc] = useState('');
     const [featName, setFeatName] = useState('');
     const [featDesc, setFeatDesc] = useState('');
 
@@ -111,36 +116,119 @@ const AdminDashboard = () => {
     const handleProductUnapprove = async (id) => { try { await API.put(`/admin/products/${id}/unapprove`); setProducts(current => current.map(p => p.id === id ? { ...p, approved: false } : p)); Swal.fire({ icon: 'success', title: 'Unapproved!', timer: 1500, showConfirmButton: false }); } catch (error) { } };
     const handleProductReject = async (id) => { try { await API.delete(`/admin/products/${id}/reject`); setProducts(current => current.filter(p => p.id !== id)); Swal.fire({ icon: 'success', title: 'Rejected!', timer: 1500, showConfirmButton: false }); } catch (error) { } };
 
-    const handleAddCategory = async (e) => { e.preventDefault(); try { const res = await API.post('/categories', { name: catName, description: catDesc }); setCategories([...categories, res.data]); setCatName(''); setCatDesc(''); Swal.fire({ icon: 'success', title: 'Added!', timer: 1500, showConfirmButton: false }); } catch (error) { Swal.fire({ icon: 'error', title: 'Failed' }); } };
     const handleAddFeature = async (e) => { e.preventDefault(); try { const res = await API.post('/features', { name: featName, description: featDesc }); setFeatures([...features, res.data]); setFeatName(''); setFeatDesc(''); Swal.fire({ icon: 'success', title: 'Added!', timer: 1500, showConfirmButton: false }); } catch (ERROR) { Swal.fire({ icon: 'error', title: 'Failed' }); } };
-    const handleDeleteCategory = async (id) => {
-        const result = await Swal.fire({
-            title: 'Delete Category?',
-            text: "This action cannot be undone.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
-        });
-        if (result.isConfirmed) {
-            try {
-                await API.delete(`/categories/${id}`);
-                setCategories(categories.filter(c => c.id !== id));
-                Swal.fire({ icon: 'success', title: 'Deleted!', timer: 1500, showConfirmButton: false });
-            } catch (error) {
-                console.error("Delete failed", error);
-                const msg = error.response?.data || 'Failed to delete category';
-                Swal.fire({ icon: 'error', title: 'Error', text: msg });
-            }
-        }
-    };
+
+    // --- Theme Setup ---
+    const { theme } = useTheme();
+    const muiTheme = useMemo(() => createTheme({
+        palette: {
+            mode: theme === 'dark' ? 'dark' : 'light',
+            primary: { main: '#ea580c' },
+            background: {
+                paper: theme === 'dark' ? '#1f2937' : '#ffffff',
+                default: theme === 'dark' ? '#111827' : '#ffffff',
+            },
+            text: {
+                primary: theme === 'dark' ? '#f3f4f6' : '#111827',
+                secondary: theme === 'dark' ? '#9ca3af' : '#4b5563',
+            },
+        },
+        components: {
+            MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
+            MuiDataGrid: {
+                styleOverrides: {
+                    root: {
+                        border: 'none',
+                        '& .MuiDataGrid-cell': { borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
+                        '& .MuiDataGrid-columnHeaders': {
+                            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
+                            backgroundColor: theme === 'dark' ? '#374151' : '#f9fafb',
+                        },
+                        '& .MuiDataGrid-footerContainer': { borderTopColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
+                    },
+                },
+            },
+        },
+    }), [theme]);
 
     // --- Table Configurations ---
     const sellerColumns = [
-        { header: "Seller Name" }, { header: "Shop Name" }, { header: "Status" }, { header: "Action", className: "text-right" }
+        { field: 'fullName', headerName: 'Seller Name', flex: 1, minWidth: 150 },
+        { field: 'shopName', headerName: 'Shop Name', width: 150 },
+        {
+            field: 'status',
+            headerName: 'Status',
+            width: 120,
+            renderCell: (params) => (
+                <Badge variant={params.row.approved ? (params.row.blocked ? 'danger' : 'success') : 'warning'}>
+                    {params.row.approved ? (params.row.blocked ? 'Blocked' : 'Verified') : 'Pending'}
+                </Badge>
+            )
+        },
+        {
+            field: 'actions',
+            headerName: 'Action',
+            width: 180,
+            renderCell: (params) => (
+                <div className="flex items-center gap-2 mt-2">
+                    {!params.row.approved && <Button size="sm" variant="success" onClick={() => handleApprove(params.row.id)}><CheckCircle size={16} /></Button>}
+                    {params.row.approved && params.row.blocked && <Button size="sm" variant="success" onClick={() => handleUnblock(params.row.id)}><CheckCircle size={16} /></Button>}
+                    {(!params.row.blocked && params.row.approved) && <Button size="sm" variant="warning" onClick={() => handleBlock(params.row.id)}><AlertCircle size={16} /></Button>}
+                    <Button size="sm" variant="danger" onClick={() => handleDeleteSeller(params.row.id)}><Trash2 size={16} /></Button>
+                </div>
+            )
+        }
     ];
+
     const productColumns = [
-        { header: "Product" }, { header: "Category" }, { header: "Price" }, { header: "Status" }, { header: "Action", className: "text-right" }
+        {
+            field: 'product',
+            headerName: 'Product',
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        {params.row.imageUrls?.[0] && <img className="h-full w-full object-cover" src={params.row.imageUrls[0]} alt="" />}
+                    </div>
+                    <span className="font-medium text-gray-900 dark:text-white truncate" title={params.row.name}>{params.row.name}</span>
+                </div>
+            )
+        },
+        { field: 'category', headerName: 'Category', width: 150, valueGetter: (value, row) => row?.category?.name || 'Uncategorized' },
+        { field: 'price', headerName: 'Price', width: 100, renderCell: (params) => `₹${params.value}` },
+        {
+            field: 'approved',
+            headerName: 'Status',
+            width: 100,
+            renderCell: (params) => {
+                const isApproved = params.row.approved || params.row.isApproved;
+                return <Badge variant={isApproved ? 'success' : 'warning'}>{isApproved ? 'Active' : 'Pending'}</Badge>;
+            }
+        },
+        {
+            field: 'actions',
+            headerName: 'Action',
+            width: 150,
+            renderCell: (params) => {
+                const isApproved = params.row.approved || params.row.isApproved;
+                return (
+                    <div className="flex items-center gap-2 mt-2">
+                        {!isApproved ? (
+                            <>
+                                <Button size="sm" variant="success" onClick={() => handleProductApprove(params.row.id)}><CheckCircle size={16} /></Button>
+                                <Button size="sm" variant="danger" onClick={() => handleProductReject(params.row.id)}><XCircle size={16} /></Button>
+                            </>
+                        ) : (
+                            <>
+                                <Button size="sm" variant="warning" onClick={() => handleProductUnapprove(params.row.id)}><AlertCircle size={16} /></Button>
+                                <Button size="sm" variant="ghost" onClick={() => handleProductReject(params.row.id)} className="text-red-500 hover:bg-red-50"><Trash2 size={16} /></Button>
+                            </>
+                        )}
+                    </div>
+                );
+            }
+        }
     ];
 
     return (
@@ -154,7 +242,7 @@ const AdminDashboard = () => {
 
                 {/* Tabs */}
                 <div className="flex bg-white dark:bg-gray-800 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto">
-                    {['overview', 'sellers', 'products', 'categories', 'features'].map(tab => (
+                    {['overview', 'sellers', 'products', 'categories', 'returns', 'features'].map(tab => (
                         <motion.button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -183,7 +271,7 @@ const AdminDashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <StatsCard title="Total Sellers" value={sellers.length} icon={Users} color="blue" trend="up" trendValue={5} />
                             <StatsCard title="Total Products" value={products.length} icon={Package} color="purple" trend="up" trendValue={12} />
-                            <StatsCard title="Categories" value={categories.length} icon={Layers} color="orange" />
+                            <StatsCard title="Categories" value="--" icon={Layers} color="orange" />
                             <StatsCard title="Active Orders" value={156} icon={ShoppingBag} color="green" trend="up" trendValue={8} /> {/* Mock value for orders */}
                         </div>
 
@@ -195,29 +283,18 @@ const AdminDashboard = () => {
                 {activeTab === 'sellers' && (
                     <motion.div key="sellers" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Sellers Management">
-                            <AdminTable
-                                columns={sellerColumns}
-                                data={sellers}
-                                renderRow={(seller) => (
-                                    <>
-                                        <td className="p-4 text-dark dark:text-white font-medium">{seller.fullName}</td>
-                                        <td className="p-4 text-muted">{seller.shopName}</td>
-                                        <td className="p-4">
-                                            <Badge variant={seller.approved ? (seller.blocked ? 'danger' : 'success') : 'warning'}>
-                                                {seller.approved ? (seller.blocked ? 'Blocked' : 'Verified') : 'Pending'}
-                                            </Badge>
-                                        </td>
-                                        <td className="p-4 text-right">
-                                            <div className="flex items-center justify-end gap-2">
-                                                {!seller.approved && <Button size="sm" variant="success" onClick={() => handleApprove(seller.id)}><CheckCircle size={16} /></Button>}
-                                                {seller.approved && seller.blocked && <Button size="sm" variant="success" onClick={() => handleUnblock(seller.id)}><CheckCircle size={16} /></Button>}
-                                                {(!seller.blocked && seller.approved) && <Button size="sm" variant="warning" onClick={() => handleBlock(seller.id)}><AlertCircle size={16} /></Button>}
-                                                <Button size="sm" variant="danger" onClick={() => handleDeleteSeller(seller.id)}><Trash2 size={16} /></Button>
-                                            </div>
-                                        </td>
-                                    </>
-                                )}
-                            />
+                            <MuiThemeProvider theme={muiTheme}>
+                                <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>
+                                    <DataGrid
+                                        rows={sellers}
+                                        columns={sellerColumns}
+                                        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
+                                        pageSizeOptions={[5, 10]}
+                                        checkboxSelection
+                                        disableRowSelectionOnClick
+                                    />
+                                </Paper>
+                            </MuiThemeProvider>
                         </Card>
                     </motion.div>
                 )}
@@ -225,84 +302,33 @@ const AdminDashboard = () => {
                 {activeTab === 'products' && (
                     <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Product Management">
-                            <AdminTable
-                                columns={productColumns}
-                                data={products}
-                                renderRow={(product) => {
-                                    const isApproved = product.approved || product.isApproved;
-                                    return (
-                                        <>
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 dark:bg-dark-light">
-                                                        {product.imageUrls?.[0] && <img className="h-full w-full object-cover" src={product.imageUrls[0]} alt="" />}
-                                                    </div>
-                                                    <span className="font-medium text-dark dark:text-white truncate max-w-[150px]">{product.name}</span>
-                                                </div>
-                                            </td>
-                                            <td className="p-4 text-muted">{product.category?.name || 'Uncategorized'}</td>
-                                            <td className="p-4 font-semibold text-dark dark:text-white">₹{product.price}</td>
-                                            <td className="p-4"><Badge variant={isApproved ? 'success' : 'warning'}>{isApproved ? 'Active' : 'Pending'}</Badge></td>
-                                            <td className="p-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    {!isApproved ? (
-                                                        <>
-                                                            <Button size="sm" variant="success" onClick={() => handleProductApprove(product.id)}><CheckCircle size={16} /></Button>
-                                                            <Button size="sm" variant="danger" onClick={() => handleProductReject(product.id)}><XCircle size={16} /></Button>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Button size="sm" variant="warning" onClick={() => handleProductUnapprove(product.id)}><AlertCircle size={16} /></Button>
-                                                            <Button size="sm" variant="ghost" onClick={() => handleProductReject(product.id)} className="text-danger hover:bg-danger-light"><Trash2 size={16} /></Button>
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </>
-                                    );
-                                }}
-                            />
+                            <MuiThemeProvider theme={muiTheme}>
+                                <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>
+                                    <DataGrid
+                                        rows={products}
+                                        columns={productColumns}
+                                        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
+                                        pageSizeOptions={[5, 10]}
+                                        checkboxSelection
+                                        disableRowSelectionOnClick
+                                    />
+                                </Paper>
+                            </MuiThemeProvider>
                         </Card>
                     </motion.div>
                 )}
 
                 {activeTab === 'categories' && (
                     <motion.div key="categories" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-1">
-                                <Card title="Add Category">
-                                    <form onSubmit={handleAddCategory} className="space-y-4">
-                                        <Input label="Name" value={catName} onChange={(e) => setCatName(e.target.value)} placeholder="e.g. Silk Sarees" required />
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-medium text-dark dark:text-white">Description</label>
-                                            <textarea value={catDesc} onChange={(e) => setCatDesc(e.target.value)} className="w-full px-4 py-2 bg-white dark:bg-dark border border-border dark:border-muted rounded-md text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50" rows="4" placeholder="Description..." />
-                                        </div>
-                                        <Button type="submit" className="w-full">Add Category</Button>
-                                    </form>
-                                </Card>
-                            </div>
-                            <div className="md:col-span-2">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {categories.map((cat, idx) => (
-                                        <Card key={cat.id || idx} className="hover:shadow-lg transition-shadow border-l-4 border-l-primary relative group">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h4 className="font-bold text-lg text-dark dark:text-white">{cat.name}</h4>
-                                                    <p className="text-muted text-sm mt-1 line-clamp-2">{cat.description || "No description"}</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleDeleteCategory(cat.id)}
-                                                    className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                                                    title="Delete Category"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        <AdminCategories />
+                    </motion.div>
+                )}
+
+                {activeTab === 'returns' && (
+                    <motion.div key="returns" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                        <Card title="Return Requests Management">
+                            <AdminReturnManagement />
+                        </Card>
                     </motion.div>
                 )}
 

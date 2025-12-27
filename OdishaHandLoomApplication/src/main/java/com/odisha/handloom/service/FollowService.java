@@ -15,66 +15,76 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FollowService {
 
-    private final SellerFollowerRepository sellerFollowerRepository;
-    private final UserRepository userRepository;
-    private final NotificationService notificationService;
+        private final SellerFollowerRepository sellerFollowerRepository;
+        private final UserRepository userRepository;
+        private final NotificationService notificationService;
 
-    @Transactional
-    public void followSeller(UUID sellerId, String followerEmail) {
-        User follower = userRepository.findByEmail(followerEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        @Transactional
+        public void followSeller(UUID sellerId, String followerEmail) {
+                User follower = userRepository.findByEmail(followerEmail)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User seller = userRepository.findById(sellerId)
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
+                User seller = userRepository.findById(sellerId)
+                                .orElseThrow(() -> new RuntimeException("Seller not found"));
 
-        // Validation: Prevent self-follow
-        if (seller.getId().equals(follower.getId())) {
-            throw new RuntimeException("You cannot follow yourself");
+                // Validation: Prevent self-follow
+                if (seller.getId().equals(follower.getId())) {
+                        throw new RuntimeException("You cannot follow yourself");
+                }
+
+                // Check if already following
+                if (sellerFollowerRepository.existsBySellerAndUser(seller, follower)) {
+                        return; // Already following
+                }
+
+                // Save Follow
+                SellerFollower follow = SellerFollower.builder()
+                                .seller(seller)
+                                .user(follower)
+                                .build();
+
+                sellerFollowerRepository.save(follow);
+
+                // Create Notification
+                notificationService.createNotification(
+                                seller,
+                                follower.getFullName() + " started following you",
+                                Notification.NotificationType.FOLLOW,
+                                follower, // Sender
+                                null, null, null // No generic IDs
+                );
         }
 
-        // Check if already following
-        if (sellerFollowerRepository.existsBySellerAndUser(seller, follower)) {
-            return; // Already following
+        @Transactional
+        public void unfollowSeller(UUID sellerId, String followerEmail) {
+                User follower = userRepository.findByEmail(followerEmail)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                User seller = userRepository.findById(sellerId)
+                                .orElseThrow(() -> new RuntimeException("Seller not found"));
+
+                sellerFollowerRepository.findBySellerAndUser(seller, follower)
+                                .ifPresent(sellerFollowerRepository::delete);
         }
 
-        // Save Follow
-        SellerFollower follow = SellerFollower.builder()
-                .seller(seller)
-                .user(follower)
-                .build();
+        @Transactional(readOnly = true)
+        public boolean isFollowing(UUID sellerId, String followerEmail) {
+                User follower = userRepository.findByEmail(followerEmail)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        sellerFollowerRepository.save(follow);
+                User seller = userRepository.findById(sellerId)
+                                .orElseThrow(() -> new RuntimeException("Seller not found"));
 
-        // Create Notification
-        notificationService.createNotification(
-                seller,
-                follower.getFullName() + " started following you",
-                Notification.NotificationType.FOLLOW,
-                follower, // Sender
-                null, null, null // No generic IDs
-        );
-    }
+                return sellerFollowerRepository.existsBySellerAndUser(seller, follower);
+        }
 
-    @Transactional
-    public void unfollowSeller(UUID sellerId, String followerEmail) {
-        User follower = userRepository.findByEmail(followerEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        @Transactional(readOnly = true)
+        public java.util.List<UUID> getFollowedSellerIds(String followerEmail) {
+                User follower = userRepository.findByEmail(followerEmail)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        User seller = userRepository.findById(sellerId)
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
-
-        sellerFollowerRepository.findBySellerAndUser(seller, follower)
-                .ifPresent(sellerFollowerRepository::delete);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean isFollowing(UUID sellerId, String followerEmail) {
-        User follower = userRepository.findByEmail(followerEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        User seller = userRepository.findById(sellerId)
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
-
-        return sellerFollowerRepository.existsBySellerAndUser(seller, follower);
-    }
+                return sellerFollowerRepository.findAllByUser(follower).stream()
+                                .map(follow -> follow.getSeller().getId())
+                                .collect(java.util.stream.Collectors.toList());
+        }
 }

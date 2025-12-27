@@ -5,9 +5,6 @@ import com.odisha.handloom.entity.OrderItem;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -44,24 +41,48 @@ public class InvoiceService {
             // perfectly in all envs without physical file.
             // But requirement said "Map data correctly".
             // Let's attempt to pass a string.
-            parameters.put("LOGO_PATH", ""); // Empty for now to avoid crash if file missing
+            // Logo Logic
+            InputStream logoStream = getClass().getResourceAsStream("/reports/logo/udrakala_logo.jpg");
+
+            // Try PNG if JPG not found
+            if (logoStream == null) {
+                logoStream = getClass().getResourceAsStream("/reports/logo/udrakala_logo.png");
+            }
+
+            if (logoStream != null) {
+                parameters.put("LOGO_PATH", logoStream);
+            } else {
+                // Requirement: "If null -> throw clear error" or "Verify logo file"
+                // Since we can't create the image, we will throw error to prompt user to fix
+                // it,
+                // OR we rely on the fallback that the user asked for "Verify logo file".
+                // But strictly following "If null -> throw clear error."
+                // However, throwing error might break the whole flow if image is just missing.
+                // I'll log severe error but maybe allow proceed logic if the Jasper allows
+                // null?
+                // No, "MANDATORY FIX... If null -> throw clear error."
+                throw new FileNotFoundException("Logo file not found in /reports/logo/udrakala_logo.jpg or .png");
+            }
 
             parameters.put("invoiceNumber", order.getInvoiceNumber() != null ? order.getInvoiceNumber()
                     : "INV-" + order.getId().toString().substring(0, 8));
             parameters.put("invoiceDate",
                     order.getInvoiceSentAt() != null
                             ? order.getInvoiceSentAt().format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                            : "");
+                            : (order.getCreatedAt() != null
+                                    ? order.getCreatedAt().format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                                    : java.time.LocalDateTime.now()
+                                            .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))));
 
             // Seller Details
             parameters.put("sellerName", order.getSeller().getFullName());
             parameters.put("sellerAddress", "Odisha based Handloom Seller"); // Detailed address if in User entity
-            parameters.put("sellerPhone", order.getSeller().getMobileNumber());
+            parameters.put("sellerPhone", order.getSeller().getPhoneNumber());
 
             // Customer Details
             parameters.put("customerName", order.getUser().getFullName());
             parameters.put("customerAddress", order.getShippingAddress());
-            parameters.put("customerPhone", order.getUser().getMobileNumber());
+            parameters.put("customerPhone", order.getUser().getPhoneNumber());
 
             // Totals
             parameters.put("subtotal", order.getTotalAmount()); // Simplified for now, assumming total = subtotal
