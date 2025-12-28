@@ -24,7 +24,7 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    @Column(length = 2000)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
@@ -48,6 +48,7 @@ public class Product {
     @lombok.Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("position ASC")
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<ProductImage> images = new java.util.ArrayList<>();
 
     public void addImage(ProductImage image) {

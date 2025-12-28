@@ -46,15 +46,12 @@ const AdminReturnManagement = () => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'REQUESTED': return 'bg-yellow-100 text-yellow-800';
-            case 'UNDER_REVIEW': return 'bg-blue-100 text-blue-800';
-            case 'APPROVED_BY_SELLER': return 'bg-green-100 text-green-800';
-            case 'REJECTED_BY_SELLER': return 'bg-red-100 text-red-800';
-            case 'APPROVED_BY_ADMIN': return 'bg-green-200 text-green-900';
-            case 'REJECTED_BY_ADMIN': return 'bg-red-200 text-red-900';
-            case 'REFUND_Initiated': return 'bg-purple-100 text-purple-800';
-            case 'REFUND_DONE': return 'bg-purple-200 text-purple-900';
-            case 'CLOSED': return 'bg-gray-200 text-gray-800';
+            case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+            case 'APPROVED': return 'bg-green-100 text-green-800';
+            case 'REJECTED': return 'bg-red-100 text-red-800';
+            case 'PICKUP_SCHEDULED': return 'bg-blue-100 text-blue-800';
+            case 'REFUND_INITIATED': return 'bg-purple-100 text-purple-800';
+            case 'COMPLETED': return 'bg-gray-200 text-gray-800';
             default: return 'bg-gray-100 text-gray-800';
         }
     };
@@ -116,11 +113,11 @@ const AdminReturnManagement = () => {
                                             className="text-indigo-600 hover:text-indigo-900 text-sm border-none bg-transparent focus:ring-0 cursor-pointer"
                                         >
                                             <option value="" disabled>Update Status</option>
-                                            <option value="APPROVED_BY_ADMIN">Approve Override</option>
-                                            <option value="REJECTED_BY_ADMIN">Reject Override</option>
+                                            <option value="APPROVED">Approve Override</option>
+                                            <option value="REJECTED">Reject Override</option>
                                             <option value="REFUND_INITIATED">Initiate Refund</option>
-                                            <option value="REFUND_DONE">Refund Done</option>
-                                            <option value="CLOSED">Close</option>
+                                            <option value="COMPLETED">Refund Done (Complete)</option>
+                                            <option value="COMPLETED">Close</option>
                                         </select>
                                     </td>
                                 </tr>

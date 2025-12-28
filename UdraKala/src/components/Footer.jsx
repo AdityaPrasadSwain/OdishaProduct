@@ -2,6 +2,34 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin, ShieldCheck, CreditCard, Truck } from 'lucide-react';
 
+const SocialLink = ({ icon: Icon, href }) => (
+    <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-orange-500 hover:text-white dark:hover:bg-orange-600 transition-all duration-300"
+    >
+        <Icon size={20} />
+    </a>
+);
+
+const FooterSection = ({ title, children }) => (
+    <div className="space-y-4">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            {children}
+        </ul>
+    </div>
+);
+
+const FooterLink = ({ to, children }) => (
+    <li>
+        <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+            {children}
+        </Link>
+    </li>
+);
+
 const Footer = () => {
     const { user } = useAuth();
     const role = user?.roles?.[0] || 'GUEST'; // Simple role check taking the first one or guest
@@ -11,34 +39,6 @@ const Footer = () => {
     const isCustomer = role === 'ROLE_CUSTOMER' || role === 'GUEST';
 
     const currentYear = new Date().getFullYear();
-
-    const SocialLink = ({ icon: Icon, href }) => (
-        <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-orange-500 hover:text-white dark:hover:bg-orange-600 transition-all duration-300"
-        >
-            <Icon size={20} />
-        </a>
-    );
-
-    const FooterSection = ({ title, children }) => (
-        <div className="space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
-            <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                {children}
-            </ul>
-        </div>
-    );
-
-    const FooterLink = ({ to, children }) => (
-        <li>
-            <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
-                {children}
-            </Link>
-        </li>
-    );
 
     return (
         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">

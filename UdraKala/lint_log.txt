@@ -1,0 +1,2135 @@
+﻿
+> udrakala@0.0.0 lint
+> eslint .
+
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\api\reviewApi.js
+  67:18  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\Footer.jsx
+   15:33  error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   59:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  57 |                         </p>
+  58 |                         <div className="flex gap-4 pt-2">
+> 59 |                             <SocialLink icon={Instagram} href="#" />
+     |                              ^^^^^^^^^^ This component is created during render
+  60 |                             <SocialLink icon={Facebook} href="#" />
+  61 |                             <SocialLink icon={Twitter} href="#" />
+  62 |                         </div>
+
+  13 |     const currentYear = new Date().getFullYear();
+  14 |
+> 15 |     const SocialLink = ({ icon: Icon, href }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |         <a
+     | ^^^^^^^^^^
+> 17 |             href={href}
+     | ^^^^^^^^^^
+> 18 |             target="_blank"
+     | ^^^^^^^^^^
+> 19 |             rel="noopener noreferrer"
+     | ^^^^^^^^^^
+> 20 |             className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-orange-500 hover:text-white dark:hover:bg-orange-600 transition-all duration-300"
+     | ^^^^^^^^^^
+> 21 |         >
+     | ^^^^^^^^^^
+> 22 |             <Icon size={20} />
+     | ^^^^^^^^^^
+> 23 |         </a>
+     | ^^^^^^^^^^
+> 24 |     );
+     | ^^^^^^ The component is created during render here
+  25 |
+  26 |     const FooterSection = ({ title, children }) => (
+  27 |         <div className="space-y-4">          react-hooks/static-components
+   60:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  58 |                         <div className="flex gap-4 pt-2">
+  59 |                             <SocialLink icon={Instagram} href="#" />
+> 60 |                             <SocialLink icon={Facebook} href="#" />
+     |                              ^^^^^^^^^^ This component is created during render
+  61 |                             <SocialLink icon={Twitter} href="#" />
+  62 |                         </div>
+  63 |                     </div>
+
+  13 |     const currentYear = new Date().getFullYear();
+  14 |
+> 15 |     const SocialLink = ({ icon: Icon, href }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |         <a
+     | ^^^^^^^^^^
+> 17 |             href={href}
+     | ^^^^^^^^^^
+> 18 |             target="_blank"
+     | ^^^^^^^^^^
+> 19 |             rel="noopener noreferrer"
+     | ^^^^^^^^^^
+> 20 |             className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-orange-500 hover:text-white dark:hover:bg-orange-600 transition-all duration-300"
+     | ^^^^^^^^^^
+> 21 |         >
+     | ^^^^^^^^^^
+> 22 |             <Icon size={20} />
+     | ^^^^^^^^^^
+> 23 |         </a>
+     | ^^^^^^^^^^
+> 24 |     );
+     | ^^^^^^ The component is created during render here
+  25 |
+  26 |     const FooterSection = ({ title, children }) => (
+  27 |         <div className="space-y-4">            react-hooks/static-components
+   61:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  59 |                             <SocialLink icon={Instagram} href="#" />
+  60 |                             <SocialLink icon={Facebook} href="#" />
+> 61 |                             <SocialLink icon={Twitter} href="#" />
+     |                              ^^^^^^^^^^ This component is created during render
+  62 |                         </div>
+  63 |                     </div>
+  64 |
+
+  13 |     const currentYear = new Date().getFullYear();
+  14 |
+> 15 |     const SocialLink = ({ icon: Icon, href }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |         <a
+     | ^^^^^^^^^^
+> 17 |             href={href}
+     | ^^^^^^^^^^
+> 18 |             target="_blank"
+     | ^^^^^^^^^^
+> 19 |             rel="noopener noreferrer"
+     | ^^^^^^^^^^
+> 20 |             className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-orange-500 hover:text-white dark:hover:bg-orange-600 transition-all duration-300"
+     | ^^^^^^^^^^
+> 21 |         >
+     | ^^^^^^^^^^
+> 22 |             <Icon size={20} />
+     | ^^^^^^^^^^
+> 23 |         </a>
+     | ^^^^^^^^^^
+> 24 |     );
+     | ^^^^^^ The component is created during render here
+  25 |
+  26 |     const FooterSection = ({ title, children }) => (
+  27 |         <div className="space-y-4">                                                                      react-hooks/static-components
+   70:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  68 |                     {isCustomer && (
+  69 |                         <>
+> 70 |                             <FooterSection title="Shop">
+     |                              ^^^^^^^^^^^^^ This component is created during render
+  71 |                                 <FooterLink to="/products?category=saree">Sarees</FooterLink>
+  72 |                                 <FooterLink to="/products?category=textile">Textiles</FooterLink>
+  73 |                                 <FooterLink to="/products?category=handicraft">Handicrafts</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>  react-hooks/static-components
+   71:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  69 |                         <>
+  70 |                             <FooterSection title="Shop">
+> 71 |                                 <FooterLink to="/products?category=saree">Sarees</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  72 |                                 <FooterLink to="/products?category=textile">Textiles</FooterLink>
+  73 |                                 <FooterLink to="/products?category=handicraft">Handicrafts</FooterLink>
+  74 |                                 <FooterLink to="/products">All Products</FooterLink>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                  react-hooks/static-components
+   72:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  70 |                             <FooterSection title="Shop">
+  71 |                                 <FooterLink to="/products?category=saree">Sarees</FooterLink>
+> 72 |                                 <FooterLink to="/products?category=textile">Textiles</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  73 |                                 <FooterLink to="/products?category=handicraft">Handicrafts</FooterLink>
+  74 |                                 <FooterLink to="/products">All Products</FooterLink>
+  75 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                react-hooks/static-components
+   73:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  71 |                                 <FooterLink to="/products?category=saree">Sarees</FooterLink>
+  72 |                                 <FooterLink to="/products?category=textile">Textiles</FooterLink>
+> 73 |                                 <FooterLink to="/products?category=handicraft">Handicrafts</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  74 |                                 <FooterLink to="/products">All Products</FooterLink>
+  75 |                             </FooterSection>
+  76 |
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                         react-hooks/static-components
+   74:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  72 |                                 <FooterLink to="/products?category=textile">Textiles</FooterLink>
+  73 |                                 <FooterLink to="/products?category=handicraft">Handicrafts</FooterLink>
+> 74 |                                 <FooterLink to="/products">All Products</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  75 |                             </FooterSection>
+  76 |
+  77 |                             <FooterSection title="Customer Care">
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                     react-hooks/static-components
+   77:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  75 |                             </FooterSection>
+  76 |
+> 77 |                             <FooterSection title="Customer Care">
+     |                              ^^^^^^^^^^^^^ This component is created during render
+  78 |                                 <FooterLink to="/track-order">Track Order</FooterLink>
+  79 |                                 <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
+  80 |                                 <FooterLink to="/returns">Returns & Exchanges</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>                                   react-hooks/static-components
+   78:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  76 |
+  77 |                             <FooterSection title="Customer Care">
+> 78 |                                 <FooterLink to="/track-order">Track Order</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  79 |                                 <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
+  80 |                                 <FooterLink to="/returns">Returns & Exchanges</FooterLink>
+  81 |                                 <FooterLink to="/contact">Contact Us</FooterLink>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                              react-hooks/static-components
+   79:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  77 |                             <FooterSection title="Customer Care">
+  78 |                                 <FooterLink to="/track-order">Track Order</FooterLink>
+> 79 |                                 <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  80 |                                 <FooterLink to="/returns">Returns & Exchanges</FooterLink>
+  81 |                                 <FooterLink to="/contact">Contact Us</FooterLink>
+  82 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                 react-hooks/static-components
+   80:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  78 |                                 <FooterLink to="/track-order">Track Order</FooterLink>
+  79 |                                 <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
+> 80 |                                 <FooterLink to="/returns">Returns & Exchanges</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  81 |                                 <FooterLink to="/contact">Contact Us</FooterLink>
+  82 |                             </FooterSection>
+  83 |                         </>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                       react-hooks/static-components
+   81:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  79 |                                 <FooterLink to="/shipping-policy">Shipping Policy</FooterLink>
+  80 |                                 <FooterLink to="/returns">Returns & Exchanges</FooterLink>
+> 81 |                                 <FooterLink to="/contact">Contact Us</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  82 |                             </FooterSection>
+  83 |                         </>
+  84 |                     )}
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                                                       react-hooks/static-components
+   89:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  87 |                     {isSeller && (
+  88 |                         <>
+> 89 |                             <FooterSection title="Seller Hub">
+     |                              ^^^^^^^^^^^^^ This component is created during render
+  90 |                                 <FooterLink to="/seller/dashboard">Dashboard</FooterLink>
+  91 |                                 <FooterLink to="/seller/products">My Products</FooterLink>
+  92 |                                 <FooterLink to="/seller/orders">Orders</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>                             react-hooks/static-components
+   90:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  88 |                         <>
+  89 |                             <FooterSection title="Seller Hub">
+> 90 |                                 <FooterLink to="/seller/dashboard">Dashboard</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  91 |                                 <FooterLink to="/seller/products">My Products</FooterLink>
+  92 |                                 <FooterLink to="/seller/orders">Orders</FooterLink>
+  93 |                                 <FooterLink to="/seller/payments">Payments</FooterLink>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                        react-hooks/static-components
+   91:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  89 |                             <FooterSection title="Seller Hub">
+  90 |                                 <FooterLink to="/seller/dashboard">Dashboard</FooterLink>
+> 91 |                                 <FooterLink to="/seller/products">My Products</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  92 |                                 <FooterLink to="/seller/orders">Orders</FooterLink>
+  93 |                                 <FooterLink to="/seller/payments">Payments</FooterLink>
+  94 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                      react-hooks/static-components
+   92:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  90 |                                 <FooterLink to="/seller/dashboard">Dashboard</FooterLink>
+  91 |                                 <FooterLink to="/seller/products">My Products</FooterLink>
+> 92 |                                 <FooterLink to="/seller/orders">Orders</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  93 |                                 <FooterLink to="/seller/payments">Payments</FooterLink>
+  94 |                             </FooterSection>
+  95 |
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                     react-hooks/static-components
+   93:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  91 |                                 <FooterLink to="/seller/products">My Products</FooterLink>
+  92 |                                 <FooterLink to="/seller/orders">Orders</FooterLink>
+> 93 |                                 <FooterLink to="/seller/payments">Payments</FooterLink>
+     |                                  ^^^^^^^^^^ This component is created during render
+  94 |                             </FooterSection>
+  95 |
+  96 |                             <FooterSection title="Resources">
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                                                 react-hooks/static-components
+   96:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  94 |                             </FooterSection>
+  95 |
+> 96 |                             <FooterSection title="Resources">
+     |                              ^^^^^^^^^^^^^ This component is created during render
+  97 |                                 <FooterLink to="/seller/policy">Seller Policy</FooterLink>
+  98 |                                 <FooterLink to="/seller/guide">Selling Guide</FooterLink>
+  99 |                                 <FooterLink to="/seller/support">Seller Support</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>                                      react-hooks/static-components
+   97:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+   95 |
+   96 |                             <FooterSection title="Resources">
+>  97 |                                 <FooterLink to="/seller/policy">Seller Policy</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+   98 |                                 <FooterLink to="/seller/guide">Selling Guide</FooterLink>
+   99 |                                 <FooterLink to="/seller/support">Seller Support</FooterLink>
+  100 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                               react-hooks/static-components
+   98:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+   96 |                             <FooterSection title="Resources">
+   97 |                                 <FooterLink to="/seller/policy">Seller Policy</FooterLink>
+>  98 |                                 <FooterLink to="/seller/guide">Selling Guide</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+   99 |                                 <FooterLink to="/seller/support">Seller Support</FooterLink>
+  100 |                             </FooterSection>
+  101 |                         </>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                   react-hooks/static-components
+   99:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+   97 |                                 <FooterLink to="/seller/policy">Seller Policy</FooterLink>
+   98 |                                 <FooterLink to="/seller/guide">Selling Guide</FooterLink>
+>  99 |                                 <FooterLink to="/seller/support">Seller Support</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  100 |                             </FooterSection>
+  101 |                         </>
+  102 |                     )}
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                                          react-hooks/static-components
+  107:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  105 |                     {isAdmin && (
+  106 |                         <>
+> 107 |                             <FooterSection title="Administration">
+      |                              ^^^^^^^^^^^^^ This component is created during render
+  108 |                                 <FooterLink to="/admin/dashboard">Dashboard</FooterLink>
+  109 |                                 <FooterLink to="/admin/users">User Management</FooterLink>
+  110 |                                 <FooterLink to="/admin/sellers">Seller Verification</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>       react-hooks/static-components
+  108:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  106 |                         <>
+  107 |                             <FooterSection title="Administration">
+> 108 |                                 <FooterLink to="/admin/dashboard">Dashboard</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  109 |                                 <FooterLink to="/admin/users">User Management</FooterLink>
+  110 |                                 <FooterLink to="/admin/sellers">Seller Verification</FooterLink>
+  111 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                            react-hooks/static-components
+  109:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  107 |                             <FooterSection title="Administration">
+  108 |                                 <FooterLink to="/admin/dashboard">Dashboard</FooterLink>
+> 109 |                                 <FooterLink to="/admin/users">User Management</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  110 |                                 <FooterLink to="/admin/sellers">Seller Verification</FooterLink>
+  111 |                             </FooterSection>
+  112 |
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                       react-hooks/static-components
+  110:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  108 |                                 <FooterLink to="/admin/dashboard">Dashboard</FooterLink>
+  109 |                                 <FooterLink to="/admin/users">User Management</FooterLink>
+> 110 |                                 <FooterLink to="/admin/sellers">Seller Verification</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  111 |                             </FooterSection>
+  112 |
+  113 |                             <FooterSection title="System">
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                               react-hooks/static-components
+  113:30  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  111 |                             </FooterSection>
+  112 |
+> 113 |                             <FooterSection title="System">
+      |                              ^^^^^^^^^^^^^ This component is created during render
+  114 |                                 <FooterLink to="/admin/settings">Settings</FooterLink>
+  115 |                                 <FooterLink to="/admin/logs">System Logs</FooterLink>
+  116 |                                 <FooterLink to="/admin/reports">Reports</FooterLink>
+
+  24 |     );
+  25 |
+> 26 |     const FooterSection = ({ title, children }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         <div className="space-y-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |             <h3 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h3>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |             </ul>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     );
+     | ^^^^^^ The component is created during render here
+  34 |
+  35 |     const FooterLink = ({ to, children }) => (
+  36 |         <li>                                                  react-hooks/static-components
+  114:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  112 |
+  113 |                             <FooterSection title="System">
+> 114 |                                 <FooterLink to="/admin/settings">Settings</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  115 |                                 <FooterLink to="/admin/logs">System Logs</FooterLink>
+  116 |                                 <FooterLink to="/admin/reports">Reports</FooterLink>
+  117 |                             </FooterSection>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                                                  react-hooks/static-components
+  115:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  113 |                             <FooterSection title="System">
+  114 |                                 <FooterLink to="/admin/settings">Settings</FooterLink>
+> 115 |                                 <FooterLink to="/admin/logs">System Logs</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  116 |                                 <FooterLink to="/admin/reports">Reports</FooterLink>
+  117 |                             </FooterSection>
+  118 |                         </>
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                      react-hooks/static-components
+  116:34  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  114 |                                 <FooterLink to="/admin/settings">Settings</FooterLink>
+  115 |                                 <FooterLink to="/admin/logs">System Logs</FooterLink>
+> 116 |                                 <FooterLink to="/admin/reports">Reports</FooterLink>
+      |                                  ^^^^^^^^^^ This component is created during render
+  117 |                             </FooterSection>
+  118 |                         </>
+  119 |                     )}
+
+  33 |     );
+  34 |
+> 35 |     const FooterLink = ({ to, children }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |         <li>
+     | ^^^^^^^^^^^^
+> 37 |             <Link to={to} className="hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+     | ^^^^^^^^^^^^
+> 38 |                 {children}
+     | ^^^^^^^^^^^^
+> 39 |             </Link>
+     | ^^^^^^^^^^^^
+> 40 |         </li>
+     | ^^^^^^^^^^^^
+> 41 |     );
+     | ^^^^^^ The component is created during render here
+  42 |
+  43 |     return (
+  44 |         <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 transition-colors duration-300">                                                                                                                                                                                                                                          react-hooks/static-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\Navbar.jsx
+   24:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+   96:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  94 |         <nav className="bg-white/90 dark:bg-gray-900/95 sticky top-0 z-50 shadow-md border-b border-gray-200 dark:border-gray-700 backdrop-blur-md">
+  95 |             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+> 96 |                 <Logo />
+     |                  ^^^^ This component is created during render
+  97 |
+  98 |                 <div className="flex items-center md:order-2 space-x-2 md:space-x-4">
+  99 |                     {/* Theme Toggle */}
+
+  56 |
+  57 |     // --- Logo & Brand ---
+> 58 |     const Logo = () => (
+     |                  ^^^^^^^
+> 59 |         <Link to={isAdmin ? "/admin/dashboard" : isSeller ? "/seller/dashboard" : "/"} className="flex items-center">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |             <img src={udraKalaLogo} className="mr-3 h-9 w-9 rounded-full sm:h-10 sm:w-10 border border-orange-200" alt="UdraKala Logo" />
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |         </Link>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |     );
+     | ^^^^^^ The component is created during render here
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+  73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/static-components
+  149:58  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  147 |                                         </div>
+  148 |                                         <ul className="py-2">
+> 149 |                                             {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+      |                                                          ^^^^^^^^^^^^ This component is created during render
+  150 |                                             {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+  151 |                                             {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label="My Dashboard" />}
+  152 |                                             {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="My Returns" />}
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (  react-hooks/static-components
+  150:59  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  148 |                                         <ul className="py-2">
+  149 |                                             {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+> 150 |                                             {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+      |                                                           ^^^^^^^^^^^^ This component is created during render
+  151 |                                             {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label="My Dashboard" />}
+  152 |                                             {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="My Returns" />}
+  153 |
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (                                                react-hooks/static-components
+  151:61  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  149 |                                             {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+  150 |                                             {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+> 151 |                                             {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label="My Dashboard" />}
+      |                                                             ^^^^^^^^^^^^ This component is created during render
+  152 |                                             {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="My Returns" />}
+  153 |
+  154 |                                             <DropdownItem to="/profile" icon={User} label="Profile" />
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (     react-hooks/static-components
+  152:61  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  150 |                                             {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label="Dashboard" />}
+  151 |                                             {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label="My Dashboard" />}
+> 152 |                                             {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="My Returns" />}
+      |                                                             ^^^^^^^^^^^^ This component is created during render
+  153 |
+  154 |                                             <DropdownItem to="/profile" icon={User} label="Profile" />
+  155 |                                             <DropdownItem icon={Settings} label="Settings" />
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (                                                react-hooks/static-components
+  154:46  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  152 |                                             {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="My Returns" />}
+  153 |
+> 154 |                                             <DropdownItem to="/profile" icon={User} label="Profile" />
+      |                                              ^^^^^^^^^^^^ This component is created during render
+  155 |                                             <DropdownItem icon={Settings} label="Settings" />
+  156 |                                             <div className="border-t dark:border-gray-600 my-1"></div>
+  157 |                                             <DropdownItem onClick={handleLogout} icon={LogOut} label="Sign out" isDanger />
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (                                                                                                                         react-hooks/static-components
+  155:46  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  153 |
+  154 |                                             <DropdownItem to="/profile" icon={User} label="Profile" />
+> 155 |                                             <DropdownItem icon={Settings} label="Settings" />
+      |                                              ^^^^^^^^^^^^ This component is created during render
+  156 |                                             <div className="border-t dark:border-gray-600 my-1"></div>
+  157 |                                             <DropdownItem onClick={handleLogout} icon={LogOut} label="Sign out" isDanger />
+  158 |                                         </ul>
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (                                                                                                                                                                                                                  react-hooks/static-components
+  157:46  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  155 |                                             <DropdownItem icon={Settings} label="Settings" />
+  156 |                                             <div className="border-t dark:border-gray-600 my-1"></div>
+> 157 |                                             <DropdownItem onClick={handleLogout} icon={LogOut} label="Sign out" isDanger />
+      |                                              ^^^^^^^^^^^^ This component is created during render
+  158 |                                         </ul>
+  159 |                                     </div>
+  160 |                                 )}
+
+  71 |
+  72 |     // --- Drodown Menu Item Helper ---
+> 73 |     const DropdownItem = ({ to, icon: Icon, label, onClick, className = "", isDanger = false }) => {
+     |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 74 |         const baseClass = `flex items-center px-4 py-2 text-sm w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${isDanger ? 'text-red-600 dark:text-red-400 hover:text-red-700' : 'text-gray-700 dark:text-gray-200'} ${className}`;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 75 |
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 89 |         );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 90 |     };
+     | ^^^^^^ The component is created during render here
+  91 |
+  92 |     // --- Right Side Actions ---
+  93 |     return (                                                                                                                                                                                                                                           react-hooks/static-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\NotificationBell.jsx
+  32:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  30 |
+  31 |     useEffect(() => {
+> 32 |         fetchNotifications();
+     |         ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |         const interval = setInterval(fetchNotifications, 60000); // Poll every 1 min
+  34 |         return () => clearInterval(interval);
+  35 |     }, []);  react-hooks/set-state-in-effect
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\OrderSuccessAnimation.jsx
+   2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    no-unused-vars
+   7:12  error  'isVisible' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  39:64  error  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  37 |                                 opacity: [0, 1, 0],
+  38 |                                 y: [-20, -100],
+> 39 |                                 x: (i % 2 === 0 ? 50 : -50) + (Math.random() * 20),
+     |                                                                ^^^^^^^^^^^^^ Cannot call impure function
+  40 |                                 scale: [0, 1.2, 0]
+  41 |                             }}
+  42 |                             transition={{  react-hooks/purity
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\PostViewerModal.jsx
+  21:8  warning  React Hook useEffect has missing dependencies: 'fetchComments' and 'fetchLikeStatus'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\admin\AdminNotificationBell.jsx
+  15:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  13 |
+  14 |     useEffect(() => {
+> 15 |         fetchCount();
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |         const interval = setInterval(fetchCount, 30000); // Poll every 30 seconds
+  17 |         return () => clearInterval(interval);
+  18 |     }, []);  react-hooks/set-state-in-effect
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\admin\StatsCard.jsx
+   2:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+   2:18  error    'useSpring' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      no-unused-vars
+  17:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  15 |             return controls.stop;
+  16 |         } else {
+> 17 |             setDisplayValue(value);
+     |             ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |         }
+  19 |     }, [value]);
+  20 |  react-hooks/set-state-in-effect
+  19:8   warning  React Hook useEffect has a missing dependency: 'count'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\chat\ChatWindow.jsx
+  58:8  warning  React Hook useEffect has a missing dependency: 'sessionId'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\common\NotificationBell.jsx
+  11:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  21:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  19 |
+  20 |     useEffect(() => {
+> 21 |         fetchNotifications();
+     |         ^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |         // Poll every 30 seconds
+  23 |         const interval = setInterval(fetchNotifications, 30000);
+  24 |         return () => clearInterval(interval);  react-hooks/set-state-in-effect
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\kyc\SellerKycFlow.jsx
+  17:8   warning  React Hook useEffect has a missing dependency: 'fetchKycStatus'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  45:25  error    'data' is defined but never used                                                                                   no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\ui\Button.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\ui\Card.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\ui\PageTransition.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\components\ui\ScrollReveal.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\context\AuthContext.jsx
+   42:21  error    'setLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                      no-unused-vars
+  173:8   warning  React Hook useEffect has a missing dependency: 'refreshUser'. Either include it or remove the dependency array                  react-hooks/exhaustive-deps
+  182:14  error    Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\context\DataContext.jsx
+    6:14  error  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file                      react-refresh/only-export-components
+  187:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\context\FollowContext.jsx
+   44:21  error  'url' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                             no-unused-vars
+  114:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\context\SellerRegistrationContext.jsx
+   1:47  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                no-unused-vars
+  54:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\context\WishlistContext.jsx
+  122:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\layouts\DashboardLayout.jsx
+  2:18  error  'useLocation' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\layouts\header\Header.jsx
+  24:13  error  'cart' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                no-unused-vars
+  83:57  error  React Hook "useState" cannot be called inside a callback. React Hooks must be called in a React function component or a custom React Hook function  react-hooks/rules-of-hooks
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\Cart.jsx
+  69:60  error  'updateCartQuantity' is not defined  no-undef
+  79:60  error  'updateCartQuantity' is not defined  no-undef
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\Home.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\LoginWithOtp.jsx
+   9:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u    no-unused-vars
+  10:13  error  'login' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u       no-unused-vars
+  46:13  error  'identifier' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\ProductDetails.jsx
+   43:8   warning  React Hook useEffect has missing dependencies: 'checkReviewEligibility' and 'fetchProductDetails'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   92:11  error    'renderStars' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                            no-unused-vars
+  166:19  error    'response' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                               no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\ProductList.jsx
+  22:43  error  'cart' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+  22:49  error  'updateCartQuantity' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  22:69  error  'removeFromCart' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       no-unused-vars
+  36:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  34 |         const categoryFromUrl = searchParams.get('category');
+  35 |         if (categoryFromUrl) {
+> 36 |             setCategoryFilter(categoryFromUrl);
+     |             ^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  37 |         }
+  38 |     }, [searchParams]);
+  39 |  react-hooks/set-state-in-effect
+  48:11  error  'categories' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\Profile.jsx
+  6:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\SellerProfile.jsx
+   5:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                    no-unused-vars
+  21:8   warning  React Hook useEffect has a missing dependency: 'fetchProfile'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\WatchReels.jsx
+    5:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                      no-unused-vars
+   32:8   warning  React Hook useEffect has a missing dependency: 'fetchReels'. Either include it or remove the dependency array                                                                                                                                                      react-hooks/exhaustive-deps
+  242:23  warning  The ref value 'videoRefs.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'videoRefs.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+  259:18  error    'e' is defined but never used                                                                                                                                                                                                                                      no-unused-vars
+  442:8   warning  React Hook useEffect has a missing dependency: 'fetchComments'. Either include it or remove the dependency array                                                                                                                                                   react-hooks/exhaustive-deps
+  468:18  error    'error' is defined but never used                                                                                                                                                                                                                                  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminDashboard.jsx
+    3:10   error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  107:18   error  'error' is defined but never used                                              no-unused-vars
+  111:276  error  'error' is defined but never used                                              no-unused-vars
+  112:283  error  'error' is defined but never used                                              no-unused-vars
+  113:246  error  'error' is defined but never used                                              no-unused-vars
+  115:290  error  'error' is defined but never used                                              no-unused-vars
+  115:297  error  Empty block statement                                                          no-empty
+  116:297  error  'error' is defined but never used                                              no-unused-vars
+  116:304  error  Empty block statement                                                          no-empty
+  117:263  error  'error' is defined but never used                                              no-unused-vars
+  117:270  error  Empty block statement                                                          no-empty
+  119:324  error  'ERROR' is defined but never used                                              no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminNotifications.jsx
+  19:18  error  'error' is defined but never used                                                                 no-unused-vars
+  30:11  error  'handleMarkAsRead' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminPayoutDashboard.jsx
+  1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminPayoutHistory.jsx
+  11:21  error  'setHistory' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminReturnManagement.jsx
+   2:48  error  'updateSellerDecision' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   4:10  error  'format' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  41:22  error  'error' is defined but never used                                                            no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AdminUserManagement.jsx
+    7:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                  no-unused-vars
+   22:8   warning  React Hook useEffect has a missing dependency: 'fetchUsers'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   47:18  error    'error' is defined but never used                                                                              no-unused-vars
+   66:22  error    'error' is defined but never used                                                                              no-unused-vars
+   92:22  error    'error' is defined but never used                                                                              no-unused-vars
+  114:22  error    'error' is defined but never used                                                                              no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\AnalyticsDashboard.jsx
+    1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+    3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+   51:12  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+   51:21  error  'setLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              no-unused-vars
+  102:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  100 |             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  101 |                 {/* 1. Total Sales */}
+> 102 |                 <DashboardCard className="relative overflow-hidden group">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  103 |                     <div className="flex justify-between items-start z-10 relative">
+  104 |                         <div>
+  105 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Platform Sales (Today)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                           react-hooks/static-components
+  133:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  131 |
+  132 |                 {/* 2. Total Orders */}
+> 133 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  134 |                     <div className="flex justify-between items-start">
+  135 |                         <div>
+  136 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Total Orders (Today)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                             react-hooks/static-components
+  157:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  155 |
+  156 |                 {/* 3. Net Profit */}
+> 157 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  158 |                     <div className="flex justify-between items-start">
+  159 |                         <div>
+  160 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Net Commission (Monthly)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                           react-hooks/static-components
+  177:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  175 |
+  176 |                 {/* 4. Avg Order Value (Gauge Style Sim) */}
+> 177 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  178 |                     <div className="flex justify-between items-start mb-6">
+  179 |                         <p className="text-gray-500 dark:text-gray-400 text-sm">Avg Order Value</p>
+  180 |                         <div className="p-3 bg-purple-100 dark:bg-purple-500/10 rounded-xl">
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                             react-hooks/static-components
+  198:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  196 |             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  197 |                 {/* 5. Orders By Channel */}
+> 198 |                 <DashboardCard title="Orders By Channel" className="lg:col-span-2">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  199 |                     <div className="space-y-6">
+  200 |                         {mockChannels.map((channel) => (
+  201 |                             <div key={channel.name}>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                               react-hooks/static-components
+  224:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  222 |
+  223 |                 {/* 6. Sales By Location */}
+> 224 |                 <DashboardCard title="Top Locations" className="lg:col-span-1">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  225 |                     <div className="space-y-4">
+  226 |                         {[
+  227 |                             { title: 'Mumbai', amount: 4500000, percent: 35 },
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                                react-hooks/static-components
+  251:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  249 |             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  250 |                 {/* 7. P&L Statement */}
+> 251 |                 <DashboardCard title="Platform Revenue (Monthly)" className="lg:col-span-1 border-l-4 border-l-teal-500">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  252 |                     <div className="space-y-3">
+  253 |                         <div className="flex justify-between text-sm py-2 border-b border-gray-100 dark:border-white/5">
+  254 |                             <span className="text-gray-500 dark:text-gray-400">Total GMV</span>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {  react-hooks/static-components
+  285:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  283 |
+  284 |                 {/* 9. Seller Reels Analytics */}
+> 285 |                 <DashboardCard title="Platform Reels Performance" className="lg:col-span-2">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  286 |                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  287 |                         <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
+  288 |                             <p className="text-xs text-gray-500 mb-1">Total Reels</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                           react-hooks/static-components
+  329:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  327 |             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  328 |                 {/* 10. Product Performance */}
+> 329 |                 <DashboardCard title="Best Selling Products">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  330 |                     <div className="overflow-x-auto">
+  331 |                         <table className="w-full text-left border-collapse">
+  332 |                             <thead>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                              react-hooks/static-components
+  370:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  368 |
+  369 |                 {/* 11. Returns & Cancellations */}
+> 370 |                 <DashboardCard title="Platform Returns">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  371 |                     <div className="flex flex-col md:flex-row items-center gap-8">
+  372 |                         {/* Donut Chart */}
+  373 |                         <div className="w-40 h-40 relative">
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                              react-hooks/static-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\admin\verification\AdminSellerDetails.jsx
+  16:8   warning  React Hook useEffect has a missing dependency: 'fetchDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  22:18  error    'error' is defined but never used                                                                                no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\customer\CustomerDashboard.jsx
+  21:12  error  'loadingOrders' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\customer\TrackOrder.jsx
+   59:30  error  'e' is defined but never used                                                                     no-unused-vars
+   81:18  error  'error' is defined but never used                                                                 no-unused-vars
+  176:11  error  'currentStepIndex' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\public\SellerProfile.jsx
+  23:8  warning  React Hook useEffect has missing dependencies: 'fetchContent' and 'fetchProfile'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\returns\CustomerReturns.jsx
+  42:26  error  'error' is defined but never used  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller-registration\Step1BasicDetails.jsx
+  4:10  error  'useAuth' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller-registration\Step2Documents.jsx
+  4:53  error  'validateRequired' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller-registration\Step3KYC.jsx
+   99:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+   97 |                         {errors.panNumber && <p className="text-red-500 text-xs">{errors.panNumber}</p>}
+   98 |                     </div>
+>  99 |                     <FileUpload label="PAN Card" name="panFile" file={sellerData.panFile} preview={sellerData.panPreview} />
+      |                      ^^^^^^^^^^ This component is created during render
+  100 |                 </div>
+  101 |
+  102 |                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+
+  62 |
+  63 |     // Helper for File Input
+> 64 |     const FileUpload = ({ label, name, file, preview }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |         <div className="mb-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |             <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 82 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 83 |     );
+     | ^^^^^^ The component is created during render here
+  84 |
+  85 |     return (
+  86 |         <form onSubmit={handleNext} className="space-y-6">                                                 react-hooks/static-components
+  108:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  106 |                         {errors.aadhaarNumber && <p className="text-red-500 text-xs">{errors.aadhaarNumber}</p>}
+  107 |                     </div>
+> 108 |                     <FileUpload label="Aadhaar Card" name="aadhaarFile" file={sellerData.aadhaarFile} preview={sellerData.aadhaarPreview} />
+      |                      ^^^^^^^^^^ This component is created during render
+  109 |                 </div>
+  110 |
+  111 |                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+
+  62 |
+  63 |     // Helper for File Input
+> 64 |     const FileUpload = ({ label, name, file, preview }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |         <div className="mb-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |             <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 82 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 83 |     );
+     | ^^^^^^ The component is created during render here
+  84 |
+  85 |     return (
+  86 |         <form onSubmit={handleNext} className="space-y-6">                         react-hooks/static-components
+  116:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  114 |                         <input type="text" name="gstNumber" value={sellerData.gstNumber} onChange={handleChange} className="w-full p-2 border rounded" placeholder="22AAAAA0000A1Z5" maxLength="15" />
+  115 |                     </div>
+> 116 |                     <FileUpload label="GST Cert (Optional)" name="gstFile" file={sellerData.gstFile} preview={sellerData.gstPreview} />
+      |                      ^^^^^^^^^^ This component is created during render
+  117 |                 </div>
+  118 |             </div>
+  119 |
+
+  62 |
+  63 |     // Helper for File Input
+> 64 |     const FileUpload = ({ label, name, file, preview }) => (
+     |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |         <div className="mb-4">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |             <label className="block text-sm font-semibold text-gray-700 mb-1">{label}</label>
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 82 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 83 |     );
+     | ^^^^^^ The component is created during render here
+  84 |
+  85 |     return (
+  86 |         <form onSubmit={handleNext} className="space-y-6">  react-hooks/static-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller-registration\Step4Review.jsx
+  51:19  error  'res' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\SellerAnalyticsDashboard.jsx
+    1:27  error  'useEffect' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         no-unused-vars
+    3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            no-unused-vars
+   51:12  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   51:21  error  'setLoading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               no-unused-vars
+  102:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  100 |             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  101 |                 {/* 1. Total Sales */}
+> 102 |                 <DashboardCard className="relative overflow-hidden group">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  103 |                     <div className="flex justify-between items-start z-10 relative">
+  104 |                         <div>
+  105 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Total Sales (Today)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                               react-hooks/static-components
+  133:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  131 |
+  132 |                 {/* 2. Total Orders */}
+> 133 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  134 |                     <div className="flex justify-between items-start">
+  135 |                         <div>
+  136 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Orders (Today)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                                    react-hooks/static-components
+  157:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  155 |
+  156 |                 {/* 3. Net Profit */}
+> 157 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  158 |                     <div className="flex justify-between items-start">
+  159 |                         <div>
+  160 |                             <p className="text-gray-500 dark:text-gray-400 text-sm">Net Profit (Monthly)</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                                react-hooks/static-components
+  177:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  175 |
+  176 |                 {/* 4. Avg Order Value (Gauge Style Sim) */}
+> 177 |                 <DashboardCard>
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  178 |                     <div className="flex justify-between items-start mb-6">
+  179 |                         <p className="text-gray-500 dark:text-gray-400 text-sm">Avg Order Value</p>
+  180 |                         <div className="p-3 bg-purple-100 dark:bg-purple-500/10 rounded-xl">
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                              react-hooks/static-components
+  198:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  196 |             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  197 |                 {/* 5. Orders By Channel */}
+> 198 |                 <DashboardCard title="Orders By Channel" className="lg:col-span-2">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  199 |                     <div className="space-y-6">
+  200 |                         {mockChannels.map((channel) => (
+  201 |                             <div key={channel.name}>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                react-hooks/static-components
+  224:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  222 |
+  223 |                 {/* 6. Sales By Location */}
+> 224 |                 <DashboardCard title="Top Locations" className="lg:col-span-1">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  225 |                     <div className="space-y-4">
+  226 |                         {[
+  227 |                             { title: 'Mumbai', amount: 450000, percent: 35 },
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                                                  react-hooks/static-components
+  251:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  249 |             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  250 |                 {/* 7. P&L Statement */}
+> 251 |                 <DashboardCard title="P&L Statement (Monthly)" className="lg:col-span-1 border-l-4 border-l-teal-500">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  252 |                     <div className="space-y-3">
+  253 |                         <div className="flex justify-between text-sm py-2 border-b border-gray-100 dark:border-white/5">
+  254 |                             <span className="text-gray-500 dark:text-gray-400">Sales Revenue</span>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {  react-hooks/static-components
+  285:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  283 |
+  284 |                 {/* 9. Seller Reels Analytics */}
+> 285 |                 <DashboardCard title="Reels Performance" className="lg:col-span-2">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  286 |                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  287 |                         <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
+  288 |                             <p className="text-xs text-gray-500 mb-1">Total Reels</p>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                     react-hooks/static-components
+  329:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  327 |             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  328 |                 {/* 10. Product Performance */}
+> 329 |                 <DashboardCard title="Top Products">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  330 |                     <div className="overflow-x-auto">
+  331 |                         <table className="w-full text-left border-collapse">
+  332 |                             <thead>
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                        react-hooks/static-components
+  370:18  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  368 |
+  369 |                 {/* 11. Returns & Cancellations */}
+> 370 |                 <DashboardCard title="Returns & Cancellations">
+      |                  ^^^^^^^^^^^^^ This component is created during render
+  371 |                     <div className="flex flex-col md:flex-row items-center gap-8">
+  372 |                         {/* Donut Chart */}
+  373 |                         <div className="w-40 h-40 relative">
+
+  61 |
+  62 |     // --- Reusable Card Component ---
+> 63 |     const DashboardCard = ({ title, children, className = "" }) => (
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <motion.div
+     | ^^^^^^^^^^^^^^^^^^^
+> 65 |             initial={{ opacity: 0, y: 20 }}
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^
+> 72 |         </motion.div>
+     | ^^^^^^^^^^^^^^^^^^^
+> 73 |     );
+     | ^^^^^^ The component is created during render here
+  74 |
+  75 |     // Helper for chart tooltips based on theme
+  76 |     const tooltipStyle = {                                                                                                                                                                                                        react-hooks/static-components
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\SellerDashboard.jsx
+   71:13  error  'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u      no-unused-vars
+   81:12  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+   81:19  error  'setError' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  426:18  error  'error' is defined but never used                                                         no-unused-vars
+  472:18  error  'error' is defined but never used                                                         no-unused-vars
+  508:22  error  'error' is defined but never used                                                         no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\SellerReelDetails.jsx
+   5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  14:13  error  'user' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\SellerReelsDashboard.jsx
+  103:19  error  'res' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  132:18  error  'e' is defined but never used                                                        no-unused-vars
+  142:18  error  'error' is defined but never used                                                    no-unused-vars
+  151:18  error  'error' is defined but never used                                                    no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\components\CommentItem.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\swain\OneDrive\Desktop\Odisha\UdraKala\src\pages\seller\components\CommentsSection.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 177 problems (164 errors, 13 warnings)
+

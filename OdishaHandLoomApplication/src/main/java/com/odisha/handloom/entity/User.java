@@ -62,6 +62,7 @@ public class User {
     }
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private java.util.List<Address> addresses;
 
     @CreationTimestamp

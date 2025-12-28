@@ -39,15 +39,7 @@ public class SellerRegistrationController {
     @Autowired
     com.odisha.handloom.service.CloudinaryService cloudinaryService;
 
-    private final Path fileStorageLocation = Paths.get("uploads/seller-docs").toAbsolutePath().normalize();
-
-    public SellerRegistrationController() {
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not create the directory where the uploaded files will be stored.", ex);
-        }
-    }
+    // Removed local file storage initialization
 
     @PostMapping("/basic")
     public ResponseEntity<?> registerBasicDetails(
@@ -137,9 +129,10 @@ public class SellerRegistrationController {
         }
 
         try {
-            String panPath = storeFile(panFile, user.getId() + "_PAN");
-            String aadhaarPath = storeFile(aadhaarFile, user.getId() + "_AADHAAR");
-            String gstPath = storeFile(gstFile, user.getId() + "_GST");
+            // Upload to Cloudinary
+            String panPath = cloudinaryService.uploadFile(panFile, "sellers/docs/" + user.getId());
+            String aadhaarPath = cloudinaryService.uploadFile(aadhaarFile, "sellers/docs/" + user.getId());
+            String gstPath = cloudinaryService.uploadFile(gstFile, "sellers/docs/" + user.getId());
 
             SellerDocuments docs = docsRepository.findBySeller(user).orElse(new SellerDocuments());
             docs.setSeller(user);
@@ -256,12 +249,12 @@ public class SellerRegistrationController {
                 user.setProfilePictureUrl(imageUrl);
             }
 
-            // Step 3 Documents
-            String panPath = storeFile(panFile, user.getId() + "_PAN");
-            String aadhaarPath = storeFile(aadhaarFile, user.getId() + "_AADHAAR");
+            // Step 3 Documents (Cloudinary)
+            String panPath = cloudinaryService.uploadFile(panFile, "sellers/docs/" + user.getId());
+            String aadhaarPath = cloudinaryService.uploadFile(aadhaarFile, "sellers/docs/" + user.getId());
             String gstPath = null;
             if (gstFile != null && !gstFile.isEmpty()) {
-                gstPath = storeFile(gstFile, user.getId() + "_GST");
+                gstPath = cloudinaryService.uploadFile(gstFile, "sellers/docs/" + user.getId());
             }
 
             SellerDocuments docs = new SellerDocuments();
@@ -326,14 +319,5 @@ public class SellerRegistrationController {
         });
     }
 
-    private String storeFile(MultipartFile file, String prefix) throws IOException {
-        String originalFilename = file.getOriginalFilename();
-        if (originalFilename == null) {
-            originalFilename = "unknown_file";
-        }
-        String fileName = prefix + "_" + org.springframework.util.StringUtils.cleanPath(originalFilename);
-        Path targetLocation = this.fileStorageLocation.resolve(fileName);
-        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-        return "/uploads/seller-docs/" + fileName; // Return relative path or full URL
-    }
+    // Local storeFile method removed in favor of CloudinaryService
 }

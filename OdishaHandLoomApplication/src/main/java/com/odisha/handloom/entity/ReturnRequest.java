@@ -1,5 +1,6 @@
 package com.odisha.handloom.entity;
 
+import com.odisha.handloom.enums.RequestType;
 import com.odisha.handloom.enums.ReturnReason;
 import com.odisha.handloom.enums.ReturnStatus;
 import jakarta.persistence.*;
@@ -34,12 +35,24 @@ public class ReturnRequest {
     private String sellerRemarks;
     private String adminComment;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private RequestType type;
+
+    @Enumerated(EnumType.STRING)
+    private com.odisha.handloom.enums.RefundMethod refundMethod;
+
+    private String refundDetails; // JSON or formatted String
+    private String pickupAddress;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "order_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Order order;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "order_item_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonBackReference
     private OrderItem orderItem;
 
     @ManyToOne
@@ -60,7 +73,10 @@ public class ReturnRequest {
     }
 
     public ReturnRequest(UUID id, ReturnReason reason, String description, String imageUrl, String proofImageUrl,
-            ReturnStatus status, String sellerRemarks, String adminComment, Order order, OrderItem orderItem,
+            ReturnStatus status, String sellerRemarks, String adminComment,
+            com.odisha.handloom.enums.RequestType type, com.odisha.handloom.enums.RefundMethod refundMethod,
+            String refundDetails, String pickupAddress,
+            Order order, OrderItem orderItem,
             User seller, User customer, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.reason = reason;
@@ -70,6 +86,10 @@ public class ReturnRequest {
         this.status = status;
         this.sellerRemarks = sellerRemarks;
         this.adminComment = adminComment;
+        this.type = type;
+        this.refundMethod = refundMethod;
+        this.refundDetails = refundDetails;
+        this.pickupAddress = pickupAddress;
         this.order = order;
         this.orderItem = orderItem;
         this.seller = seller;
@@ -91,6 +111,10 @@ public class ReturnRequest {
         private ReturnStatus status;
         private String sellerRemarks;
         private String adminComment;
+        private com.odisha.handloom.enums.RequestType type;
+        private com.odisha.handloom.enums.RefundMethod refundMethod;
+        private String refundDetails;
+        private String pickupAddress;
         private Order order;
         private OrderItem orderItem;
         private User seller;
@@ -141,6 +165,26 @@ public class ReturnRequest {
             return this;
         }
 
+        public ReturnRequestBuilder type(com.odisha.handloom.enums.RequestType type) {
+            this.type = type;
+            return this;
+        }
+
+        public ReturnRequestBuilder refundMethod(com.odisha.handloom.enums.RefundMethod refundMethod) {
+            this.refundMethod = refundMethod;
+            return this;
+        }
+
+        public ReturnRequestBuilder refundDetails(String refundDetails) {
+            this.refundDetails = refundDetails;
+            return this;
+        }
+
+        public ReturnRequestBuilder pickupAddress(String pickupAddress) {
+            this.pickupAddress = pickupAddress;
+            return this;
+        }
+
         public ReturnRequestBuilder order(Order order) {
             this.order = order;
             return this;
@@ -173,7 +217,8 @@ public class ReturnRequest {
 
         public ReturnRequest build() {
             return new ReturnRequest(id, reason, description, imageUrl, proofImageUrl, status, sellerRemarks,
-                    adminComment, order, orderItem, seller, customer, createdAt, updatedAt);
+                    adminComment, type, refundMethod, refundDetails, pickupAddress, order, orderItem, seller, customer,
+                    createdAt, updatedAt);
         }
     }
 
@@ -239,6 +284,38 @@ public class ReturnRequest {
 
     public void setAdminComment(String adminComment) {
         this.adminComment = adminComment;
+    }
+
+    public com.odisha.handloom.enums.RequestType getType() {
+        return type;
+    }
+
+    public void setType(com.odisha.handloom.enums.RequestType type) {
+        this.type = type;
+    }
+
+    public com.odisha.handloom.enums.RefundMethod getRefundMethod() {
+        return refundMethod;
+    }
+
+    public void setRefundMethod(com.odisha.handloom.enums.RefundMethod refundMethod) {
+        this.refundMethod = refundMethod;
+    }
+
+    public String getRefundDetails() {
+        return refundDetails;
+    }
+
+    public void setRefundDetails(String refundDetails) {
+        this.refundDetails = refundDetails;
+    }
+
+    public String getPickupAddress() {
+        return pickupAddress;
+    }
+
+    public void setPickupAddress(String pickupAddress) {
+        this.pickupAddress = pickupAddress;
     }
 
     public Order getOrder() {

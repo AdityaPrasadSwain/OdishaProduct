@@ -1,66 +1,73 @@
 package com.odisha.handloom.controller;
 
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
-import com.stripe.param.PaymentIntentCreateParams;
-import org.springframework.beans.factory.annotation.Value;
+import com.odisha.handloom.entity.Payment;
+import com.odisha.handloom.entity.User;
+import com.odisha.handloom.enums.PaymentMethod;
+import com.odisha.handloom.enums.PaymentStatus;
+import com.odisha.handloom.exception.ResourceNotFoundException;
+import com.odisha.handloom.repository.UserRepository;
+import com.odisha.handloom.security.jwt.JwtUtils;
+import com.odisha.handloom.service.PaymentService;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/payments")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@RequiredArgsConstructor
 public class PaymentController {
 
-    @Value("${stripe.api.key}")
-    private String stripeApiKey;
+    private final PaymentService paymentService;
+    private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
 
-    @Value("${stripe.publishable.key}")
-    private String stripePublishableKey;
+    @PostMapping("/initiate")
+    public ResponseEntity<?> initiatePayment(@RequestHeader("Authorization") String token,
+            @RequestBody PaymentInitiateRequest request) {
+        String email = jwtUtils.getUserNameFromJwtToken(token.substring(7));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
 
-    @PostConstruct
-    public void init() {
-        Stripe.apiKey = stripeApiKey;
+        Payment payment = paymentService.initiatePayment(user.getId(), request.getOrderId(), request.getMethod());
+
+        return ResponseEntity.ok(Map.of(
+                "paymentId", payment.getId(),
+                "transactionId", payment.getTransactionId(),
+                "gatewayRef", payment.getGatewayRef() != null ? payment.getGatewayRef() : "",
+                "amount", payment.getAmount(),
+                "status", payment.getStatus()));
     }
 
-    @GetMapping("/config")
-    public ResponseEntity<?> getPaymentConfig() {
-        Map<String, String> response = new HashMap<>();
-        response.put("publishableKey", stripePublishableKey);
-        return ResponseEntity.ok(response);
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyPayment(@RequestHeader("Authorization") String token,
+            @RequestBody PaymentVerifyRequest request) {
+        String email = jwtUtils.getUserNameFromJwtToken(token.substring(7));
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
+
+        Payment payment = paymentService.verifyPayment(user.getId(), request.getOrderId(), request.getPaymentId(),
+                request.getOrderRef(), request.getSignature());
+
+        return ResponseEntity.ok(Map.of(
+                "success", payment.getStatus() == PaymentStatus.SUCCESS,
+                "status", payment.getStatus()));
     }
 
-    @PostMapping("/create-payment-intent")
-    public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> paymentInfo) {
-        try {
-            Long amount = Long.parseLong(paymentInfo.get("amount").toString());
-            String currency = (String) paymentInfo.get("currency");
+    @Data
+    public static class PaymentInitiateRequest {
+        private UUID orderId;
+        private PaymentMethod method;
+    }
 
-            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount(amount)
-                    .setCurrency(currency)
-                    .setAutomaticPaymentMethods(
-                            PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                                    .setEnabled(true)
-                                    .build())
-                    .build();
-
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
-
-            Map<String, String> response = new HashMap<>();
-            response.put("clientSecret", paymentIntent.getClientSecret());
-
-            return ResponseEntity.ok(response);
-        } catch (StripeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Error creating payment intent: " + e.getMessage()));
-        }
+    @Data
+    public static class PaymentVerifyRequest {
+        private UUID orderId;
+        private String paymentId; // from Gateway specific
+        private String orderRef; // from Gateway specific
+        private String signature;
     }
 }

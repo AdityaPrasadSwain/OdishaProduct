@@ -2,6 +2,8 @@ package com.odisha.handloom.dto;
 
 import com.odisha.handloom.enums.ReturnReason;
 import com.odisha.handloom.enums.ReturnStatus;
+import com.odisha.handloom.enums.RequestType;
+import com.odisha.handloom.enums.RefundMethod;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,24 @@ public class ReturnRequestDTO {
         private String description;
         private String imageUrl;
         private String proofImageUrl;
+        private RequestType type;
+        private RefundMethod refundMethod;
+        private String refundDetails;
+        private String pickupAddress;
+    }
+
+    @Data
+    public static class CreateRequestMultipart {
+        private UUID orderId;
+        private UUID orderItemId;
+        private ReturnReason reason;
+        private String description;
+        private org.springframework.web.multipart.MultipartFile image;
+        private org.springframework.web.multipart.MultipartFile proofImage;
+        private RequestType type;
+        private RefundMethod refundMethod;
+        private String refundDetails;
+        private String pickupAddress;
     }
 
     @Data
@@ -37,6 +57,10 @@ public class ReturnRequestDTO {
         private ReturnStatus status;
         private String sellerRemarks;
         private String adminComment;
+        private RequestType type;
+        private RefundMethod refundMethod;
+        private String refundDetails;
+        private String pickupAddress;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
     }
@@ -45,6 +69,7 @@ public class ReturnRequestDTO {
     public static class SellerDecision {
         private boolean approved; // true = APPROVED_BY_SELLER, false = REJECTED_BY_SELLER
         private String remarks;
+        private ReturnStatus status; // Optional: specific status to set
     }
 
     @Data

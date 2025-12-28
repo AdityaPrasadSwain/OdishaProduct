@@ -45,8 +45,13 @@ import Input from '../../components/ui/Input';
 import Modal from '../../components/ui/Modal';
 import SellerReelsDashboard from './SellerReelsDashboard';
 import SellerAnalyticsDashboard from './SellerAnalyticsDashboard';
+
 import SellerProfileView from './SellerProfileView'; // New Import
 import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton';
+import AiAssistButton from '../../components/AiAssistButton';
+import { generateProductDescription } from '../../api/aiApi';
+
+
 
 
 const StatCard = ({ label, value, icon: Icon, colorClass }) => (
@@ -401,7 +406,28 @@ const SellerDashboard = () => {
             packOf: product.packOf || ''
         });
         setShowModal(true);
+
     };
+
+    const handleGenerateDescription = async () => {
+        if (!productForm.name || !productForm.categoryName) {
+            Swal.fire("Info", "Please enter Product Name and Category first.", "info");
+            return;
+        }
+
+        try {
+            const description = await generateProductDescription({
+                title: productForm.name,
+                features: `${productForm.material || ''}, ${productForm.color || ''}, ${productForm.pattern || ''}`,
+                category: productForm.categoryName
+            });
+            // Append or replace? Let's replace for now or append if exists
+            setProductForm(prev => ({ ...prev, description: description }));
+        } catch (error) {
+            Swal.fire("Error", "Could not generate description", "error");
+        }
+    };
+
 
     const openAddModal = () => {
         setEditingProduct(null);
@@ -591,7 +617,7 @@ const SellerDashboard = () => {
                 </div>
             )
         },
-        { field: 'customer', headerName: 'Customer', width: 150, valueGetter: (value, row) => row.customer.name },
+        { field: 'customer', headerName: 'Customer', width: 150, valueGetter: (value, row) => row.customer?.name || 'Unknown' },
         { field: 'reason', headerName: 'Reason', width: 150 },
         { field: 'type', headerName: 'Type', width: 100 },
         {
@@ -895,12 +921,22 @@ const SellerDashboard = () => {
                         onChange={e => setProductForm({ ...productForm, name: e.target.value })}
                         required
                     />
-                    <Input
-                        label="Description"
-                        value={productForm.description}
-                        onChange={e => setProductForm({ ...productForm, description: e.target.value })}
-                        required
-                    />
+                    <div className="flex gap-2 items-end">
+                        <div className="flex-1">
+                            <Input
+                                label="Description"
+                                value={productForm.description}
+                                onChange={e => setProductForm({ ...productForm, description: e.target.value })}
+                                required
+                                multiline
+                                rows={4}
+                            />
+                        </div>
+                        <div className="mb-1">
+                            <AiAssistButton onClick={handleGenerateDescription} label="AI Write" className="whitespace-nowrap" />
+                        </div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <Input
                             label="Price"

@@ -1,15 +1,18 @@
-import api from './axios';
+import axios from 'axios';
 
-export const getStripeConfig = async () => {
-    const response = await api.get('/payments/config');
+const API_URL = 'http://localhost:8085/api/payments';
+
+const getAuthHeader = () => {
+    const token = localStorage.getItem('token');
+    return { headers: { Authorization: `Bearer ${token}` } };
+};
+
+export const initiatePayment = async (orderId, method) => {
+    const response = await axios.post(`${API_URL}/initiate`, { orderId, method }, getAuthHeader());
     return response.data;
 };
 
-export const createPaymentIntent = async (amount, currency, metadata) => {
-    const response = await api.post('/payments/create-payment-intent', {
-        amount,
-        currency,
-        ...metadata
-    });
+export const verifyPayment = async (orderId, paymentId, orderRef, signature) => {
+    const response = await axios.post(`${API_URL}/verify`, { orderId, paymentId, orderRef, signature }, getAuthHeader());
     return response.data;
 };

@@ -3,6 +3,7 @@ package com.odisha.handloom.service;
 import com.odisha.handloom.dto.ReturnRequestDTO;
 import com.odisha.handloom.entity.*;
 import com.odisha.handloom.entity.OrderStatus; // Fixed Import
+
 import com.odisha.handloom.enums.ReturnReason;
 import com.odisha.handloom.enums.ReturnStatus;
 import com.odisha.handloom.exception.ResourceNotFoundException;
@@ -39,6 +40,7 @@ public class ReturnRequestService {
     private final ReturnStatusLogRepository returnStatusLogRepository;
 
     @Transactional
+    @SuppressWarnings("null")
     public ReturnRequestDTO.Response createReturnRequest(UUID customerId, ReturnRequestDTO.CreateRequest request) {
         User customer = userRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", customerId));
@@ -87,6 +89,10 @@ public class ReturnRequestService {
                 .imageUrl(request.getImageUrl())
                 .proofImageUrl(request.getProofImageUrl())
                 .status(ReturnStatus.PENDING)
+                .type(request.getType())
+                .refundMethod(request.getRefundMethod())
+                .refundDetails(request.getRefundDetails())
+                .pickupAddress(request.getPickupAddress())
                 .build();
 
         returnRequest = returnRequestRepository.save(returnRequest);
@@ -146,41 +152,64 @@ public class ReturnRequestService {
             throw new RuntimeException("Not authorized to manage this return");
         }
 
-        if (request.getStatus() != ReturnStatus.PENDING && request.getStatus() != ReturnStatus.PICKUP_SCHEDULED) {
-            throw new RuntimeException("Cannot change status from " + request.getStatus());
-        }
-
         ReturnStatus oldStatus = request.getStatus();
-        ReturnStatus newStatus;
+        ReturnStatus newStatus = null;
 
-        if (decision.isApproved()) {
-            newStatus = ReturnStatus.APPROVED;
-            // logic to schedule pickup could be triggered here, or moved to
-            // 'PICKUP_SCHEDULED'
-            // For now, approved implies pickup will be scheduled.
+        // If explicit status is provided, validate and use it
+        if (decision.getStatus() != null) {
+            newStatus = decision.getStatus();
+            // Valid Transitions for Seller
+            boolean isValid = false;
 
-            // Notify Customer
-            try {
-                emailService.sendHtmlEmail(request.getCustomer().getEmail(), "Return Approved",
-                        "<p>Your return request for " + request.getOrderItem().getProduct().getName()
-                                + " has been approved by the seller. Pickup will be scheduled shortly.</p>");
-            } catch (Exception e) {
-                System.err.println("Failed to send approval email: " + e.getMessage());
+            // APPROVED -> PICKUP_SCHEDULED
+            if (oldStatus == ReturnStatus.APPROVED && newStatus == ReturnStatus.PICKUP_SCHEDULED)
+                isValid = true;
+            // PICKUP_SCHEDULED -> COMPLETED (or REFUND_INITIATED, but usually that's
+            // automatic or separate)
+            // Let's allow PICKUP_SCHEDULED -> COMPLETED or REFUND_INITIATED for flexibility
+            if (oldStatus == ReturnStatus.PICKUP_SCHEDULED
+                    && (newStatus == ReturnStatus.COMPLETED || newStatus == ReturnStatus.REFUND_INITIATED))
+                isValid = true;
+            // Allow direct fix if stuck
+            if (oldStatus == ReturnStatus.PENDING
+                    && (newStatus == ReturnStatus.APPROVED || newStatus == ReturnStatus.REJECTED))
+                isValid = true;
+
+            if (!isValid) {
+                throw new RuntimeException("Invalid status transition from " + oldStatus + " to " + newStatus);
             }
-
         } else {
-            newStatus = ReturnStatus.REJECTED;
-            try {
-                emailService.sendHtmlEmail(request.getCustomer().getEmail(), "Return Rejected",
-                        "<p>Your return request for " + request.getOrderItem().getProduct().getName()
-                                + " has been rejected. Reason: " + decision.getRemarks() + "</p>");
-            } catch (Exception e) {
-                System.err.println("Failed to send rejection email: " + e.getMessage());
+            // Legacy Boolean Logic (Approve/Reject from Pending)
+            if (request.getStatus() != ReturnStatus.PENDING) {
+                throw new RuntimeException(
+                        "Cannot change status from " + request.getStatus() + " using approval logic.");
+            }
+            if (decision.isApproved()) {
+                newStatus = ReturnStatus.APPROVED;
+                // Notify Customer
+                try {
+                    emailService.sendHtmlEmail(request.getCustomer().getEmail(), "Return Approved",
+                            "<p>Your return request for " + request.getOrderItem().getProduct().getName()
+                                    + " has been approved by the seller. Pickup will be scheduled shortly.</p>");
+                } catch (Exception e) {
+                    System.err.println("Failed to send approval email: " + e.getMessage());
+                }
+            } else {
+                newStatus = ReturnStatus.REJECTED;
+                try {
+                    emailService.sendHtmlEmail(request.getCustomer().getEmail(), "Return Rejected",
+                            "<p>Your return request for " + request.getOrderItem().getProduct().getName()
+                                    + " has been rejected. Reason: " + decision.getRemarks() + "</p>");
+                } catch (Exception e) {
+                    System.err.println("Failed to send rejection email: " + e.getMessage());
+                }
             }
         }
 
         request.setStatus(newStatus);
-        request.setSellerRemarks(decision.getRemarks());
+        if (decision.getRemarks() != null && !decision.getRemarks().isEmpty()) {
+            request.setSellerRemarks(decision.getRemarks());
+        }
 
         request = returnRequestRepository.save(request);
         logStatusChange(request, oldStatus, newStatus, sellerId);
@@ -271,6 +300,10 @@ public class ReturnRequestService {
         response.setStatus(request.getStatus());
         response.setSellerRemarks(request.getSellerRemarks());
         response.setAdminComment(request.getAdminComment());
+        response.setType(request.getType());
+        response.setRefundMethod(request.getRefundMethod());
+        response.setRefundDetails(request.getRefundDetails());
+        response.setPickupAddress(request.getPickupAddress());
         response.setCreatedAt(request.getCreatedAt());
         response.setUpdatedAt(request.getUpdatedAt());
         return response;

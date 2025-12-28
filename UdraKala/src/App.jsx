@@ -40,6 +40,7 @@ import PublicLayout from './layouts/PublicLayout';
 import SellerProfile from './pages/public/SellerProfile';
 import ReturnRequestForm from './pages/returns/ReturnRequestForm';
 import CustomerReturns from './pages/returns/CustomerReturns';
+import ReturnRequestCenter from './pages/returns/wizard/ReturnRequestCenter';
 import SellerReturnDashboard from './pages/seller/SellerReturnDashboard';
 import AdminReturnManagement from './pages/admin/AdminReturnManagement';
 
@@ -98,6 +99,7 @@ function App() {
           <Route path="/customer/orders" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><MyOrders /></ProtectedRoute>} />
           <Route path="/customer/returns" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><CustomerReturns /></ProtectedRoute>} />
           <Route path="/customer/returns/create" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><ReturnRequestForm /></ProtectedRoute>} />
+          <Route path="/return-request" element={<ProtectedRoute allowedRoles={['CUSTOMER']}><ReturnRequestCenter /></ProtectedRoute>} />
 
           {/* Shared Routes */}
           <Route path="/profile" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Profile /></ProtectedRoute>} />

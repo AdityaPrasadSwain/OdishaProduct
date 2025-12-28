@@ -152,12 +152,14 @@ public class AdminSellerVerificationController {
     }
 
     @PostMapping("/{id}/activate")
-    public ResponseEntity<?> activateSeller(@PathVariable UUID id, Authentication auth) {
+    public ResponseEntity<?> activateSeller(@PathVariable UUID id,
+            @RequestBody(required = false) Map<String, String> payload, Authentication auth) {
         User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Seller not found"));
 
         seller.setRegistrationStatus(RegistrationStatus.APPROVED);
         seller.setBlocked(false);
-        userRepository.save(seller);
+        seller.setApproved(true);
+        userRepository.saveAndFlush(seller);
 
         logAction(auth, id, "ACTIVATE_SELLER", "Re-activated seller account");
         return ResponseEntity.ok(new MessageResponse("Seller Activated"));

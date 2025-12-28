@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { getOrderDetails, downloadCustomerInvoice, cancelOrder } from '../../api/orderApi';
 import { createReturnRequest } from '../../api/returnApi';
 import { motion as Motion } from 'motion/react';
@@ -14,6 +14,7 @@ import reviewApi from '../../api/reviewApi';
 
 const TrackOrder = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [downloadingInvoice, setDownloadingInvoice] = useState(false);
@@ -101,39 +102,6 @@ const TrackOrder = () => {
     };
 
     // Return Logic
-    const openReturnModal = (item) => {
-        setSelectedItem(item);
-        setReturnModalOpen(true);
-        setReturnReason('');
-        setReturnDescription('');
-        setReturnType('REFUND');
-        setProofFile(null);
-    };
-
-    const handleReturn = async (e) => {
-        e.preventDefault();
-        if (!returnReason) {
-            Swal.fire('Required', 'Please select a reason', 'warning');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('orderItemId', selectedItem.id);
-        formData.append('reason', returnReason);
-        formData.append('description', returnDescription);
-        formData.append('type', returnType);
-        if (proofFile) formData.append('proofImage', proofFile);
-
-        try {
-            await createReturnRequest(formData);
-            setReturnModalOpen(false);
-            Swal.fire('Success', 'Return requested successfully', 'success');
-            const data = await getOrderDetails(id);
-            setOrder(data);
-        } catch (error) {
-            Swal.fire('Error', error.response?.data?.message || 'Failed', 'error');
-        }
-    };
 
     const handleCancelOrder = async () => {
         const result = await Swal.fire({
@@ -314,7 +282,7 @@ const TrackOrder = () => {
                             {isDelivered && !item.returnRequest && (
                                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button
-                                        onClick={() => openReturnModal(item)}
+                                        onClick={() => navigate('/return-request', { state: { order, orderItem: item } })}
                                         className="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 flex items-center gap-2"
                                     >
                                         <RotateCw size={14} /> Return / Exchange this item
@@ -428,52 +396,7 @@ const TrackOrder = () => {
                 </div>
             </div>
 
-            {/* Modals */}
-            {
-                returnModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                        <Motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md p-6 shadow-2xl"
-                        >
-                            <h3 className="text-lg font-bold mb-4 dark:text-white">Request Return</h3>
-                            <form onSubmit={handleReturn} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">Reason</label>
-                                    <select
-                                        value={returnReason}
-                                        onChange={(e) => setReturnReason(e.target.value)}
-                                        className="w-full border rounded p-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        required
-                                    >
-                                        <option value="">Select Reason</option>
-                                        <option value="DAMAGED">Damaged Product</option>
-                                        <option value="WRONG_PRODUCT">Wrong Item</option>
-                                        <option value="QUALITY_ISSUE">Quality Issue</option>
-                                        <option value="MISSING_PARTS">Missing Parts</option>
-                                        <option value="NOT_AS_DESCRIBED">Not As Described</option>
-                                        <option value="OTHER">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium mb-1 dark:text-gray-300">Description</label>
-                                    <textarea
-                                        value={returnDescription}
-                                        onChange={(e) => setReturnDescription(e.target.value)}
-                                        className="w-full border rounded p-2 text-sm h-24 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="Explain the issue..."
-                                    />
-                                </div>
-                                <div className="flex justify-end gap-2">
-                                    <button type="button" onClick={() => setReturnModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded dark:text-gray-300 dark:hover:bg-gray-700">Cancel</button>
-                                    <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700">Submit</button>
-                                </div>
-                            </form>
-                        </Motion.div>
-                    </div>
-                )
-            }
+
 
             <ReviewModal
                 isOpen={reviewModalOpen}

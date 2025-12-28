@@ -34,4 +34,21 @@ public class CloudinaryService {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), params);
         return uploadResult.get("secure_url").toString();
     }
+
+    public String uploadFile(MultipartFile file, String folderName) throws IOException {
+        Map<String, Object> options = new java.util.HashMap<>();
+        if (folderName != null && !folderName.isEmpty()) {
+            options.put("folder", folderName);
+        }
+
+        // Force raw for PDF to avoid image conversion issues
+        if (file.getContentType() != null && "application/pdf".equals(file.getContentType())) {
+            options.put("resource_type", "raw");
+        } else {
+            options.put("resource_type", "auto");
+        }
+
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), options);
+        return uploadResult.get("secure_url").toString();
+    }
 }

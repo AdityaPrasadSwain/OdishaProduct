@@ -2,107 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { createOrder } from '../api/orderApi';
-import { getStripeConfig, createPaymentIntent } from '../api/paymentApi';
+import { initiatePayment, verifyPayment } from '../api/paymentApi';
 import { getUserAddresses } from '../api/addressApi';
 import { useAuth } from '../context/AuthContext';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
-import { CreditCard, MapPin, Truck, CheckCircle, Loader2, Plus, Star } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { CreditCard, MapPin, Truck, CheckCircle, Loader2, Plus, Star, ShieldCheck } from 'lucide-react';
 import AddressForm from '../components/AddressForm';
 import { sendOrderEmail, sendSellerOrderNotification } from '../utils/emailService';
-
-let stripePromise = null;
-
-const getStripe = async () => {
-    if (!stripePromise) {
-        const config = await getStripeConfig();
-        stripePromise = loadStripe(config.publishableKey);
-    }
-    return stripePromise;
-};
-
-const StripePaymentForm = ({ onSuccess, onError, loading, setLoading }) => {
-    const stripe = useStripe();
-    const elements = useElements();
-    const [elementsReady, setElementsReady] = useState(false);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!stripe || !elements || !elementsReady) return;
-
-        setLoading(true);
-
-        const { error: submitError } = await elements.submit();
-        if (submitError) {
-            onError(submitError.message);
-            setLoading(false);
-            return;
-        }
-
-        const { error, paymentIntent } = await stripe.confirmPayment({
-            elements,
-            confirmParams: {
-                return_url: window.location.origin + '/payment-success',
-            },
-            redirect: 'if_required',
-        });
-
-        if (error) {
-            onError(error.message);
-            setLoading(false);
-        } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-            onSuccess(paymentIntent.id);
-        } else {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg max-h-[400px] overflow-y-auto">
-                <PaymentElement
-                    onReady={() => setElementsReady(true)}
-                    options={{
-                        layout: 'tabs'
-                    }}
-                />
-            </div>
-            <button
-                type="submit"
-                disabled={!stripe || !elements || !elementsReady || loading}
-                className="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg shadow-lg transform transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-            >
-                {loading ? (
-                    <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Processing...
-                    </>
-                ) : !elementsReady ? (
-                    <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Loading...
-                    </>
-                ) : (
-                    <>
-                        <CreditCard size={20} />
-                        Pay Now
-                    </>
-                )}
-            </button>
-        </form>
-    );
-};
 
 const Checkout = () => {
     const { user } = useAuth();
     const { cart, clearCart } = useData();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [stripeLoaded, setStripeLoaded] = useState(false);
-    const [clientSecret, setClientSecret] = useState(null);
-    const [stripeInstance, setStripeInstance] = useState(null);
 
     // Address State
     const [addresses, setAddresses] = useState([]);
@@ -113,6 +26,8 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState('COD');
 
     const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    const isFormValid = selectedAddressId != null;
 
     useEffect(() => {
         if (!user) {
@@ -130,7 +45,6 @@ const Checkout = () => {
             const data = await getUserAddresses();
             setAddresses(data);
 
-            // Allow auto-selection logic
             if (data.length > 0) {
                 const defaultAddr = data.find(a => a.default);
                 if (defaultAddr) {
@@ -146,201 +60,127 @@ const Checkout = () => {
         }
     };
 
-    useEffect(() => {
-        const initStripe = async () => {
-            try {
-                const stripe = await getStripe();
-                setStripeInstance(stripe);
-                setStripeLoaded(true);
-            } catch (err) {
-                console.error('Failed to load Stripe:', err);
-            }
-        };
-        initStripe();
-    }, []);
-
-    useEffect(() => {
-        const initPaymentIntent = async () => {
-            if (paymentMethod === 'ONLINE' && totalAmount > 0 && !clientSecret) {
-                try {
-                    const amountInPaise = Math.round(totalAmount * 100);
-                    const response = await createPaymentIntent(amountInPaise, 'inr', {
-                        orderType: 'product_purchase'
-                    });
-                    setClientSecret(response.clientSecret);
-                } catch (err) {
-                    console.error('Failed to create payment intent:', err);
-                }
-            }
-        };
-        initPaymentIntent();
-    }, [paymentMethod, totalAmount, clientSecret]);
-
-    const handlePaymentMethodChange = async (method) => {
-        setPaymentMethod(method);
-        if (method === 'ONLINE' && !clientSecret && totalAmount > 0) {
-            try {
-                const amountInPaise = Math.round(totalAmount * 100);
-                const response = await createPaymentIntent(amountInPaise, 'inr', {
-                    orderType: 'product_purchase'
-                });
-                setClientSecret(response.clientSecret);
-            } catch (err) {
-                console.error('Failed to create payment intent:', err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Error',
-                    text: 'Failed to initialize payment. Please try again.',
-                });
-            }
-        }
-    };
-
     const handleAddressAdded = (newAddress) => {
         setAddresses([...addresses, newAddress]);
-        setSelectedAddressId(newAddress.id); // Auto select new address
+        setSelectedAddressId(newAddress.id);
     };
 
-    const handleCODSubmit = async (e) => {
-        e.preventDefault();
+    const handlePlaceOrder = async () => {
+        if (!isFormValid) {
+            Swal.fire('Error', 'Please select a delivery address', 'error');
+            return;
+        }
+
         setLoading(true);
 
-        const orderPayload = {
-            items: cart.map(item => ({
-                productId: item.id,
-                quantity: item.quantity
-            })),
-            addressId: selectedAddressId,
-            shippingAddress: null, // Backend will handle snapshot from addressId
-            paymentMethod: 'COD',
-            paymentId: 'COD'
-        };
-
         try {
+            // 1. Create Pending Order
+            const orderPayload = {
+                items: cart.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity
+                })),
+                addressId: selectedAddressId,
+                shippingAddress: null,
+                paymentMethod: paymentMethod, // 'COD' or 'ONLINE' (mapped to generic method)
+                paymentId: null // Pending
+            };
+
             const newOrder = await createOrder(orderPayload);
+            const orderId = newOrder.id;
 
-            // Send Order Email (Customer)
-            await sendOrderEmail(user.email, user.fullName, newOrder.id || 'N/A', totalAmount);
+            // 2. Initiate Payment
+            // Pass the selected method directly (UPI, CARD, NET_BANKING, COD)
+            const paymentResponse = await initiatePayment(orderId, paymentMethod);
 
-            // Send Seller Order Notifications
-            const sellersMap = new Map();
-            cart.forEach(item => {
-                if (item.seller && item.seller.email) {
-                    if (!sellersMap.has(item.seller.email)) {
-                        sellersMap.set(item.seller.email, {
-                            name: item.seller.fullName || item.seller.shopName || 'Seller',
-                            items: []
-                        });
+            if (paymentMethod === 'COD') {
+                await processOrderSuccess(newOrder, 'COD');
+            } else {
+                // ONLINE FLOW
+                // Theoretically, here we would redirect to paymentResponse.gatewayUrl
+                // For Mock, we simulate user action
+
+                // Show Mock Payment Modal
+                await MySwal.fire({
+                    title: 'Secure Payment Gateway',
+                    text: `Processing payment of ₹${totalAmount}...`,
+                    icon: 'info',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    willClose: () => {
+                        // verify logic placeholder for strict mode if needed
                     }
-                    sellersMap.get(item.seller.email).items.push({
-                        name: item.name,
-                        quantity: item.quantity
-                    });
-                }
-            });
+                });
 
-            for (const [email, data] of sellersMap.entries()) {
-                await sendSellerOrderNotification(email, data.name, newOrder.id || 'N/A', data.items);
+                // 3. Verify Payment (Mock)
+                const verifyResponse = await verifyPayment(
+                    orderId,
+                    'MOCK_PAY_ID_' + Date.now(),
+                    paymentResponse.gatewayRef || 'MOCK_ORDER_REF',
+                    'MOCK_SIGNATURE'
+                );
+
+                if (verifyResponse.success) {
+                    await processOrderSuccess(newOrder, 'ONLINE');
+                } else {
+                    throw new Error('Payment verification failed');
+                }
             }
 
-            clearCart();
-            Swal.fire({
-                icon: 'success',
-                title: 'Order Placed!',
-                text: 'Your order has been placed successfully.',
-                confirmButtonColor: '#ea580c'
-            }).then(() => {
-                navigate('/customer/orders');
-            });
         } catch (error) {
             console.error(error);
             Swal.fire({
                 icon: 'error',
                 title: 'Order Failed',
-                text: error.response?.data?.message || 'Something went wrong',
+                text: error.message || error.response?.data?.message || 'Something went wrong processing your order.',
             });
         } finally {
             setLoading(false);
         }
     };
 
-    const handlePaymentSuccess = async (paymentIntentId) => {
-        const orderPayload = {
-            items: cart.map(item => ({
-                productId: item.id,
-                quantity: item.quantity
-            })),
-            addressId: selectedAddressId,
-            shippingAddress: null,
-            paymentMethod: 'ONLINE',
-            paymentId: paymentIntentId
-        };
+    const processOrderSuccess = async (order, method) => {
+        // Send Order Email (Customer)
+        await sendOrderEmail(user.email, user.fullName, order.id, totalAmount);
+        // Notify Sellers
+        await notifySellers(order.id);
 
-        try {
-            const newOrder = await createOrder(orderPayload);
+        clearCart();
 
-            // Send Order Email (Customer)
-            await sendOrderEmail(user.email, user.fullName, newOrder.id || 'N/A', totalAmount);
-
-            // Send Seller Order Notifications
-            const sellersMap = new Map();
-            cart.forEach(item => {
-                if (item.seller && item.seller.email) {
-                    if (!sellersMap.has(item.seller.email)) {
-                        sellersMap.set(item.seller.email, {
-                            name: item.seller.fullName || item.seller.shopName || 'Seller',
-                            items: []
-                        });
-                    }
-                    sellersMap.get(item.seller.email).items.push({
-                        name: item.name,
-                        quantity: item.quantity
-                    });
-                }
-            });
-
-            for (const [email, data] of sellersMap.entries()) {
-                await sendSellerOrderNotification(email, data.name, newOrder.id || 'N/A', data.items);
-            }
-
-            clearCart();
-            navigate('/payment-success', { state: { paymentIntentId } });
-        } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: 'Payment succeeded but order creation failed. Please contact support.',
-            });
-        }
-    };
-
-    const handlePaymentError = (message) => {
         Swal.fire({
-            icon: 'error',
-            title: 'Payment Failed',
-            text: message || 'Payment could not be processed',
+            icon: 'success',
+            title: method === 'COD' ? 'Order Placed!' : 'Payment Successful!',
+            text: `Your order #${order.id.substring(0, 8)} has been confirmed.`,
+            confirmButtonColor: '#ea580c'
+        }).then(() => {
+            navigate('/customer/orders');
         });
     };
 
-    const isFormValid = selectedAddressId != null;
-
-    if (cart.length === 0) {
-        navigate('/cart');
-        return null;
-    }
-
-    const elementsOptions = clientSecret ? {
-        clientSecret,
-        appearance: {
-            theme: 'stripe',
-            variables: {
-                colorPrimary: '#ea580c',
-                colorBackground: '#ffffff',
-                borderRadius: '8px',
+    const notifySellers = async (orderId) => {
+        const sellersMap = new Map();
+        cart.forEach(item => {
+            if (item.seller && item.seller.email) {
+                if (!sellersMap.has(item.seller.email)) {
+                    sellersMap.set(item.seller.email, {
+                        name: item.seller.fullName || item.seller.shopName || 'Seller',
+                        items: []
+                    });
+                }
+                sellersMap.get(item.seller.email).items.push({
+                    name: item.name,
+                    quantity: item.quantity
+                });
             }
+        });
+
+        for (const [email, data] of sellersMap.entries()) {
+            await sendSellerOrderNotification(email, data.name, orderId, data.items);
         }
-    } : null;
+    };
+
+    // Helper to workaround Swal inside async function if needed, but direct Swal works usually.
+    const MySwal = Swal;
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
@@ -359,7 +199,7 @@ const Checkout = () => {
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-2">
-                                    <MapPin size={20} className="text-orange-500" /> Choose Your Delivery Address
+                                    <MapPin size={20} className="text-orange-500" /> Delivery Address
                                 </h2>
                                 <button
                                     onClick={() => setIsAddressModalOpen(true)}
@@ -427,66 +267,79 @@ const Checkout = () => {
                             <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center gap-2">
                                 <CreditCard size={20} className="text-orange-500" /> Payment Method
                             </h2>
-                            <div className="flex gap-4 mb-6">
+                            <div className="grid grid-cols-2 gap-4 mb-6">
                                 <button
                                     type="button"
-                                    onClick={() => handlePaymentMethodChange('COD')}
-                                    className={`flex-1 p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'COD' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
+                                    onClick={() => setPaymentMethod('UPI')}
+                                    className={`p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'UPI' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
+                                >
+                                    <ShieldCheck className={paymentMethod === 'UPI' ? 'text-orange-600' : 'text-gray-400'} />
+                                    <span className="font-medium text-gray-900 dark:text-white text-sm">UPI</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('CARD')}
+                                    className={`p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'CARD' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
+                                >
+                                    <CreditCard className={paymentMethod === 'CARD' ? 'text-orange-600' : 'text-gray-400'} />
+                                    <span className="font-medium text-gray-900 dark:text-white text-sm">Card</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('NET_BANKING')}
+                                    className={`p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'NET_BANKING' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
+                                >
+                                    <CheckCircle className={paymentMethod === 'NET_BANKING' ? 'text-orange-600' : 'text-gray-400'} />
+                                    <span className="font-medium text-gray-900 dark:text-white text-sm">Net Banking</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setPaymentMethod('COD')}
+                                    className={`p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'COD' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
                                 >
                                     <Truck className={paymentMethod === 'COD' ? 'text-orange-600' : 'text-gray-400'} />
-                                    <span className="font-medium text-gray-900 dark:text-white text-sm">Cash on Delivery</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handlePaymentMethodChange('ONLINE')}
-                                    className={`flex-1 p-4 border rounded-lg cursor-pointer transition flex flex-col items-center gap-2 ${paymentMethod === 'ONLINE' ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20' : 'border-gray-200 dark:border-gray-700 hover:border-orange-300'}`}
-                                >
-                                    <CreditCard className={paymentMethod === 'ONLINE' ? 'text-orange-600' : 'text-gray-400'} />
-                                    <span className="font-medium text-gray-900 dark:text-white text-sm">Card / UPI</span>
+                                    <span className="font-medium text-gray-900 dark:text-white text-sm">COD</span>
                                 </button>
                             </div>
 
-                            {paymentMethod === 'COD' ? (
-                                <form onSubmit={handleCODSubmit}>
-                                    <button
-                                        type="submit"
-                                        disabled={loading || !isFormValid}
-                                        className="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg shadow-lg transform transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
-                                    >
-                                        {loading ? (
-                                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        ) : (
-                                            "Confirm Order"
-                                        )}
-                                    </button>
-                                    {!isFormValid && (
-                                        <p className="text-center text-sm text-red-500 mt-2">Please select a delivery address</p>
-                                    )}
-                                </form>
-                            ) : (
-                                <div>
-                                    {!stripeLoaded || !clientSecret ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <Loader2 className="w-8 h-8 animate-spin text-orange-500" />
-                                            <span className="ml-2 text-gray-600 dark:text-gray-300">Loading payment form...</span>
-                                        </div>
-                                    ) : !isFormValid ? (
-                                        <div className="text-center py-4 text-orange-500">
-                                            Please select a delivery address to continue
-                                        </div>
-                                    ) : (
-                                        <Elements stripe={stripeInstance} options={elementsOptions}>
-                                            <StripePaymentForm
-                                                clientSecret={clientSecret}
-                                                onSuccess={handlePaymentSuccess}
-                                                onError={handlePaymentError}
-                                                loading={loading}
-                                                setLoading={setLoading}
-                                            />
-                                        </Elements>
-                                    )}
-                                </div>
-                            )}
+                            <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                {paymentMethod === 'COD' ? (
+                                    <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                        <CheckCircle size={16} className="text-green-500" />
+                                        Pay cash or UPI when the order is delivered to your doorstep.
+                                    </div>
+                                ) : paymentMethod === 'UPI' ? (
+                                    <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                        <ShieldCheck size={16} className="text-blue-500" />
+                                        Pay instantly using Google Pay, PhonePe, Paytm, or any UPI app.
+                                    </div>
+                                ) : ( // Covers 'CARD' and 'NET_BANKING'
+                                    <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                                        <ShieldCheck size={16} className="text-blue-500" />
+                                        You will be redirected to our secure payment gateway to complete the payment.
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={handlePlaceOrder}
+                                disabled={loading || !isFormValid}
+                                className="w-full mt-6 py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg shadow-lg transform transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        {paymentMethod === 'COD' ? 'Place Order' : 'Proceed to Payment'}
+                                    </>
+                                )}
+                            </button>
                         </div>
 
                     </div>
@@ -509,14 +362,13 @@ const Checkout = () => {
                             ))}
                         </div>
                         <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <span className="text-lg font-medium text-gray-900 dark:text-white">Total</span>
+                            <span className="text-lg font-medium text-gray-900 dark:text-white">Total To Pay</span>
                             <span className="text-2xl font-bold text-orange-600">₹{totalAmount}</span>
                         </div>
                     </div>
                 </div>
             </Motion.div>
 
-            {/* Address Form Modal */}
             <AddressForm
                 isOpen={isAddressModalOpen}
                 onClose={() => setIsAddressModalOpen(false)}

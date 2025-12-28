@@ -35,12 +35,44 @@ public class ReturnRequestController {
         throw new RuntimeException("Invalid Token");
     }
 
-    @PostMapping
+    @Autowired
+    private com.odisha.handloom.service.CloudinaryService cloudinaryService;
+
+    @PostMapping(consumes = { "multipart/form-data" })
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ReturnRequestDTO.Response> createReturnRequest(
-            @RequestBody ReturnRequestDTO.CreateRequest request,
+            @ModelAttribute ReturnRequestDTO.CreateRequestMultipart multipartRequest,
             @RequestHeader("Authorization") String token) {
+
         User user = getUserFromToken(token);
+
+        String imageUrl = null;
+        String proofImageUrl = null;
+
+        try {
+            if (multipartRequest.getImage() != null && !multipartRequest.getImage().isEmpty()) {
+                imageUrl = cloudinaryService.uploadFile(multipartRequest.getImage(), "returns/" + user.getId());
+            }
+            if (multipartRequest.getProofImage() != null && !multipartRequest.getProofImage().isEmpty()) {
+                proofImageUrl = cloudinaryService.uploadFile(multipartRequest.getProofImage(),
+                        "returns/" + user.getId());
+            }
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to upload return images: " + e.getMessage());
+        }
+
+        ReturnRequestDTO.CreateRequest request = new ReturnRequestDTO.CreateRequest();
+        request.setOrderId(multipartRequest.getOrderId());
+        request.setOrderItemId(multipartRequest.getOrderItemId());
+        request.setReason(multipartRequest.getReason());
+        request.setDescription(multipartRequest.getDescription());
+        request.setImageUrl(imageUrl);
+        request.setProofImageUrl(proofImageUrl);
+        request.setType(multipartRequest.getType());
+        request.setRefundMethod(multipartRequest.getRefundMethod());
+        request.setRefundDetails(multipartRequest.getRefundDetails());
+        request.setPickupAddress(multipartRequest.getPickupAddress());
+
         return ResponseEntity.ok(returnRequestService.createReturnRequest(user.getId(), request));
     }
 

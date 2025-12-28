@@ -13,12 +13,12 @@ public class OrderItem {
     private UUID id;
 
     @OneToOne(mappedBy = "orderItem", cascade = CascadeType.ALL)
-    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "orderItem", "customer", "seller" })
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private ReturnRequest returnRequest;
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonBackReference
     private Order order;
 
     @ManyToOne

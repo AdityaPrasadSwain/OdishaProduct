@@ -42,12 +42,25 @@ export const cancelReturnRequest = async (id) => {
 };
 
 export const processReturnRequest = async (id, action, remarks) => {
-    // Mapping action string to boolean for backend DTO
-    // Note: This matches ReturnRequestDTO.SellerDecision (boolean approved)
-    const isApproved = action === 'APPROVED';
-    const decisionData = {
-        approved: isApproved,
-        remarks: remarks
-    };
+    // Map Frontend Action strings to Backend DTO
+    let decisionData = { remarks: remarks };
+
+    if (action === 'APPROVED') {
+        decisionData.approved = true;
+    } else if (action === 'REJECTED') {
+        decisionData.approved = false;
+    } else {
+        // Handle explicit status updates
+        // SellerDashboard passes 'PICKED_UP' for button, we map to Enum 'PICKUP_SCHEDULED'
+        if (action === 'PICKED_UP') {
+            decisionData.status = 'PICKUP_SCHEDULED';
+        } else if (action === 'COMPLETED') {
+            decisionData.status = 'COMPLETED';
+        } else {
+            // Fallback
+            decisionData.status = action;
+        }
+    }
+
     return await updateSellerDecision(id, decisionData);
 };

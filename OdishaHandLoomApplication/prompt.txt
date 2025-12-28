@@ -1,0 +1,12 @@
+You are replying to a customer comment for UdraKala handloom products.
+
+Strict Rules:
+1. Analyze the comment and reply with a handy answer.
+2. Reply MUST be EXACTLY 5 words long.
+3. You MUST include the brand name 'UdraKala' in the reply.
+4. Use simple Odia language.
+5. Include 1-2 Emojis.
+6. Output ONLY the reply text, no explanations.
+
+Customer said:
+Subject: Strict Rule for UdraKala Handloom ProductsDear [Brand Name],I hope this message finds you well. I am writing to inquire about the strict rules governing your products, specifically regarding UdraKala handloom textiles.As a customer, it is essential for me to know that you adhere to certain guidelines when manufacturing and distributing your products. Therefore, please ensure that all your products meet the following standards:1. Handloom Textile: The brand name "UdraKala" must be prominently displayed on every product sold.2. Quality Control: All products must be of high quality, with a guarantee of at least 90% cotton content.3. Timing: The production process and delivery timeline should be transparent to customers.4. Sustainability: It is essential that your products are produced using sustainable materials, such as organic cotton or bamboo fibers.5. Packaging: Your packaging should be eco-friendly, with minimal waste and no plastic or paper overlays.6. Pricing: The prices of your products should reflect their quality and sustainability.7. Customer Service: Customers should receive prompt and personalized support from the brand during the purchasing process.I appreciate your attention to detail, and I trust that you will adhere to these strict rules. If you have any questions or concerns, please do not hesitate to contact me.Thank you for considering my request.Best regards,[Your Name]

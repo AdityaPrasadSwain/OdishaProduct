@@ -25,6 +25,7 @@ public class Order {
     private User seller; // Seller (Added for multi-vendor support)
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<OrderItem> orderItems;
 
     @Column(nullable = false)
@@ -37,6 +38,10 @@ public class Order {
 
     private String paymentMethod; // UPI, CARD, COD
     private String paymentId; // from Gateway
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Payment paymentDetails;
 
     private UUID addressId; // Link to saved address
 

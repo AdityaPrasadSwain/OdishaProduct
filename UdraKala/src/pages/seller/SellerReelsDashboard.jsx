@@ -9,6 +9,9 @@ import Modal from '../../components/ui/Modal';
 import Card from '../../components/ui/Card';
 import { useTheme } from '../../context/ThemeContext';
 import Button from '../../components/ui/Button';
+import AiAssistButton from '../../components/AiAssistButton';
+import { generateReelScript, generateCommentReply } from '../../api/aiApi';
+
 
 const SellerReelsDashboard = () => {
     const { theme } = useTheme();
@@ -23,6 +26,12 @@ const SellerReelsDashboard = () => {
     const [loadingComments, setLoadingComments] = useState(false);
     const [replyText, setReplyText] = useState("");
     const [replyingTo, setReplyingTo] = useState(null); // comment ID being replied to
+
+    // AI Script Modal
+    const [showScriptModal, setShowScriptModal] = useState(false);
+    const [scriptInput, setScriptInput] = useState({ productName: '', targetAudience: '', platform: 'Instagram' });
+    const [generatedScript, setGeneratedScript] = useState("");
+
 
     const muiTheme = useMemo(() => createTheme({
         palette: {
@@ -125,6 +134,26 @@ const SellerReelsDashboard = () => {
         }
     };
 
+    const handleAiReply = async (commentContent) => {
+        try {
+            const context = `Replying to a customer on a ${selectedReel.caption} reel.`;
+            const reply = await generateCommentReply({ comment: commentContent, context });
+            setReplyText(reply);
+        } catch (error) {
+            Swal.fire("Error", "Could not generate reply", "error");
+        }
+    };
+
+    const handleGenerateScript = async () => {
+        try {
+            const script = await generateReelScript(scriptInput);
+            setGeneratedScript(script);
+        } catch (error) {
+            Swal.fire("Error", "Could not generate script", "error");
+        }
+    };
+
+
     const columns = [
         {
             field: 'thumbnail', headerName: 'Reel', width: 100,
@@ -184,6 +213,13 @@ const SellerReelsDashboard = () => {
                     <div><p className="text-xs opacity-80">Followers</p><h3 className="text-2xl font-bold">{stats.totalFollowers}</h3></div>
                 </Card>
             </div>
+
+            <div className="flex justify-end">
+                <Button onClick={() => setShowScriptModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    ✨ Create AI Reel Script
+                </Button>
+            </div>
+
 
             <Card title="Reel Performance">
                 {loading ? (
@@ -281,6 +317,13 @@ const SellerReelsDashboard = () => {
                                                             value={replyText}
                                                             onChange={(e) => setReplyText(e.target.value)}
                                                         />
+                                                        <AiAssistButton
+                                                            onClick={() => handleAiReply(comment.content)}
+                                                            label="AI"
+                                                            loadingLabel="..."
+                                                            className="!px-2 !py-1 text-xs"
+                                                        />
+
                                                         <Button size="sm" onClick={() => handleReply(comment.id)}><Send size={14} /></Button>
                                                     </div>
                                                 )}
@@ -310,7 +353,52 @@ const SellerReelsDashboard = () => {
                     </div>
                 </div>
             )}
+
+            {/* AI Script Modal */}
+            {showScriptModal && (
+                <Modal onClose={() => setShowScriptModal(false)} title="AI Reel Script Generator">
+                    <div className="space-y-4 w-[500px] max-w-full">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Product Name</label>
+                            <input
+                                className="w-full border p-2 rounded"
+                                value={scriptInput.productName}
+                                onChange={e => setScriptInput({ ...scriptInput, productName: e.target.value })}
+                                placeholder="e.g. Silk Saree"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Target Audience</label>
+                            <input
+                                className="w-full border p-2 rounded"
+                                value={scriptInput.targetAudience}
+                                onChange={e => setScriptInput({ ...scriptInput, targetAudience: e.target.value })}
+                                placeholder="e.g. Young Women"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Platform</label>
+                            <select
+                                className="w-full border p-2 rounded"
+                                value={scriptInput.platform}
+                                onChange={e => setScriptInput({ ...scriptInput, platform: e.target.value })}
+                            >
+                                <option>Instagram</option>
+                                <option>YouTube Shorts</option>
+                            </select>
+                        </div>
+                        <AiAssistButton onClick={handleGenerateScript} label="Generate Script" className="w-full justify-center" />
+
+                        {generatedScript && (
+                            <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded whitespace-pre-wrap max-h-[300px] overflow-y-auto text-sm">
+                                {generatedScript}
+                            </div>
+                        )}
+                    </div>
+                </Modal>
+            )}
         </div>
+
     );
 };
 

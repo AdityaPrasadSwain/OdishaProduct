@@ -65,12 +65,20 @@ const AdminSellerDetails = () => {
 
     const { seller, documents, bankDetails, logs } = data;
 
+    const getFileUrl = (path) => {
+        if (!path) return '';
+        if (path.startsWith('http')) return path;
+        // Ensure path starts with / if not present
+        const safePath = path.startsWith('/') ? path : `/${path}`;
+        return `http://localhost:8085${safePath}`;
+    };
+
     return (
         <div className="p-6 max-w-6xl mx-auto">
             <div className="flex justify-between items-start mb-6">
                 <div className="flex gap-4">
                     <img
-                        src={`http://localhost:8080${seller.profilePictureUrl || '/uploads/default-profile.png'}`}
+                        src={getFileUrl(seller.profilePictureUrl) || '/uploads/default-profile.png'}
                         alt={seller.fullName}
                         className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                         onError={(e) => e.target.src = "https://via.placeholder.com/150"}
@@ -168,20 +176,19 @@ const AdminSellerDetails = () => {
                             {documents?.panFileUrl && (
                                 <div>
                                     <p className="font-semibold mb-1">PAN Card</p>
-                                    <a href={`http://localhost:8080${documents.panFileUrl}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
-                                    {/* <img src={`http://localhost:8080${documents.panFileUrl}`} alt="PAN" className="h-32 object-cover border rounded mt-2"/> */}
+                                    <a href={getFileUrl(documents.panFileUrl)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
                                 </div>
                             )}
                             {documents?.aadhaarFileUrl && (
                                 <div>
                                     <p className="font-semibold mb-1">Aadhaar Card</p>
-                                    <a href={`http://localhost:8080${documents.aadhaarFileUrl}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
+                                    <a href={getFileUrl(documents.aadhaarFileUrl)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
                                 </div>
                             )}
                             {documents?.gstFileUrl && (
                                 <div>
                                     <p className="font-semibold mb-1">GST Certificate</p>
-                                    <a href={`http://localhost:8080${documents.gstFileUrl}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
+                                    <a href={getFileUrl(documents.gstFileUrl)} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">View Document</a>
                                 </div>
                             )}
                         </div>

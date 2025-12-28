@@ -3,7 +3,12 @@ package com.odisha.handloom;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 @SpringBootApplication
+@EntityScan("com.odisha.handloom")
+@EnableJpaRepositories("com.odisha.handloom")
 @org.springframework.scheduling.annotation.EnableAsync
 @org.springframework.boot.context.properties.EnableConfigurationProperties({
         com.odisha.handloom.security.jwt.JwtProperties.class })

@@ -11,8 +11,8 @@ const ReturnRequestForm = () => {
 
     const [reason, setReason] = useState('');
     const [description, setDescription] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
-    const [proofImageUrl, setProofImageUrl] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+    const [proofImageFile, setProofImageFile] = useState(null);
     const [loading, setLoading] = useState(false);
 
     if (!order || !orderItem) {
@@ -36,21 +36,27 @@ const ReturnRequestForm = () => {
             return;
         }
 
-        if ((reason === 'DAMAGED' || reason === 'WRONG_PRODUCT') && !proofImageUrl) {
+        if ((reason === 'DAMAGED' || reason === 'WRONG_PRODUCT') && !proofImageFile) {
             Swal.fire('Error', 'Proof image is required for this reason', 'error');
             return;
         }
 
         setLoading(true);
         try {
-            await createReturnRequest({
-                orderId: order.id,
-                orderItemId: orderItem.id,
-                reason,
-                description,
-                imageUrl,
-                proofImageUrl
-            });
+            const formData = new FormData();
+            formData.append('orderId', order.id);
+            formData.append('orderItemId', orderItem.id);
+            formData.append('reason', reason);
+            formData.append('description', description);
+
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+            if (proofImageFile) {
+                formData.append('proofImage', proofImageFile);
+            }
+
+            await createReturnRequest(formData);
             Swal.fire('Success', 'Return request submitted successfully', 'success')
                 .then(() => navigate('/customer/returns'));
         } catch (error) {
@@ -117,40 +123,40 @@ const ReturnRequestForm = () => {
                     Given the constraints, I will use text inputs but label them clearly.
                 */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Image URL (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Product Image (Optional)</label>
                     <div className="flex">
                         <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                             <PhotoIcon className="h-5 w-5" />
                         </span>
                         <input
-                            type="text"
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files[0])}
                             className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            placeholder="https://..."
                         />
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Proof Image URL {(reason === 'DAMAGED' || reason === 'WRONG_PRODUCT') && <span className="text-red-500">*</span>}
-                    </label>
-                    <div className="flex">
-                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                            <CloudArrowUpIcon className="h-5 w-5" />
-                        </span>
-                        <input
-                            type="text"
-                            value={proofImageUrl}
-                            onChange={(e) => setProofImageUrl(e.target.value)}
-                            className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            placeholder="https://..."
-                            required={reason === 'DAMAGED' || reason === 'WRONG_PRODUCT'}
-                        />
+                {(reason === 'DAMAGED' || reason === 'WRONG_PRODUCT') && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Proof Image <span className="text-red-500">*</span>
+                        </label>
+                        <div className="flex">
+                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                <CloudArrowUpIcon className="h-5 w-5" />
+                            </span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setProofImageFile(e.target.files[0])}
+                                className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                required
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Required for Damaged or Wrong Product claims.</p>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Required for Damaged or Wrong Product claims.</p>
-                </div>
+                )}
 
                 <div className="flex justify-end gap-3 pt-4">
                     <button
