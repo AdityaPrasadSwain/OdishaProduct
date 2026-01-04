@@ -56,14 +56,14 @@ public class ReelInteractionService {
                 Product reel = productRepository.findById(reelId)
                                 .orElseThrow(() -> new RuntimeException("Reel not found"));
 
-                ReelComment comment = ReelComment.builder()
-                                .reel(reel)
-                                .user(user)
-                                .content(request.getComment())
-                                .parent(null)
-                                .sellerResponse(false)
-                                .replies(new ArrayList<>())
-                                .build();
+                ReelComment comment = new ReelComment();
+                comment.setReel(reel);
+                comment.setUser(user);
+                comment.setContent(request.getComment());
+                comment.setParent(null);
+                comment.setSellerResponse(false);
+                // comment.setReplies(new ArrayList<>()); // Initialize in getter or constructor
+                // if possible
 
                 if (user.getId().equals(reel.getSeller().getId())) {
                         comment.setSellerReply(true);
@@ -87,14 +87,13 @@ public class ReelInteractionService {
                         throw new RuntimeException("Comment does not belong to this reel");
                 }
 
-                ReelComment reply = ReelComment.builder()
-                                .reel(reel)
-                                .user(user)
-                                .content(request.getComment())
-                                .parent(parent)
-                                .sellerResponse(false)
-                                .replies(new ArrayList<>())
-                                .build();
+                ReelComment reply = new ReelComment();
+                reply.setReel(reel);
+                reply.setUser(user);
+                reply.setContent(request.getComment());
+                reply.setParent(parent);
+                reply.setSellerResponse(false);
+                // reply.setReplies(new ArrayList<>());
 
                 if (user.getId().equals(reel.getSeller().getId())) {
                         reply.setSellerReply(true);
@@ -128,10 +127,9 @@ public class ReelInteractionService {
                         commentLikeRepository.delete(existingLike.get());
                         isLiked = false;
                 } else {
-                        CommentLike like = CommentLike.builder()
-                                        .comment(comment)
-                                        .user(user)
-                                        .build();
+                        CommentLike like = new CommentLike();
+                        like.setComment(comment);
+                        like.setUser(user);
                         commentLikeRepository.save(like);
                         isLiked = true;
 
@@ -142,30 +140,29 @@ public class ReelInteractionService {
 
                 long count = commentLikeRepository.countByComment(comment);
 
-                return CommentLikeResponse.builder()
-                                .commentId(commentId)
-                                .likesCount(count)
-                                .isLiked(isLiked)
-                                .build();
+                CommentLikeResponse response = new CommentLikeResponse();
+                response.setCommentId(commentId);
+                response.setLikesCount(count);
+                response.setIsLiked(isLiked);
+                return response;
         }
 
         private CommentResponse mapToCommentResponse(ReelComment c, User currentUser) {
                 long likesCount = commentLikeRepository.countByComment(c);
                 boolean isLiked = currentUser != null && commentLikeRepository.existsByCommentAndUser(c, currentUser);
 
-                return CommentResponse.builder()
-                                .id(c.getId())
-                                .content(c.getContent())
-                                .user(c.getUser().getFullName())
-                                .createdAt(c.getCreatedAt())
-                                .isSellerReply(c.isSellerReply())
-                                .likesCount(likesCount)
-                                .isLiked(isLiked)
-                                // Recursive mapping
-                                .replies(c.getReplies() != null
-                                                ? c.getReplies().stream().map(r -> mapToCommentResponse(r, currentUser))
-                                                                .collect(Collectors.toList())
-                                                : new ArrayList<>())
-                                .build();
+                CommentResponse response = new CommentResponse();
+                response.setId(c.getId());
+                response.setContent(c.getContent());
+                response.setUser(c.getUser().getFullName());
+                response.setCreatedAt(c.getCreatedAt());
+                response.setSellerReply(c.isSellerReply());
+                response.setLikesCount(likesCount);
+                response.setIsLiked(isLiked);
+                response.setReplies(c.getReplies() != null
+                                ? c.getReplies().stream().map(r -> mapToCommentResponse(r, currentUser))
+                                                .collect(Collectors.toList())
+                                : new ArrayList<>());
+                return response;
         }
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/kyc")
+@RequestMapping("/api/seller/kyc")
 public class SellerKycController {
 
     @Autowired

@@ -18,8 +18,21 @@ const SellerProfile = () => {
     const [selectedPost, setSelectedPost] = useState(null);
 
     useEffect(() => {
-        fetchProfile();
-        fetchContent();
+        const isValidUUID = (uuid) => {
+            const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+            return regex.test(uuid);
+        };
+
+        if (isValidUUID(id)) {
+            fetchProfile();
+            fetchContent();
+        } else {
+            setLoading(false);
+            if (id === 'orders' && user?.role === 'SELLER') {
+                navigate('/seller/dashboard');
+            }
+        }
+        // eslint-disable-next-line
     }, [id]);
 
     const fetchProfile = async () => {

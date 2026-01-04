@@ -26,4 +26,12 @@ public class PlatformConfig {
     public static PlatformConfig createDefault() {
         return new PlatformConfig("DEFAULT", new BigDecimal("0.05"), new BigDecimal("0.18"));
     }
+
+    public BigDecimal getCommissionPercentage() {
+        return commissionPercentage;
+    }
+
+    public BigDecimal getGstPercentage() {
+        return gstPercentage;
+    }
 }

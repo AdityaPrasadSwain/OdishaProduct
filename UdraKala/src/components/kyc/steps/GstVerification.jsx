@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import api from '../../../api/axios';
 import Swal from 'sweetalert2';
 
 const GstVerification = ({ onNext, onSkip, token }) => {
@@ -13,9 +14,7 @@ const GstVerification = ({ onNext, onSkip, token }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:8085/api/kyc/gst/verify', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.post('/seller/kyc/gst/verify', formData);
             Swal.fire('Success', 'GST Verified Successfully', 'success');
             onNext(response.data);
         } catch (error) {

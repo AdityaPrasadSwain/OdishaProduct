@@ -54,10 +54,33 @@ public class SellerPayoutServiceImpl implements SellerPayoutService {
         return userRepository.findById(sellerId).orElseThrow(() -> new RuntimeException("Seller not found"));
     }
 
+    @Autowired
+    private com.odisha.handloom.repository.SellerBankDetailsRepository bankDetailsRepository;
+
     @Override
-    public List<User> getAllSellerBankDetails() {
+    public List<com.odisha.handloom.payload.dto.SellerPayoutDTO> getAllSellerBankDetails() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.SELLER && u.getBankAccountNumber() != null)
+                .filter(u -> u.getRole() == Role.SELLER)
+                .map(seller -> {
+                    com.odisha.handloom.entity.SellerBankDetails details = bankDetailsRepository.findBySeller(seller)
+                            .orElse(null);
+
+                    com.odisha.handloom.payload.dto.SellerPayoutDTO dto = new com.odisha.handloom.payload.dto.SellerPayoutDTO();
+                    dto.setId(seller.getId());
+                    dto.setFullName(seller.getFullName());
+                    dto.setShopName(seller.getShopName());
+
+                    if (details != null) {
+                        dto.setBankDetails(new com.odisha.handloom.payload.dto.SellerPayoutDTO.BankDetailsDTO(
+                                details.getAccountNumber(),
+                                details.getIfscCode(),
+                                details.getAccountHolderName(),
+                                details.getBankName(),
+                                details.isVerified()));
+                    }
+
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
@@ -111,13 +134,13 @@ public class SellerPayoutServiceImpl implements SellerPayoutService {
                 seller.getAccountHolderName());
 
         // 5. Create Payout Record
-        Payout payout = Payout.builder()
-                .seller(seller)
-                .bankAccountSnapshot(snapshot)
-                .totalAmount(totalAmount)
-                .payoutReference("TXN-" + UUID.randomUUID().toString()) // Mock Reference
-                .status(Payout.PayoutStatus.SUCCESS) // Assuming manual success for now
-                .build();
+        // 5. Create Payout Record
+        Payout payout = new Payout();
+        payout.setSeller(seller);
+        payout.setBankAccountSnapshot(snapshot);
+        payout.setTotalAmount(totalAmount);
+        payout.setPayoutReference("TXN-" + UUID.randomUUID().toString()); // Mock Reference
+        payout.setStatus(Payout.PayoutStatus.SUCCESS); // Assuming manual success for now
 
         Payout savedPayout = payoutRepository.save(payout);
 
@@ -132,7 +155,31 @@ public class SellerPayoutServiceImpl implements SellerPayoutService {
     }
 
     @Override
+
     public List<Payout> getPayoutHistory(UUID sellerId) {
         return payoutRepository.findBySeller_Id(sellerId);
+    }
+
+    @Override
+    public com.odisha.handloom.payload.response.WalletOverviewResponse getWalletOverview(UUID sellerId) {
+        // 1. Calculate Current Balance (Pending Earnings)
+        List<SellerEarnings> pendingEarnings = getPendingEarnings(sellerId);
+        BigDecimal currentBalance = pendingEarnings.stream()
+                .map(SellerEarnings::getNetAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // 2. Calculate Total Withdrawn (Success Payouts)
+        List<Payout> history = getPayoutHistory(sellerId);
+        BigDecimal totalWithdrawn = history.stream()
+                .filter(p -> p.getStatus() == Payout.PayoutStatus.SUCCESS)
+                .map(Payout::getTotalAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // 3. Return Response
+        return com.odisha.handloom.payload.response.WalletOverviewResponse.builder()
+                .currentBalance(currentBalance)
+                .totalWithdrawn(totalWithdrawn)
+                .recentPayouts(history)
+                .build();
     }
 }

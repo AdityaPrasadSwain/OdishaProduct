@@ -39,7 +39,7 @@ public class AdminNotification {
 
     @Column(name = "is_read", nullable = false)
     @Builder.Default
-    private boolean isRead = false;
+    private Boolean isRead = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -48,4 +48,68 @@ public class AdminNotification {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public AdminNotificationType getType() {
+        return type;
+    }
+
+    public void setType(AdminNotificationType type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public UUID getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(UUID entityId) {
+        this.entityId = entityId;
+    }
+
+    public boolean isRead() {
+        return Boolean.TRUE.equals(isRead);
+    }
+
+    public void setRead(Boolean isRead) {
+        this.isRead = isRead;
+    }
+
+    public AdminNotificationPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(AdminNotificationPriority priority) {
+        this.priority = priority;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

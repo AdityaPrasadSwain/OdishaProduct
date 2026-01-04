@@ -183,15 +183,21 @@ const ProductList = () => {
                                             <span className="text-xl font-bold text-orange-700 dark:text-orange-400">₹{product.price}</span>
                                         )}
                                     </div>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            addToCart(product);
-                                        }}
-                                        className="px-4 py-2 bg-orange-700 text-white rounded-lg text-sm font-semibold hover:bg-orange-800 transition shadow-md active:transform active:scale-95"
-                                    >
-                                        Add +
-                                    </button>
+                                    {product.stockQuantity <= 0 ? (
+                                        <span className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg text-xs font-bold border border-gray-200 dark:border-gray-600 select-none">
+                                            Out of Stock
+                                        </span>
+                                    ) : (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                addToCart(product);
+                                            }}
+                                            className="px-4 py-2 bg-orange-700 text-white rounded-lg text-sm font-semibold hover:bg-orange-800 transition shadow-md active:transform active:scale-95"
+                                        >
+                                            Add +
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </Motion.div>

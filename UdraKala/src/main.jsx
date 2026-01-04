@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { DataProvider } from './context/DataContext';
-import { ThemeProvider } from './context/ThemeProvider';
+import { ThemeProvider } from './context/ThemeContext';
 import { initEmailjs } from './utils/emailService';
 import './index.css';
 

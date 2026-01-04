@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "orders")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -50,7 +51,8 @@ public class Order {
     private String trackingId;
 
     // Invoice Details
-    private boolean invoiceSent = false;
+    @Column(name = "invoice_sent", nullable = false)
+    private Boolean invoiceSent = false;
     private LocalDateTime invoiceSentAt;
     private String invoiceNumber;
 
@@ -74,7 +76,7 @@ public class Order {
     private String formattedPaymentMethod; // e.g. "UPI, SuperCoins"
 
     @Transient
-    private boolean invoiceAvailable;
+    private Boolean invoiceAvailable;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -88,7 +90,7 @@ public class Order {
     public Order(UUID id, User user, User seller, List<OrderItem> orderItems, BigDecimal totalAmount,
             OrderStatus status,
             String shippingAddress, String paymentMethod, String paymentId, String courierName, String trackingId,
-            boolean invoiceSent, LocalDateTime invoiceSentAt, String invoiceNumber,
+            Boolean invoiceSent, LocalDateTime invoiceSentAt, String invoiceNumber,
             LocalDateTime createdAt,
             LocalDateTime updatedAt) {
         this.id = id;
@@ -125,7 +127,7 @@ public class Order {
         private String paymentId;
         private String courierName;
         private String trackingId;
-        private boolean invoiceSent;
+        private Boolean invoiceSent;
         private LocalDateTime invoiceSentAt;
         private String invoiceNumber;
         private LocalDateTime createdAt;
@@ -189,7 +191,7 @@ public class Order {
             return this;
         }
 
-        public OrderBuilder invoiceSent(boolean invoiceSent) {
+        public OrderBuilder invoiceSent(Boolean invoiceSent) {
             this.invoiceSent = invoiceSent;
             return this;
         }
@@ -318,10 +320,10 @@ public class Order {
     }
 
     public boolean isInvoiceSent() {
-        return invoiceSent;
+        return Boolean.TRUE.equals(invoiceSent);
     }
 
-    public void setInvoiceSent(boolean invoiceSent) {
+    public void setInvoiceSent(Boolean invoiceSent) {
         this.invoiceSent = invoiceSent;
     }
 
@@ -408,10 +410,10 @@ public class Order {
     }
 
     public boolean isInvoiceAvailable() {
-        return invoiceAvailable;
+        return Boolean.TRUE.equals(invoiceAvailable);
     }
 
-    public void setInvoiceAvailable(boolean invoiceAvailable) {
+    public void setInvoiceAvailable(Boolean invoiceAvailable) {
         this.invoiceAvailable = invoiceAvailable;
     }
 }

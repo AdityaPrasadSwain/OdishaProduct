@@ -70,14 +70,14 @@ public class ReviewService {
         }
 
         // 8. Create Review
-        Review review = Review.builder()
-                .customer(customer)
-                .product(orderItem.getProduct())
-                .orderItem(orderItem)
-                .rating(request.getRating())
-                .reviewText(request.getReviewText())
-                .images(new ArrayList<>())
-                .build();
+        // 8. Create Review
+        Review review = new Review();
+        review.setCustomer(customer);
+        review.setProduct(orderItem.getProduct());
+        review.setOrderItem(orderItem);
+        review.setRating(request.getRating());
+        review.setReviewText(request.getReviewText());
+        review.setImages(new ArrayList<>());
 
         // 9. Upload Images
         if (files != null && !files.isEmpty()) {
@@ -86,10 +86,9 @@ public class ReviewService {
             }
             for (MultipartFile file : files) {
                 String url = cloudinaryService.uploadImage(file);
-                ReviewImage image = ReviewImage.builder()
-                        .review(review)
-                        .imageUrl(url)
-                        .build();
+                ReviewImage image = new ReviewImage();
+                image.setReview(review);
+                image.setImageUrl(url);
                 review.addImage(image);
             }
         }
@@ -144,10 +143,9 @@ public class ReviewService {
             }
             for (MultipartFile file : files) {
                 String url = cloudinaryService.uploadImage(file);
-                ReviewImage image = ReviewImage.builder()
-                        .review(review)
-                        .imageUrl(url)
-                        .build();
+                ReviewImage image = new ReviewImage();
+                image.setReview(review);
+                image.setImageUrl(url);
                 review.addImage(image);
             }
         }
@@ -182,13 +180,7 @@ public class ReviewService {
 
     // O(1) Incremental Update for New Reviews
     private void updateProductStatsIncremental(Product product, int newRating, boolean isNew) {
-        // We need to fetch fresh to ensure thread safety ideally, but 'product' here is
-        // managed entity from line 47/61? No, line 47 orderItem.getProduct() is
-        // managed.
-        // However, statistical fields might be stale if not refreshed, but typically in
-        // simple apps this is okay.
-        // Better:
-        long currentCount = product.getTotalReviews();
+        long currentCount = product.getTotalReviews() != null ? product.getTotalReviews() : 0L;
         double currentAvg = product.getAverageRating() != null ? product.getAverageRating() : 0.0;
         double currentSum = currentAvg * currentCount;
 
@@ -203,7 +195,7 @@ public class ReviewService {
 
     // O(1) Incremental Update for Edited Reviews
     private void updateProductStatsOnEdit(Product product, int oldRating, int newRating) {
-        long currentCount = product.getTotalReviews();
+        long currentCount = product.getTotalReviews() != null ? product.getTotalReviews() : 0L;
         double currentAvg = product.getAverageRating() != null ? product.getAverageRating() : 0.0;
         double currentSum = currentAvg * currentCount;
 

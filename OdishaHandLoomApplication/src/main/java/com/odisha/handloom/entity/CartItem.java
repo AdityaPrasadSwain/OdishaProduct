@@ -20,13 +20,13 @@ public class CartItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    private int quantity;
+    private Integer quantity;
     private BigDecimal price; // Price at time of adding (optional, or dynamic)
 
     public CartItem() {
     }
 
-    public CartItem(UUID id, Cart cart, Product product, int quantity, BigDecimal price) {
+    public CartItem(UUID id, Cart cart, Product product, Integer quantity, BigDecimal price) {
         this.id = id;
         this.cart = cart;
         this.product = product;
@@ -42,7 +42,7 @@ public class CartItem {
         private UUID id;
         private Cart cart;
         private Product product;
-        private int quantity;
+        private Integer quantity;
         private BigDecimal price;
 
         CartItemBuilder() {
@@ -63,7 +63,7 @@ public class CartItem {
             return this;
         }
 
-        public CartItemBuilder quantity(int quantity) {
+        public CartItemBuilder quantity(Integer quantity) {
             this.quantity = quantity;
             return this;
         }
@@ -102,11 +102,11 @@ public class CartItem {
         this.product = product;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

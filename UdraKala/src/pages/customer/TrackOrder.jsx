@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getOrderDetails, downloadCustomerInvoice, cancelOrder } from '../../api/orderApi';
+import { getOrderDetails, downloadCustomerInvoice, cancelOrder, getPackingVideo } from '../../api/orderApi';
 import { createReturnRequest } from '../../api/returnApi';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
 import {
     Check, Truck, RotateCw, Download, Star,
     MessageSquare, ChevronRight, MapPin, CreditCard,
-    ShieldCheck, Package, AlertCircle
+    ShieldCheck, Package, AlertCircle, Video
 } from 'lucide-react';
 import ReviewModal from '../../components/customer/ReviewModal';
 import reviewApi from '../../api/reviewApi';
@@ -18,6 +18,7 @@ const TrackOrder = () => {
     const [order, setOrder] = useState(null);
     const [loading, setLoading] = useState(true);
     const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+    const [packingVideoUrl, setPackingVideoUrl] = useState(null);
 
     // Return State
     const [returnModalOpen, setReturnModalOpen] = useState(false);
@@ -48,6 +49,22 @@ const TrackOrder = () => {
         };
         fetchDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (order?.id) {
+            const fetchVideo = async () => {
+                try {
+                    const data = await getPackingVideo(order.id);
+                    if (data && data.url) {
+                        setPackingVideoUrl(data.url);
+                    }
+                } catch (e) {
+                    // Ignore if no video found
+                }
+            };
+            fetchVideo();
+        }
+    }, [order]);
 
     useEffect(() => {
         if (order?.status === 'DELIVERED' && order.orderItems) {
@@ -136,25 +153,20 @@ const TrackOrder = () => {
     // Steps for timeline
     const steps = [
         { status: 'CONFIRMED', label: 'Order Confirmed', date: order.createdAt },
+        { status: 'PACKED', label: 'Packed by Seller', date: null },
         { status: 'SHIPPED', label: 'Shipped', date: null }, // Date could be courier date if tracked
         { status: 'OUT_FOR_DELIVERY', label: 'Out For Delivery', date: null },
         { status: 'DELIVERED', label: 'Delivered', date: isDelivered ? order.updatedAt : null }
     ];
 
-    const currentStepIndex = ['PENDING', 'CONFIRMED', 'PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED'].indexOf(order.status);
-    // Simplified mapping for visual steps
-    // 0: Confirmed (PENDING/CONFIRMED)
-    // 1: Shipped (PACKED/SHIPPED)
-    // 2: Out For Delivery (OUT_FOR_DELIVERY)
-    // 3: Delivered (DELIVERED)
-
     const getActiveStep = () => {
         const s = order.status;
-        if (s === 'DELIVERED') return 3;
-        if (s === 'OUT_FOR_DELIVERY') return 2;
-        if (['SHIPPED', 'PACKED'].includes(s)) return 1;
+        if (['DELIVERED', 'RETURN_REQUESTED', 'RETURNED', 'REPLACED', 'REPLACEMENT_REQUESTED', 'RTO_INITIATED', 'RTO_COMPLETED'].includes(s)) return 4;
+        if (s === 'OUT_FOR_DELIVERY') return 3;
+        if (['SHIPPED', 'READY_TO_SHIP', 'DISPATCHED', 'IN_TRANSIT'].includes(s)) return 2;
+        if (['PACKED', 'SELLER_CONFIRMED'].includes(s)) return 1;
         if (['CONFIRMED', 'PENDING', 'INVOICE_SENT'].includes(s)) return 0;
-        return -1; // Cancelled/Returned handled separately
+        return -1; // Cancelled handled separately
     };
     const activeStep = getActiveStep();
 
@@ -188,6 +200,27 @@ const TrackOrder = () => {
                                     )}
                                 </div>
                             </div>
+                        </div>
+                    )}
+
+                    {/* Packing Proof Video Section */}
+                    {packingVideoUrl && (
+                        <div className="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center gap-2 mb-3 text-purple-700 dark:text-purple-400 font-bold">
+                                <Video size={20} />
+                                <span>Packing Proof Video</span>
+                            </div>
+                            <video
+                                controls
+                                width="100%"
+                                className="rounded-lg border border-gray-100 dark:border-gray-800 bg-black aspect-video"
+                            >
+                                <source src={packingVideoUrl} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <p className="text-xs text-gray-400 mt-2 text-center">
+                                This video was uploaded by the seller as proof of packing using our secure system.
+                            </p>
                         </div>
                     )}
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import api from '../../../api/axios';
 import Swal from 'sweetalert2';
 
 const AadhaarVerification = ({ onNext, token }) => {
@@ -17,9 +18,7 @@ const AadhaarVerification = ({ onNext, token }) => {
 
         setLoading(true);
         try {
-            await axios.post('http://localhost:8085/api/kyc/aadhaar/send-otp', { aadhaarNumber }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/seller/kyc/aadhaar/send-otp', { aadhaarNumber });
             setShowOtpModal(true);
             Swal.fire('OTP Sent', 'Check your registered mobile number', 'info');
         } catch (error) {
@@ -32,11 +31,9 @@ const AadhaarVerification = ({ onNext, token }) => {
     const handleVerifyOtp = async () => {
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:8085/api/kyc/aadhaar/verify-otp', {
+            const response = await api.post('/seller/kyc/aadhaar/verify-otp', {
                 aadhaarNumber,
                 otp
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
             Swal.fire('Success', 'Aadhaar Verified Successfully', 'success');
             setShowOtpModal(false);

@@ -34,4 +34,20 @@ public class ReelLike {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void setReel(Product reel) {
+        this.reel = reel;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Product getReel() {
+        return reel;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

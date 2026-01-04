@@ -29,6 +29,8 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// IDE Refresh Trigger
+
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
@@ -163,6 +165,7 @@ public class ApiHealthTest {
 
             // Since return type is now generic ResponseEntity<?>, we cast body to Category
             Category savedCat = (Category) catResponse.getBody();
+            assertNotNull(savedCat, "Saved Category response body is null");
             UUID categoryId = savedCat.getId();
             System.out.println("STEP 1 SUCCESS: Category Added (ID: " + categoryId + ")");
 

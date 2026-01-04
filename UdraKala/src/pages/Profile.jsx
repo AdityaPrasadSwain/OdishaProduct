@@ -134,17 +134,12 @@ const Profile = () => {
                     <div className="relative -mt-24 mb-6 flex flex-col md:flex-row items-end md:items-end gap-6">
                         <div className="relative group">
                             <div className="w-40 h-40 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden shadow-lg bg-gray-100 relative">
-                                {imagePreview ? (
-                                    <img
-                                        src={imagePreview}
-                                        alt="Profile"
-                                        className="w-full h-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                        <User size={64} />
-                                    </div>
-                                )}
+                                <img
+                                    src={imagePreview || '/default_profile.jpg'}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = '/default_profile.jpg'; }}
+                                />
 
                                 {isEditing && (
                                     <label className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">

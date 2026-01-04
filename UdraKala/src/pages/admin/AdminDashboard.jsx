@@ -41,7 +41,8 @@ const AdminDashboard = () => {
     const navigate = useNavigate();
 
     // Check for alerts on mount
-    useEffect(() => {
+    // Check for alerts on mount - Removed to prevent duplicate alerts (handled by Bell)
+    /* useEffect(() => {
         const checkAlerts = async () => {
             const count = await getUnreadNotificationCount();
             if (count > 0) {
@@ -60,7 +61,7 @@ const AdminDashboard = () => {
             }
         };
         checkAlerts();
-    }, [navigate]);
+    }, [navigate]); */
 
     // Initial Data Fetch
     useEffect(() => {

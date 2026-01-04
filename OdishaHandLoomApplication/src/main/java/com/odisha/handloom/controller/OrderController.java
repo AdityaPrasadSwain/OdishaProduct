@@ -42,9 +42,13 @@ public class OrderController {
 
         try {
             System.out.println("Received Order Request: " + orderRequest);
-            orderService.createOrder(customer, orderRequest.getItems(), orderRequest.getShippingAddress(),
+            List<Order> orders = orderService.createOrder(customer, orderRequest.getItems(),
+                    orderRequest.getShippingAddress(),
                     orderRequest.getPaymentMethod(), orderRequest.getPaymentId(), orderRequest.getAddressId());
-            return ResponseEntity.ok(new MessageResponse("Orders placed successfully!"));
+            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            response.put("status", "SUCCESS");
+            response.put("orders", orders);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -72,7 +76,22 @@ public class OrderController {
         return orderService.getCustomerOrders(customer.getId());
     }
 
+    @GetMapping("/customer")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public List<Order> getFilteredCustomerOrders(
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(required = false) String range,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate from,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate to) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User customer = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        return orderService.getFilteredCustomerOrders(customer.getId(), status, range, from, to);
+    }
+
     @GetMapping("/seller-orders")
+
     @PreAuthorize("hasRole('SELLER')")
     public List<Order> getSellerOrders() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

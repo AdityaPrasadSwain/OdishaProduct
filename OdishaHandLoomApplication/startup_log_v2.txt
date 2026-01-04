@@ -1,0 +1,195 @@
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::staticFieldBase has been called by com.google.inject.internal.aop.HiddenClassDefiner (file:/C:/Users/swain/Downloads/apache-maven-3.9.11/lib/guice-5.1.0-classes.jar)
+WARNING: Please consider reporting this to the maintainers of class com.google.inject.internal.aop.HiddenClassDefiner
+WARNING: sun.misc.Unsafe::staticFieldBase will be removed in a future release
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.odisha:OdishaHandLoomApplication >----------------
+[INFO] Building OdishaHandLoomApplication 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.4.1:run (default-cli) > test-compile @ OdishaHandLoomApplication >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ OdishaHandLoomApplication ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 8 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ OdishaHandLoomApplication ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 232 source files with javac [debug parameters release 21] to target\classes
+[INFO] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/service/ChatService.java: C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\src\main\java\com\odisha\handloom\service\ChatService.java uses unchecked or unsafe operations.
+[INFO] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/service/ChatService.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ OdishaHandLoomApplication ---
+[INFO] skip non existing resourceDirectory C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ OdishaHandLoomApplication ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 2 source files with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:3.4.1:run (default-cli) < test-compile @ OdishaHandLoomApplication <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.4.1:run (default-cli) @ OdishaHandLoomApplication ---
+[INFO] Attaching agents: []
+16:12:07.752 [main] INFO com.odisha.handloom.OdishaHandLoomApplication -- Starting OdishaHandLoomApplication on Java 25 with Spring Boot 4.0.1
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.4.1)
+
+2025-12-29T16:12:08.504+05:30  INFO 51980 --- [           main] c.o.handloom.OdishaHandLoomApplication   : Starting OdishaHandLoomApplication using Java 25 with PID 51980 (C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\target\classes started by swain in C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication)
+2025-12-29T16:12:08.507+05:30  INFO 51980 --- [           main] c.o.handloom.OdishaHandLoomApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-12-29T16:12:09.512+05:30  INFO 51980 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-29T16:12:09.673+05:30  INFO 51980 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 147 ms. Found 39 JPA repository interfaces.
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (file:/C:/Users/swain/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.34/tomcat-embed-core-10.1.34.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2025-12-29T16:12:10.830+05:30  INFO 51980 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-12-29T16:12:10.846+05:30  INFO 51980 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-29T16:12:10.847+05:30  INFO 51980 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.34]
+2025-12-29T16:12:10.936+05:30  INFO 51980 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-29T16:12:10.936+05:30  INFO 51980 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2315 ms
+2025-12-29T16:12:11.094+05:30  INFO 51980 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-29T16:12:11.163+05:30  INFO 51980 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.4.Final
+2025-12-29T16:12:11.202+05:30  INFO 51980 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-29T16:12:11.532+05:30  INFO 51980 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-29T16:12:11.569+05:30  INFO 51980 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-29T16:12:11.870+05:30  INFO 51980 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@42503099
+2025-12-29T16:12:11.871+05:30  INFO 51980 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-29T16:12:11.941+05:30  WARN 51980 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-29T16:12:11.958+05:30  INFO 51980 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 18.1
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-12-29T16:12:14.041+05:30  INFO 51980 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-29T16:12:14.800+05:30  INFO 51980 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-29T16:12:15.354+05:30  INFO 51980 --- [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-29T16:12:16.418+05:30  INFO 51980 --- [           main] eAuthenticationProviderManagerConfigurer : Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2025-12-29T16:12:16.419+05:30  WARN 51980 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used by Spring Security for automatically configuring username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider. If the current configuration is intentional, to turn off this warning, increase the logging level of 'org.springframework.security.config.annotation.authentication.configuration.InitializeUserDetailsBeanManagerConfigurer' to ERROR
+------------------------------------------------
+OTP CONFIG BINDING SUCCESSFUL
+Expiry: 5
+Length: 6
+Sender: ODISHA-APP
+Mode: PROD
+------------------------------------------------
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       : ==========================================
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       :  OTP CONFIGURATION LOADED 
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       :  Enabled: true
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       :  Expiry Minutes: 5
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       :  OTP Length: 6
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       :  Sender ID: ODISHA-APP
+2025-12-29T16:12:17.439+05:30  INFO 51980 --- [           main] c.o.h.service.OtpConfigTestService       : ==========================================
+2025-12-29T16:12:17.626+05:30  WARN 51980 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-29T16:12:19.073+05:30  INFO 51980 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2025-12-29T16:12:19.073+05:30  INFO 51980 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4b6d894d]]
+2025-12-29T16:12:19.076+05:30  INFO 51980 --- [           main] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2025-12-29T16:12:19.110+05:30  INFO 51980 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path '/'
+2025-12-29T16:12:19.118+05:30  INFO 51980 --- [           main] c.o.handloom.OdishaHandLoomApplication   : Started OdishaHandLoomApplication in 11.217 seconds (process running for 11.706)
+Checking for users_role_check constraint...
+Constraint dropped.
+Updated test user role to DELIVERY_AGENT. Rows affected: 1
+Hibernate: 
+    select
+        count(*) 
+    from
+        chat_flows cf1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        faqs f1_0
+Checking for payments_status_check constraint update...
+Updated payments_status_check constraint successfully to allow COD statuses.
+Hibernate: 
+    select
+        count(*) 
+    from
+        categories c1_0
+Running DatabaseSchemaFixer...
+Successfully altered 'otps.email' to be nullable.
+Successfully altered 'otps.mobile' to be nullable.
+Successfully altered 'otps.type' to be nullable.
+Successfully altered 'otps.resend_at' to be nullable.
+Successfully added 'users.is_deleted' column.
+Successfully added 'users.account_holder_name' column.
+Successfully added 'users.is_bank_verified' column.
+Successfully added 'users.is_bank_verified' column.
+Successfully added 'users.profile_picture_url' column.
+Successfully added 'users.bio' column.
+Successfully added 'users.gender' column.
+2025-12-29T16:12:19.256+05:30  INFO 51980 --- [           main] c.o.handloom.config.MigrationRunner      : STARTING CUSTOM MIGRATION: Update Shipments Constraint
+2025-12-29T16:12:19.264+05:30  INFO 51980 --- [           main] c.o.handloom.config.MigrationRunner      : CUSTOM MIGRATION SUCCESSFUL: Shipments constraint updated.
+2025-12-29T16:12:19.265+05:30  INFO 51980 --- [           main] c.o.handloom.config.DatabaseFixConfig    : Keep-Alive: Attempting to update users_registration_status_check constraint...
+2025-12-29T16:12:19.266+05:30  INFO 51980 --- [           main] c.o.handloom.config.DatabaseFixConfig    : Sanitized existing user registration statuses.
+2025-12-29T16:12:19.269+05:30  INFO 51980 --- [           main] c.o.handloom.config.DatabaseFixConfig    : Successfully updated users_registration_status_check constraint.
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.account_holder_name,
+        u1_0.address,
+        u1_0.bank_account_number,
+        u1_0.bank_name,
+        u1_0.bio,
+        u1_0.business_type,
+        u1_0.city,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.followers_count,
+        u1_0.following_count,
+        u1_0.full_name,
+        u1_0.gender,
+        u1_0.gst_number,
+        u1_0.ifsc_code,
+        u1_0.is_approved,
+        u1_0.is_bank_verified,
+        u1_0.is_blocked,
+        u1_0.is_deleted,
+        u1_0.pan_number,
+        u1_0.password,
+        u1_0.phone_number,
+        u1_0.pincode,
+        u1_0.profile_picture_url,
+        u1_0.registration_status,
+        u1_0.role,
+        u1_0.shop_name,
+        u1_0.state,
+        u1_0.updated_at 
+    from
+        users u1_0 
+    where
+        u1_0.phone_number=?
+PASSWORD FIXER: User with phone 9861842856 NOT found.
+? Sending Startup Test Email (PROD Mode)...
+? OTP Email sent successfully to swainaditya921@gmail.com
+? Startup Test Email PASSED.
+2025-12-29T16:12:25.957+05:30  WARN 51980 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2025-12-29T16:12:25.957+05:30  WARN 51980 --- [           main] o.s.core.events.SpringDocAppInitializer  : SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2025-12-29T16:13:19.085+05:30  INFO 51980 --- [MessageBroker-1] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 1, active threads = 1, queued tasks = 0, completed tasks = 0]
+^CTerminate batch job (Y/N)? 2025-12-29T16:13:19.781+05:30  INFO 51980 --- [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-12-29T16:13:19.830+05:30  INFO 51980 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-12-29T16:13:19.840+05:30  INFO 51980 --- [ionShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2025-12-29T16:13:19.841+05:30  INFO 51980 --- [ionShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@4b6d894d]]
+2025-12-29T16:13:19.841+05:30  INFO 51980 --- [ionShutdownHook] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+2025-12-29T16:13:19.866+05:30  INFO 51980 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-29T16:13:19.890+05:30  INFO 51980 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-29T16:13:19.905+05:30  INFO 51980 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:28 min
+[INFO] Finished at: 2025-12-29T16:13:20+05:30
+[INFO] ------------------------------------------------------------------------

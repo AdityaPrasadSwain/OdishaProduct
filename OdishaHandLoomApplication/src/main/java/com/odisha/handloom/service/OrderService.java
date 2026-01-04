@@ -55,6 +55,9 @@ public class OrderService {
     @Autowired
     private AdminNotificationService adminNotificationService;
 
+    @Autowired
+    private com.odisha.handloom.service.ShipmentService shipmentService;
+
     @Transactional
     public List<Order> createOrder(User customer, List<OrderItemRequest> items, String address, String paymentMethod,
             String paymentId, UUID addressId) {
@@ -140,6 +143,10 @@ public class OrderService {
             createdOrders.add(savedOrder);
             System.out.println("[OrderService] Order saved with ID: " + savedOrder.getId());
 
+            // Auto-create Shipment
+            // Auto-create Shipment
+            shipmentService.createShipment(savedOrder.getId());
+
             // Calculate and Save Seller Earnings (Dynamic Commission + GST)
             com.odisha.handloom.entity.PlatformConfig config = platformConfigRepository.findById("DEFAULT")
                     .orElse(com.odisha.handloom.entity.PlatformConfig.createDefault());
@@ -156,16 +163,15 @@ public class OrderService {
                 // Net Amount
                 BigDecimal net = gross.subtract(commission).subtract(gst);
 
-                SellerEarnings earnings = SellerEarnings.builder()
-                        .seller(seller)
-                        .order(savedOrder)
-                        .orderItem(item)
-                        .grossAmount(gross)
-                        .commission(commission)
-                        .gstAmount(gst)
-                        .netAmount(net)
-                        .payoutStatus(SellerEarnings.PayoutStatus.PENDING)
-                        .build();
+                SellerEarnings earnings = new SellerEarnings();
+                earnings.setSeller(seller);
+                earnings.setOrder(savedOrder);
+                earnings.setOrderItem(item);
+                earnings.setGrossAmount(gross);
+                earnings.setCommission(commission);
+                earnings.setGstAmount(gst);
+                earnings.setNetAmount(net);
+                earnings.setPayoutStatus(SellerEarnings.PayoutStatus.PENDING);
 
                 sellerEarningsRepository.save(earnings);
             }
@@ -205,7 +211,7 @@ public class OrderService {
                     customer.getEmail(),
                     customer.getFullName(),
                     savedOrder.getId().toString().substring(0, 8),
-                    savedOrder.getTotalAmount().doubleValue(),
+                    savedOrder.getTotalAmount(),
                     savedOrder.getOrderItems(),
                     invoicePdf);
 
@@ -246,6 +252,13 @@ public class OrderService {
             order.setCourierName(courier);
         if (tracking != null)
             order.setTrackingId(tracking);
+
+        // Auto-generate tracking ID if missing and status is READY_TO_SHIP or later
+        if ((status == OrderStatus.READY_TO_SHIP || status == OrderStatus.SHIPPED || status == OrderStatus.DISPATCHED)
+                && (order.getTrackingId() == null || order.getTrackingId().isEmpty())) {
+            order.setTrackingId(
+                    "TRK" + System.currentTimeMillis() + order.getId().toString().substring(0, 4).toUpperCase());
+        }
 
         Order savedOrder = orderRepository.save(order);
 
@@ -310,6 +323,7 @@ public class OrderService {
                 productNames);
     }
 
+    @Transactional
     public void cancelOrder(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
@@ -328,6 +342,15 @@ public class OrderService {
             throw new RuntimeException("Order is already cancelled.");
         }
 
+        // Restore Stock
+        for (OrderItem item : order.getOrderItems()) {
+            Product product = item.getProduct();
+            // Restore exact ordered quantity
+            product.setStockQuantity(product.getStockQuantity() + item.getQuantity());
+            productRepository.save(product);
+            System.out.println("Restored stock for product: " + product.getName() + " | Qty: " + item.getQuantity());
+        }
+
         order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
 
@@ -344,6 +367,41 @@ public class OrderService {
 
     public List<Order> getSellerOrders(UUID sellerId) {
         return orderRepository.findBySellerId(sellerId);
+    }
+
+    public List<Order> getFilteredCustomerOrders(UUID userId, OrderStatus status, String range,
+            java.time.LocalDate from, java.time.LocalDate to) {
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+        LocalDateTime now = LocalDateTime.now();
+
+        if (range != null) {
+            switch (range.toUpperCase()) {
+                case "DAY":
+                    startDate = now.with(java.time.LocalTime.MIN);
+                    endDate = now.with(java.time.LocalTime.MAX);
+                    break;
+                case "WEEK":
+                    startDate = now.minusDays(7).with(java.time.LocalTime.MIN);
+                    endDate = now.with(java.time.LocalTime.MAX);
+                    break;
+                case "MONTH":
+                    startDate = now.minusDays(30).with(java.time.LocalTime.MIN);
+                    endDate = now.with(java.time.LocalTime.MAX);
+                    break;
+                case "CUSTOM":
+                    if (from != null)
+                        startDate = from.atStartOfDay();
+                    if (to != null)
+                        endDate = to.atTime(java.time.LocalTime.MAX);
+                    break;
+                default:
+                    // All Time
+                    break;
+            }
+        }
+
+        return orderRepository.findOrdersByFilters(userId, status, startDate, endDate);
     }
 
     public Order getOrder(UUID orderId) {

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -46,13 +47,14 @@ import Modal from '../../components/ui/Modal';
 import SellerReelsDashboard from './SellerReelsDashboard';
 import SellerAnalyticsDashboard from './SellerAnalyticsDashboard';
 
-import SellerProfileView from './SellerProfileView'; // New Import
+import SellerProfileView from './SellerProfileView';
+import SellerOrders from './SellerOrders';
+import SellerWallet from './SellerWallet';
+import ManifestView from './ManifestView';
 import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton';
 import AiAssistButton from '../../components/AiAssistButton';
 import { generateProductDescription } from '../../api/aiApi';
-
-
-
+import { MASTER_CATALOG } from '../../data/masterCatalog';
 
 const StatCard = ({ label, value, icon: Icon, colorClass }) => (
     <Card className="flex items-center gap-4 relative overflow-hidden">
@@ -67,6 +69,7 @@ const StatCard = ({ label, value, icon: Icon, colorClass }) => (
 );
 
 const SellerDashboard = () => {
+    const navigate = useNavigate();
     const { theme } = useTheme();
     const { user } = useAuth();
 
@@ -183,6 +186,31 @@ const SellerDashboard = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [reelFile, setReelFile] = useState(null);
 
+    // Classification State
+    const [selectedMainId, setSelectedMainId] = useState('');
+    const [selectedGroupId, setSelectedGroupId] = useState('');
+    const [selectedSubId, setSelectedSubId] = useState('');
+
+    const mainCategory = useMemo(() => MASTER_CATALOG.find(c => c.id === selectedMainId), [selectedMainId]);
+    const categoryGroup = useMemo(() => mainCategory?.groups.find(g => g.id === selectedGroupId), [mainCategory, selectedGroupId]);
+    const subCategory = useMemo(() => categoryGroup?.subcategories.find(s => s.id === selectedSubId), [categoryGroup, selectedSubId]);
+
+    const generateClassificationData = () => {
+        if (!mainCategory || !categoryGroup || !subCategory) return null;
+        return JSON.stringify({
+            category_main: mainCategory.name,
+            category_group: categoryGroup.name,
+            subcategory_name: subCategory.name,
+            category_id: subCategory.id,
+            breadcrumbs: `${mainCategory.name} > ${categoryGroup.name} > ${subCategory.name}`,
+            seo_title: `${subCategory.name} - Buy Authentic ${categoryGroup.name} Online`,
+            seo_slug: subCategory.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            seo_keywords: [mainCategory.name, categoryGroup.name, subCategory.name, 'Handloom', 'Odisha', 'Authentic'],
+            search_tags: [subCategory.name, categoryGroup.name, mainCategory.name, 'Handmade'],
+            confidence_score: "100"
+        });
+    };
+
     // Initial Data Fetch
     const fetchData = async () => {
         try {
@@ -224,35 +252,8 @@ const SellerDashboard = () => {
 
     useEffect(() => {
         fetchData();
-        checkNewNotifications();
+        // checkNewNotifications removed to prevent duplicate/annoying alerts
     }, []);
-
-    const checkNewNotifications = async () => {
-        try {
-            const { data: count } = await API.get('/notifications/unread-count');
-            if (count > 0) {
-                Swal.fire({
-                    title: 'New Notifications!',
-                    text: `You have ${count} unread notifications, including new followers!`,
-                    icon: 'info',
-                    confirmButtonText: 'View Notifications',
-                    showCancelButton: true,
-                    cancelButtonText: 'Close'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Logic to open notification dropdown is tricky since it's in Navbar. 
-                        // Instead, we can maybe redirect or just let them know.
-                        // Or trigger a custom event? For now, simple alert is "Seller Alert System".
-                        // Use document.querySelector to click the bell? A bit hacky but works for demo requirements.
-                        const bellBtn = document.querySelector('button[aria-label="Notifications"]'); // Ensure Bell has aria-label or just warn user to check bell
-                        if (bellBtn) bellBtn.click();
-                    }
-                });
-            }
-        } catch (error) {
-            console.error("Failed to check notifications alert", error);
-        }
-    };
 
     // Derived Stats
     const stats = useMemo(() => {
@@ -311,9 +312,30 @@ const SellerDashboard = () => {
                 Swal.fire('Success', 'Product updated successfully', 'success');
             } else {
                 // Add New Product with Images
-                const category = categories.find(c => c.name === productForm.categoryName);
-                if (!category) {
-                    Swal.fire('Error', 'Invalid Category', 'error');
+                // Use selectedSubCategory logic if available, else fallback to standard selection
+                let categoryId = null;
+                let classificationData = null;
+
+                if (selectedSubId && subCategory) {
+                    // Try to find the category in backend system by Name
+                    const backendCategory = categories.find(c => c.name === subCategory.name);
+                    if (backendCategory) {
+                        categoryId = backendCategory.id;
+                    } else {
+                        // Fallback: If strict category matching is required but missing, we might error or use a default.
+                        // For now, let's warn.
+                        Swal.fire('Error', `Category '${subCategory.name}' not found in system. Please contact Admin.`, 'error');
+                        return;
+                    }
+                    classificationData = generateClassificationData();
+                } else {
+                    // Fallback to legacy behavior if user didn't use the hierarchy (should be enforced though)
+                    const category = categories.find(c => c.name === productForm.categoryName);
+                    if (category) categoryId = category.id;
+                }
+
+                if (!categoryId) {
+                    Swal.fire('Error', 'Invalid Category Selection', 'error');
                     return;
                 }
 
@@ -333,13 +355,15 @@ const SellerDashboard = () => {
                     description: productForm.description,
                     price: productForm.price,
                     stockQuantity: productForm.stockQuantity,
-                    categoryId: category.id,
-                    discountPrice: 0, // Default or add field
+                    categoryId: categoryId,
+                    discountPrice: 0,
                     material: productForm.material,
                     color: productForm.color,
                     size: productForm.size,
                     origin: productForm.origin,
-                    packOf: productForm.packOf
+                    packOf: productForm.packOf,
+                    classificationData: classificationData,
+                    specifications: JSON.stringify(productForm.specifications || {})
                 })], { type: "application/json" });
 
                 formData.append("product", productBlob);
@@ -403,8 +427,30 @@ const SellerDashboard = () => {
             color: product.color || '',
             size: product.size || '',
             origin: product.origin || '',
-            packOf: product.packOf || ''
+            packOf: product.packOf || '',
+            specifications: JSON.parse(product.specifications || '{}')
         });
+
+        // Reverse lookup category hierarchy
+        let foundMain = '', foundGroup = '', foundSub = '';
+        if (product.category?.name) {
+            for (const main of MASTER_CATALOG) {
+                for (const group of main.groups) {
+                    const sub = group.subcategories.find(s => s.name === product.category.name);
+                    if (sub) {
+                        foundMain = main.id;
+                        foundGroup = group.id;
+                        foundSub = sub.id;
+                        break;
+                    }
+                }
+                if (foundSub) break;
+            }
+        }
+        setSelectedMainId(foundMain);
+        setSelectedGroupId(foundGroup);
+        setSelectedSubId(foundSub);
+
         setShowModal(true);
 
     };
@@ -446,6 +492,9 @@ const SellerDashboard = () => {
         });
         setSelectedFiles([]);
         setReelFile(null);
+        setSelectedMainId('');
+        setSelectedGroupId('');
+        setSelectedSubId('');
         setShowModal(true);
     };
 
@@ -520,7 +569,7 @@ const SellerDashboard = () => {
             width: 80,
             renderCell: (params) => (
                 <img
-                    src={params.row.images?.[0]?.imageUrl || 'https://via.placeholder.com/40'}
+                    src={params.row.images?.[0]?.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
                     alt={params.row.name}
                     className="w-10 h-10 rounded object-cover"
                 />
@@ -607,7 +656,7 @@ const SellerDashboard = () => {
             renderCell: (params) => (
                 <div className="flex items-center gap-2">
                     <img
-                        src={params.row.orderItem?.product?.images?.[0]?.imageUrl || 'https://via.placeholder.com/40'}
+                        src={params.row.orderItem?.product?.images?.[0]?.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
                         className="w-8 h-8 rounded"
                         alt=""
                     />
@@ -643,10 +692,10 @@ const SellerDashboard = () => {
                         </>
                     )}
                     {params.row.status === 'APPROVED' && (
-                        <Button size="sm" variant="primary" onClick={() => handleReturnAction(params.row.id, 'PICKED_UP')}>Picked Up</Button>
+                        <Button size="sm" variant="primary" onClick={() => handleReturnAction(params.row.id, 'PICKUP_INITIATED')}>Initiate Pickup</Button>
                     )}
-                    {params.row.status === 'PICKED_UP' && (
-                        <Button size="sm" variant="success" onClick={() => handleReturnAction(params.row.id, 'COMPLETED')}>Complete</Button>
+                    {params.row.status === 'PICKUP_INITIATED' && (
+                        <Button size="sm" variant="success" onClick={() => handleReturnAction(params.row.id, 'PASS_CHECK')}>Complete</Button>
                     )}
                 </div>
             )
@@ -657,19 +706,15 @@ const SellerDashboard = () => {
 
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Seller Dashboard</h1>
-                    <p className="text-gray-500 dark:text-gray-400">Manage your products and orders</p>
-                </div>
-                <Button onClick={openAddModal}>
-                    <Plus size={20} className="mr-2" /> Add Product
-                </Button>
+            <div>
+                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Seller Dashboard</h1>
+                <p className="text-gray-500 dark:text-gray-400">Manage your products, orders, and earnings.</p>
             </div>
 
             {/* Tabs */}
+            {/* Tabs */}
             <div className="flex bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto w-fit">
-                {['overview', 'analytics', 'products', 'orders', 'returns', 'reels', 'profile'].map(tab => (
+                {['overview', 'analytics', 'products', 'orders', 'manifest', 'returns', 'wallet', 'reels', 'profile'].map(tab => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -766,6 +811,12 @@ const SellerDashboard = () => {
                                         <option key={c} value={c}>{c}</option>
                                     ))}
                                 </select>
+
+                                <div className="ml-auto">
+                                    <Button onClick={() => navigate('/seller/products/create')} variant="primary">
+                                        <Plus size={18} className="mr-2" /> Add Product
+                                    </Button>
+                                </div>
                             </div>
 
                             <MuiThemeProvider theme={muiTheme}>
@@ -785,41 +836,17 @@ const SellerDashboard = () => {
 
                     {/* Orders Tab */}
                     {activeTab === 'orders' && (
-                        <Card title="Recent Orders">
-                            {/* Filter Bar */}
-                            <div className="flex gap-4 mb-4">
-                                <Input
-                                    placeholder="Search Order ID / Customer..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="max-w-xs"
-                                />
-                                <select
-                                    className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
-                                    value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value)}
-                                >
-                                    <option value="ALL">All Status</option>
-                                    <option value="PENDING">Pending</option>
-                                    <option value="SHIPPED">Shipped</option>
-                                    <option value="DELIVERED">Delivered</option>
-                                    <option value="CANCELLED">Cancelled</option>
-                                </select>
-                            </div>
+                        <SellerOrders />
+                    )}
 
-                            <MuiThemeProvider theme={muiTheme}>
-                                <Paper sx={{ width: '100%', height: 500, boxShadow: 'none' }}>
-                                    <DataGrid
-                                        rows={filteredData}
-                                        columns={orderColumns}
-                                        initialState={{ pagination: { paginationModel } }}
-                                        pageSizeOptions={[5, 10]}
-                                        checkboxSelection
-                                        disableRowSelectionOnClick
-                                    />
-                                </Paper>
-                            </MuiThemeProvider>
-                        </Card>
+                    {/* Manifest Tab */}
+                    {activeTab === 'manifest' && (
+                        <ManifestView />
+                    )}
+
+                    {/* Wallet Tab */}
+                    {activeTab === 'wallet' && (
+                        <SellerWallet />
                     )}
 
 
@@ -954,30 +981,54 @@ const SellerDashboard = () => {
                         />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            label="Material"
-                            value={productForm.material}
-                            onChange={e => setProductForm({ ...productForm, material: e.target.value })}
-                        />
-                        <Input
-                            label="Color"
-                            value={productForm.color}
-                            onChange={e => setProductForm({ ...productForm, color: e.target.value })}
-                        />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            label="Size / Dimensions"
-                            value={productForm.size}
-                            onChange={e => setProductForm({ ...productForm, size: e.target.value })}
-                        />
-                        <Input
-                            label="Origin"
-                            value={productForm.origin}
-                            onChange={e => setProductForm({ ...productForm, origin: e.target.value })}
-                        />
-                    </div>
+                    {/* Dynamic Specifications Form */}
+                    {selectedMainId === 'HL' && (
+                        <div className="bg-purple-50 dark:bg-gray-800 p-4 rounded-md border border-purple-100 dark:border-gray-700 space-y-4">
+                            <h4 className="font-semibold text-purple-700 dark:text-purple-300">Handloom Details</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Material (e.g., Cotton, Silk)" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} required />
+                                <Input label="Weaving Type" value={productForm.specifications?.weavingType || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, weavingType: e.target.value } })} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Pattern / Design" value={productForm.specifications?.pattern || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, pattern: e.target.value } })} />
+                                <Input label="Occasion" value={productForm.specifications?.occasion || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, occasion: e.target.value } })} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Color" value={productForm.color} onChange={e => setProductForm({ ...productForm, color: e.target.value })} required />
+                                <Input label="Length / Size" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} required />
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedMainId === 'HC' && (
+                        <div className="bg-orange-50 dark:bg-gray-800 p-4 rounded-md border border-orange-100 dark:border-gray-700 space-y-4">
+                            <h4 className="font-semibold text-orange-700 dark:text-orange-300">Handicraft Details</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Material" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} required />
+                                <Input label="Technique (e.g., Carved, Cast)" value={productForm.specifications?.technique || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, technique: e.target.value } })} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Finish Type" value={productForm.specifications?.finishType || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, finishType: e.target.value } })} />
+                                <Input label="Artisan Region" value={productForm.specifications?.artisanRegion || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, artisanRegion: e.target.value } })} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Input label="Dimensions (L x W x H)" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} required />
+                                <Input label="Weight (kg/g)" value={productForm.specifications?.weight || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, weight: e.target.value } })} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Fallback/Generic fields if no specific category selected (though validation requires it) */}
+                    {!selectedMainId && (
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input label="Material" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} />
+                            <Input label="Color" value={productForm.color} onChange={e => setProductForm({ ...productForm, color: e.target.value })} />
+                            <Input label="Size" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} />
+                        </div>
+                    )}
+
+                    <Input label="Origin" value={productForm.origin} onChange={e => setProductForm({ ...productForm, origin: e.target.value })} />
+
                     <div>
                         <Input
                             label="Pack Of"
@@ -987,18 +1038,61 @@ const SellerDashboard = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
-                        <select
-                            className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
-                            value={productForm.categoryName}
-                            onChange={e => setProductForm({ ...productForm, categoryName: e.target.value })}
-                            required
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map(c => (
-                                <option key={c.id} value={c.name}>{c.name}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Category</label>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Main Category */}
+                            <select
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
+                                value={selectedMainId}
+                                onChange={e => {
+                                    setSelectedMainId(e.target.value);
+                                    setSelectedGroupId('');
+                                    setSelectedSubId('');
+                                }}
+                                required={!editingProduct}
+                            >
+                                <option value="">Select Main Category</option>
+                                {MASTER_CATALOG.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name}</option>
+                                ))}
+                            </select>
+
+                            {/* Group */}
+                            <select
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
+                                value={selectedGroupId}
+                                onChange={e => {
+                                    setSelectedGroupId(e.target.value);
+                                    setSelectedSubId('');
+                                }}
+                                disabled={!selectedMainId}
+                                required={!editingProduct}
+                            >
+                                <option value="">Select Group</option>
+                                {mainCategory?.groups?.map(g => (
+                                    <option key={g.id} value={g.id}>{g.name}</option>
+                                ))}
+                            </select>
+
+                            {/* Sub Category */}
+                            <select
+                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
+                                value={selectedSubId}
+                                onChange={e => {
+                                    setSelectedSubId(e.target.value);
+                                    // Also update the form state for legacy compatibility if needed
+                                    const sub = categoryGroup?.subcategories?.find(s => s.id === e.target.value);
+                                    if (sub) setProductForm({ ...productForm, categoryName: sub.name });
+                                }}
+                                disabled={!selectedGroupId}
+                                required={!editingProduct}
+                            >
+                                <option value="">Select Specific Type</option>
+                                {categoryGroup?.subcategories?.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                     <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors relative">
                         <input

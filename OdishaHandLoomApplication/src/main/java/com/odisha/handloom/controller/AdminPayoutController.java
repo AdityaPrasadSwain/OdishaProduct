@@ -1,6 +1,5 @@
 package com.odisha.handloom.controller;
 
-import com.odisha.handloom.entity.User;
 import com.odisha.handloom.payload.response.MessageResponse;
 import com.odisha.handloom.service.SellerPayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,31 +12,31 @@ import java.util.UUID;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/admin/payouts")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminPayoutController {
 
     @Autowired
     private SellerPayoutService payoutService;
 
-    @GetMapping("/seller-bank-details")
-    public List<User> getAllSellerBankDetails() {
+    @GetMapping("/bank-details")
+    public List<com.odisha.handloom.payload.dto.SellerPayoutDTO> getAllSellerBankDetails() {
         return payoutService.getAllSellerBankDetails();
     }
 
-    @PutMapping("/seller-bank-details/{id}/verify")
+    @PutMapping("/bank-details/{id}/verify")
     public ResponseEntity<?> verifyBankDetails(@PathVariable UUID id) {
         payoutService.verifyBankDetails(id, true);
         return ResponseEntity.ok(new MessageResponse("Bank details verified successfully!"));
     }
 
-    @PutMapping("/seller-bank-details/{id}/reject")
+    @PutMapping("/bank-details/{id}/reject")
     public ResponseEntity<?> rejectBankDetails(@PathVariable UUID id) {
         payoutService.verifyBankDetails(id, false);
         return ResponseEntity.ok(new MessageResponse("Bank details rejected (unverified)."));
     }
 
-    @PostMapping("/payouts/initiate/{sellerId}")
+    @PostMapping("/initiate/{sellerId}")
     public ResponseEntity<?> initiatePayout(@PathVariable UUID sellerId) {
         try {
             payoutService.initiatePayout(sellerId);

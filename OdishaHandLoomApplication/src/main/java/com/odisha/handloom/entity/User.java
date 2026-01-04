@@ -9,6 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -38,7 +39,8 @@ public class User {
     // Seller fields
     private String gstNumber;
     private String shopName;
-    private boolean isApproved; // For Admin to approve seller
+    @Column(name = "is_approved", nullable = false)
+    private Boolean isApproved = false; // For Admin to approve seller
     private Boolean isBlocked; // For Admin to block/unblock seller
 
     private String panNumber;
@@ -46,18 +48,21 @@ public class User {
     private String ifscCode;
     private String bankName;
     private String accountHolderName;
-    private boolean isBankVerified = false; // Default false until Admin verifies
+
+    @Column(name = "is_bank_verified", nullable = false)
+    private Boolean isBankVerified = false;
 
     private Long followersCount = 0L;
     private Long followingCount = 0L;
 
-    private boolean isDeleted = false;
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
 
     public boolean isDeleted() {
-        return isDeleted;
+        return Boolean.TRUE.equals(isDeleted);
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(Boolean deleted) {
         isDeleted = deleted;
     }
 
@@ -91,11 +96,18 @@ public class User {
     public User() {
     }
 
+    public User(String username, String email, String password) {
+        this.email = email;
+        this.password = password;
+        this.fullName = username; // Default fallback if needed, or just set separately
+    }
+
     public User(UUID id, String email, String password, String fullName, String phoneNumber, Role role, String address,
             String profilePictureUrl, String bio, String gender,
-            String gstNumber, String shopName, boolean isApproved, Boolean isBlocked, String panNumber,
+            String gstNumber, String shopName, Boolean isApproved, Boolean isBlocked, String panNumber,
             String bankAccountNumber,
-            String ifscCode, String bankName, LocalDateTime createdAt, LocalDateTime updatedAt,
+            String ifscCode, String bankName, String accountHolderName, LocalDateTime createdAt,
+            LocalDateTime updatedAt,
             RegistrationStatus registrationStatus,
             String businessType, String state, String city, String pincode) {
         this.id = id;
@@ -116,6 +128,7 @@ public class User {
         this.bankAccountNumber = bankAccountNumber;
         this.ifscCode = ifscCode;
         this.bankName = bankName;
+        this.accountHolderName = accountHolderName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.registrationStatus = registrationStatus;
@@ -279,10 +292,10 @@ public class User {
     }
 
     public boolean isApproved() {
-        return isApproved;
+        return Boolean.TRUE.equals(isApproved);
     }
 
-    public void setApproved(boolean approved) {
+    public void setApproved(Boolean approved) {
         isApproved = approved;
     }
 
@@ -335,10 +348,10 @@ public class User {
     }
 
     public boolean isBankVerified() {
-        return isBankVerified;
+        return Boolean.TRUE.equals(isBankVerified);
     }
 
-    public void setBankVerified(boolean bankVerified) {
+    public void setBankVerified(Boolean bankVerified) {
         isBankVerified = bankVerified;
     }
 
@@ -387,12 +400,13 @@ public class User {
         private String gender;
         private String gstNumber;
         private String shopName;
-        private boolean isApproved;
+        private Boolean isApproved;
         private Boolean isBlocked;
         private String panNumber;
         private String bankAccountNumber;
         private String ifscCode;
         private String bankName;
+        private String accountHolderName;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private RegistrationStatus registrationStatus;
@@ -401,6 +415,10 @@ public class User {
         private String state;
         private String city;
         private String pincode;
+        private Long followersCount = 0L;
+        private Long followingCount = 0L;
+        private Boolean isBankVerified = false;
+        private Boolean isDeleted = false;
 
         UserBuilder() {
         }
@@ -465,7 +483,7 @@ public class User {
             return this;
         }
 
-        public UserBuilder isApproved(boolean isApproved) {
+        public UserBuilder isApproved(Boolean isApproved) {
             this.isApproved = isApproved;
             return this;
         }
@@ -492,6 +510,11 @@ public class User {
 
         public UserBuilder bankName(String bankName) {
             this.bankName = bankName;
+            return this;
+        }
+
+        public UserBuilder accountHolderName(String accountHolderName) {
+            this.accountHolderName = accountHolderName;
             return this;
         }
 
@@ -530,11 +553,38 @@ public class User {
             return this;
         }
 
+        public UserBuilder followersCount(Long followersCount) {
+            this.followersCount = followersCount;
+            return this;
+        }
+
+        public UserBuilder followingCount(Long followingCount) {
+            this.followingCount = followingCount;
+            return this;
+        }
+
+        public UserBuilder isBankVerified(Boolean isBankVerified) {
+            this.isBankVerified = isBankVerified;
+            return this;
+        }
+
+        public UserBuilder isDeleted(Boolean isDeleted) {
+            this.isDeleted = isDeleted;
+            return this;
+        }
+
         public User build() {
-            return new User(id, email, password, fullName, phoneNumber, role, address, profilePictureUrl, bio, gender,
+            User user = new User(id, email, password, fullName, phoneNumber, role, address, profilePictureUrl, bio,
+                    gender,
                     gstNumber, shopName, isApproved,
-                    isBlocked, panNumber, bankAccountNumber, ifscCode, bankName, createdAt, updatedAt,
-                    registrationStatus, businessType, state, city, pincode); // Updated constructor call
+                    isBlocked, panNumber, bankAccountNumber, ifscCode, bankName, accountHolderName, createdAt,
+                    updatedAt,
+                    registrationStatus, businessType, state, city, pincode);
+            user.setFollowersCount(followersCount);
+            user.setFollowingCount(followingCount);
+            user.setBankVerified(isBankVerified);
+            user.setDeleted(isDeleted);
+            return user;
         }
     }
 }

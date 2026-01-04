@@ -32,6 +32,14 @@ const adminApi = {
     deleteSeller: async (id) => {
         const response = await API.delete(`/admin/sellers/${id}`);
         return response.data;
+    },
+    getAgents: async () => {
+        const response = await API.get('/admin/agents');
+        return response.data;
+    },
+    createAgent: async (agentData) => {
+        const response = await API.post('/admin/agents', agentData);
+        return response.data;
     }
 };
 

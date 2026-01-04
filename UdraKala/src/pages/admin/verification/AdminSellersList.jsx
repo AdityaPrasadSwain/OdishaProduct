@@ -50,7 +50,7 @@ const AdminSellersList = () => {
             <div className="flex gap-4 mb-6">
                 <div className="relative">
                     <select
-                        className="appearance-none bg-white border rounded px-4 py-2 pr-8 leading-tight focus:outline-none focus:shadow-outline"
+                        className="appearance-none bg-white dark:bg-gray-700 border dark:border-gray-600 rounded px-4 py-2 pr-8 leading-tight focus:outline-none focus:shadow-outline text-gray-700 dark:text-gray-200"
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
                     >
@@ -65,23 +65,23 @@ const AdminSellersList = () => {
             </div>
 
             {loading ? <p>Loading...</p> : (
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
                     <table className="min-w-full leading-normal">
                         <thead>
                             <tr>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Seller
                                 </th>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Business Name
                                 </th>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Contact
                                 </th>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Status
                                 </th>
-                                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                                <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                                     Action
                                 </th>
                             </tr>
@@ -89,31 +89,31 @@ const AdminSellersList = () => {
                         <tbody>
                             {filteredSellers.map((seller) => (
                                 <tr key={seller.id}>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                                         <div className="flex items-center">
                                             <div className="ml-3">
-                                                <p className="text-gray-900 whitespace-no-wrap">
+                                                <p className="text-gray-900 dark:text-white whitespace-no-wrap">
                                                     {seller.fullName}
                                                 </p>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p className="text-gray-900 whitespace-no-wrap">{seller.shopName || '-'}</p>
+                                    <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                        <p className="text-gray-900 dark:text-white whitespace-no-wrap">{seller.shopName || '-'}</p>
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p className="text-gray-900 whitespace-no-wrap">{seller.email}</p>
-                                        <p className="text-gray-600 whitespace-no-wrap text-xs">{seller.phoneNumber}</p>
+                                    <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                        <p className="text-gray-900 dark:text-white whitespace-no-wrap">{seller.email}</p>
+                                        <p className="text-gray-600 dark:text-gray-400 whitespace-no-wrap text-xs">{seller.phoneNumber}</p>
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                                         <span className={`relative inline-block px-3 py-1 font-semibold leading-tight rounded-full ${getStatusColor(seller.registrationStatus)}`}>
                                             <span className="relative text-xs">{seller.registrationStatus?.replace('_', ' ')}</span>
                                         </span>
                                     </td>
-                                    <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
                                         <button
                                             onClick={() => navigate(`/admin/sellers/${seller.id}`)}
-                                            className="text-orange-600 hover:text-orange-900 flex items-center gap-1"
+                                            className="text-orange-600 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300 flex items-center gap-1"
                                         >
                                             <Eye size={16} /> View
                                         </button>

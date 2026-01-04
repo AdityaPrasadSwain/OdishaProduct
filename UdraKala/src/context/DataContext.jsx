@@ -62,6 +62,22 @@ export const DataProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
+    // Listen for storage changes (Multi-tab persistence)
+    useEffect(() => {
+        const handleStorageChange = (e) => {
+            if (e.key === 'cart') {
+                try {
+                    setCart(JSON.parse(e.newValue) || []);
+                } catch (err) {
+                    console.error("Failed to sync cart from storage", err);
+                }
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
+
     const addToCart = (product) => {
         setCart(prevCart => {
             const existingItem = prevCart.find(item => item.id === product.id);

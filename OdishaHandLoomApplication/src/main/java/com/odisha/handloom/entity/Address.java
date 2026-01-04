@@ -23,13 +23,14 @@ public class Address {
     private String country;
 
     @com.fasterxml.jackson.annotation.JsonProperty("isDefault")
-    private boolean isDefault;
+    @Column(name = "is_default", nullable = false)
+    private Boolean isDefault = false;
 
     public Address() {
     }
 
     public Address(UUID id, User user, String street, String city, String state, String zipCode, String country,
-            boolean isDefault) {
+            Boolean isDefault) {
         this.id = id;
         this.user = user;
         this.street = street;
@@ -52,7 +53,7 @@ public class Address {
         private String state;
         private String zipCode;
         private String country;
-        private boolean isDefault;
+        private Boolean isDefault;
 
         AddressBuilder() {
         }
@@ -92,7 +93,7 @@ public class Address {
             return this;
         }
 
-        public AddressBuilder isDefault(boolean isDefault) {
+        public AddressBuilder isDefault(Boolean isDefault) {
             this.isDefault = isDefault;
             return this;
         }
@@ -159,10 +160,10 @@ public class Address {
     }
 
     public boolean isDefault() {
-        return isDefault;
+        return Boolean.TRUE.equals(isDefault);
     }
 
-    public void setDefault(boolean aDefault) {
+    public void setDefault(Boolean aDefault) {
         isDefault = aDefault;
     }
 }

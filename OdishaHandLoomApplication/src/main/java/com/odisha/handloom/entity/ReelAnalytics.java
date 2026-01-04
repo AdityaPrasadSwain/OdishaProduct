@@ -27,12 +27,44 @@ public class ReelAnalytics {
     private Product reel;
 
     @Builder.Default
-    private long totalViews = 0;
+    private Long totalViews = 0L;
     @Builder.Default
-    private long totalLikes = 0;
+    private Long totalLikes = 0L;
     @Builder.Default
-    private long totalReach = 0; // Distinct viewers
+    private Long totalReach = 0L; // Distinct viewers
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void setReel(Product reel) {
+        this.reel = reel;
+    }
+
+    public Product getReel() {
+        return reel;
+    }
+
+    public void setTotalViews(Long totalViews) {
+        this.totalViews = totalViews;
+    }
+
+    public void setTotalLikes(Long totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
+    public Long getTotalLikes() {
+        return totalLikes;
+    }
+
+    public Long getTotalViews() {
+        return totalViews;
+    }
+
+    public void setTotalReach(Long totalReach) {
+        this.totalReach = totalReach;
+    }
+
+    public Long getTotalReach() {
+        return totalReach;
+    }
 }

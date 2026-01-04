@@ -11,56 +11,11 @@ import {
 import PayoutDetailsModal from './PayoutDetailsModal';
 import PayoutConfirmationModal from './PayoutConfirmationModal';
 
-// Mock Data (Replace with API fetch)
-const MOCK_SELLERS = [
-    {
-        id: 1,
-        name: "Aditya Swain",
-        shopName: "Odisha Handlooms",
-        email: "aditya@example.com",
-        phone: "9876543210",
-        bankName: "HDFC Bank",
-        bankAccountNumber: "12345678901234",
-        ifscCode: "HDFC0001234",
-        accountHolderName: "Aditya Prasad Swain",
-        isBankVerified: true,
-        pendingEarnings: [
-            { id: 101, orderId: "ORD-8723", grossAmount: 2500, commission: 125, gstAmount: 22.5, netAmount: 2352.5, payoutStatus: "PENDING" },
-            { id: 102, orderId: "ORD-9921", grossAmount: 1200, commission: 60, gstAmount: 10.8, netAmount: 1129.2, payoutStatus: "PENDING" }
-        ]
-    },
-    {
-        id: 2,
-        name: "Rahul Kumar",
-        shopName: "Rahul Textiles",
-        email: "rahul@example.com",
-        phone: "9123456780",
-        bankName: "SBI",
-        bankAccountNumber: "987654321098",
-        ifscCode: "SBIN0004567",
-        accountHolderName: "Rahul Kumar",
-        isBankVerified: false,
-        pendingEarnings: [
-            { id: 103, orderId: "ORD-1122", grossAmount: 5000, commission: 250, gstAmount: 45, netAmount: 4705, payoutStatus: "PENDING" }
-        ]
-    },
-    {
-        id: 3,
-        name: "Priya Singh",
-        shopName: "Priya Creations",
-        email: "priya@example.com",
-        phone: "9988776655",
-        bankName: "ICICI Bank",
-        bankAccountNumber: "556677889900",
-        ifscCode: "ICIC0003344",
-        accountHolderName: "Priya Singh",
-        isBankVerified: true,
-        pendingEarnings: []
-    }
-];
+import api from '../../api/axios';
+import { getAllSettlements } from '../../api/settlementApi';
 
 const AdminPayoutDashboard = () => {
-    const [sellers, setSellers] = useState(MOCK_SELLERS);
+    const [sellers, setSellers] = useState([]);
     const [selectedSeller, setSelectedSeller] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -68,6 +23,62 @@ const AdminPayoutDashboard = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("ALL"); // ALL, PENDING, PAID, UNVERIFIED
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            const [settlementsRes, bankRes] = await Promise.all([
+                getAllSettlements(),
+                api.get('/admin/payouts/bank-details')
+            ]);
+
+            const settlements = settlementsRes || [];
+            const users = bankRes.data || [];
+
+            // Group settlements by sellerId
+            const settlementsBySeller = settlements.reduce((acc, s) => {
+                if (!acc[s.sellerId]) acc[s.sellerId] = [];
+                acc[s.sellerId].push(s);
+                return acc;
+            }, {});
+
+            // Merge with user data
+            const mappedSellers = users.map(user => {
+                const sellerSettlements = settlementsBySeller[user.id] || [];
+                // Filter only PENDING/READY settlements for the dashboard view
+                const pending = sellerSettlements.filter(s => ['PENDING', 'READY'].includes(s.status));
+
+                return {
+                    id: user.id,
+                    name: user.fullName || 'Unknown',
+                    shopName: user.shopName || 'N/A',
+                    email: user.email,
+                    phone: user.phoneNumber,
+                    bankName: user.bankName || 'N/A',
+                    bankAccountNumber: user.bankAccountNumber,
+                    ifscCode: user.ifscCode,
+                    accountHolderName: user.accountHolderName,
+                    isBankVerified: user.isBankVerified || false,
+                    pendingEarnings: pending.map(s => ({
+                        id: s.id,
+                        orderId: s.orderId ? s.orderId.toString() : 'N/A', // Ensure string if UUID
+                        grossAmount: s.orderAmount,
+                        commission: s.platformFee,
+                        gstAmount: s.tax,
+                        netAmount: s.netAmount,
+                        payoutStatus: s.status
+                    }))
+                };
+            });
+
+            setSellers(mappedSellers);
+        } catch (error) {
+            console.error("Error fetching dashboard data", error);
+        }
+    };
 
     // Derived Stats
     const totalPendingPayouts = sellers.reduce((acc, seller) => {
@@ -95,21 +106,19 @@ const AdminPayoutDashboard = () => {
         setShowConfirmModal(true);
     };
 
-    const handleConfirmPayout = () => {
+    const handleConfirmPayout = async () => {
         setIsProcessing(true);
-        // Simulate API Call
-        setTimeout(() => {
+        try {
+            await api.post(`/admin/payouts/initiate/${selectedSeller.id}`);
             setIsProcessing(false);
             setShowConfirmModal(false);
-            // Update local state to reflect payout (in real app, refetch data)
-            setSellers(prev => prev.map(s => {
-                if (s.name === payoutData.sellerName) {
-                    return { ...s, pendingEarnings: [] }; // Clear earnings
-                }
-                return s;
-            }));
-            alert(`Payout of ₹${payoutData.netAmount.toFixed(2)} to ${payoutData.sellerName} successful!`);
-        }, 2000);
+            alert(`Payout initiated successfully for ${payoutData.sellerName}!`);
+            fetchDashboardData(); // Refresh data
+        } catch (error) {
+            console.error(error);
+            setIsProcessing(false);
+            alert(`Payout failed: ${error.response?.data?.message || 'Unknown error'}`);
+        }
     };
 
     // Filtering Logic

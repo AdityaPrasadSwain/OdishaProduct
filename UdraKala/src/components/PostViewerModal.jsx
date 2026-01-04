@@ -30,7 +30,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
                 ? `/api/reels/${post.id}/comments`
                 : `/api/reels/${post.id}/comments`; // Fallback/Universal for now
 
-            const response = await axios.get(`http://localhost:8080${endpoint}`, {
+            const response = await axios.get(`http://localhost:8085${endpoint}`, {
                 withCredentials: true
             });
             setComments(response.data);
@@ -44,7 +44,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
     const fetchLikeStatus = async () => {
         try {
             // Reusing Reel endpoints as they are attached to Products
-            const response = await axios.get(`http://localhost:8080/api/reels/${post.id}/likes/count`, {
+            const response = await axios.get(`http://localhost:8085/api/reels/${post.id}/likes/count`, {
                 withCredentials: true
             });
             setLikesCount(response.data.count);
@@ -60,10 +60,10 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
         if (!user) return alert("Please login to like");
         try {
             if (isLiked) {
-                await axios.delete(`http://localhost:8080/api/reels/${post.id}/like`, { withCredentials: true });
+                await axios.delete(`http://localhost:8085/api/reels/${post.id}/like`, { withCredentials: true });
                 setLikesCount(prev => prev - 1);
             } else {
-                await axios.post(`http://localhost:8080/api/reels/${post.id}/like`, {}, { withCredentials: true });
+                await axios.post(`http://localhost:8085/api/reels/${post.id}/like`, {}, { withCredentials: true });
                 setLikesCount(prev => prev + 1);
             }
             setIsLiked(!isLiked);
@@ -77,7 +77,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
         if (!newComment.trim() || !user) return;
 
         try {
-            const response = await axios.post(`http://localhost:8080/api/reels/${post.id}/comments`,
+            const response = await axios.post(`http://localhost:8085/api/reels/${post.id}/comments`,
                 { comment: newComment },
                 { withCredentials: true }
             );

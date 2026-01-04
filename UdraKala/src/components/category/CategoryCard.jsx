@@ -10,17 +10,12 @@ const CategoryCard = ({ category }) => {
         >
             <Link to={`/products?category=${category.name}`} className="relative">
                 <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-4 border-white dark:border-gray-800 group-hover:shadow-xl group-hover:border-orange-100 dark:group-hover:border-orange-900/30 transition-all duration-300">
-                    {category.imageUrl ? (
-                        <img
-                            src={category.imageUrl}
-                            alt={category.name}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                    ) : (
-                        <div className="w-full h-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
-                            <span className="text-xs">No Image</span>
-                        </div>
-                    )}
+                    <img
+                        src={category.imageUrl || '/default_category_placeholder.png'}
+                        alt={category.name}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        onError={(e) => { e.target.onerror = null; e.target.src = '/default_category_placeholder.png'; }}
+                    />
                 </div>
             </Link>
             <Link

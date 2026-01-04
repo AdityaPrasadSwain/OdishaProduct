@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+// IDE Refresh Trigger
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/customer")
@@ -45,8 +47,9 @@ public class CustomerController {
             System.out.println("[CustomerController] Searching for: " + search);
             return productRepository.findByNameContainingIgnoreCase(search);
         }
-        List<Product> products = productRepository.findByIsApprovedTrue();
-        System.out.println("[CustomerController] Found " + products.size() + " approved products");
+        // List<Product> products = productRepository.findByIsApprovedTrue();
+        List<Product> products = productRepository.findAll();
+        System.out.println("[CustomerController] Found " + products.size() + " products (ALL - Debug Mode)");
         return products;
     }
 
@@ -120,25 +123,28 @@ public class CustomerController {
 
         // 4. Transform Reels to DTO
         List<SellerProfileResponse.ReelDTO> reelDTOs = reels.stream()
-                .map(r -> SellerProfileResponse.ReelDTO.builder()
-                        .productId(r.getId())
-                        .videoUrl(r.getReelUrl())
-                        .thumbnailUrl(r.getImages().isEmpty() ? null : r.getImages().get(0).getImageUrl())
-                        .title(r.getName())
-                        .build())
+                .map(r -> {
+                    SellerProfileResponse.ReelDTO dto = new SellerProfileResponse.ReelDTO();
+                    dto.setProductId(r.getId());
+                    dto.setVideoUrl(r.getReelUrl());
+                    dto.setThumbnailUrl(r.getImages().isEmpty() ? null : r.getImages().get(0).getImageUrl());
+                    dto.setTitle(r.getName());
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(SellerProfileResponse.builder()
-                .sellerId(seller.getId())
-                .shopName(seller.getShopName())
-                .profileImageUrl(seller.getProfilePictureUrl())
-                .bio(seller.getBio())
-                .postsCount(postsCount)
-                .followersCount(followersCount)
-                .followingCount(followingCount)
-                .isFollowing(isFollowing)
-                .reels(reelDTOs)
-                .build());
+        SellerProfileResponse response = new SellerProfileResponse();
+        response.setSellerId(seller.getId());
+        response.setShopName(seller.getShopName());
+        response.setProfileImageUrl(seller.getProfilePictureUrl());
+        response.setBio(seller.getBio());
+        response.setPostsCount(postsCount);
+        response.setFollowersCount(followersCount);
+        response.setFollowingCount(followingCount);
+        response.setFollowing(isFollowing);
+        response.setReels(reelDTOs);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/orders")

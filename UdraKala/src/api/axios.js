@@ -2,7 +2,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8085/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8086/api",
   timeout: 15000,
   headers: {
     "Content-Type": "application/json",
@@ -31,6 +31,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    /* 🔴 0. Check custom config to skip global handling */
+    if (error.config?.skipGlobalError) {
+      return Promise.reject(error);
+    }
+
     /* 🔴 1. Ignore cancelled requests (page reload / route change) */
     if (
       axios.isCancel(error) ||

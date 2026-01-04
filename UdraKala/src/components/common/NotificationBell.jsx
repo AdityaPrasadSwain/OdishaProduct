@@ -2,19 +2,43 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { getUserNotifications, getUnreadCount, markAsRead, markAllAsRead } from '../../api/notificationApi';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
+    const lastNotificationIdRef = useRef(null);
     const navigate = useNavigate();
 
     const fetchNotifications = async () => {
-        const data = await getUserNotifications();
-        setNotifications(data);
-        const count = await getUnreadCount();
-        setUnreadCount(count);
+        try {
+            const data = await getUserNotifications();
+            setNotifications(data);
+            const count = await getUnreadCount();
+            setUnreadCount(count);
+
+            if (data && data.length > 0) {
+                const latest = data[0];
+                // Check if it's a new notification and unread
+                if (lastNotificationIdRef.current && latest.id !== lastNotificationIdRef.current && !latest.read) {
+                    Swal.fire({
+                        title: latest.title,
+                        text: latest.message,
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                }
+                lastNotificationIdRef.current = latest.id;
+            }
+        } catch (error) {
+            console.error("Error fetching notifications", error);
+        }
     };
 
     useEffect(() => {

@@ -25,14 +25,14 @@ public class OrderItem {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    private int quantity;
+    private Integer quantity;
 
     private BigDecimal price; // Price at the time of purchase
 
     public OrderItem() {
     }
 
-    public OrderItem(UUID id, Order order, Product product, int quantity, BigDecimal price) {
+    public OrderItem(UUID id, Order order, Product product, Integer quantity, BigDecimal price) {
         this.id = id;
         this.order = order;
         this.product = product;
@@ -48,7 +48,7 @@ public class OrderItem {
         private UUID id;
         private Order order;
         private Product product;
-        private int quantity;
+        private Integer quantity;
         private BigDecimal price;
 
         OrderItemBuilder() {
@@ -69,7 +69,7 @@ public class OrderItem {
             return this;
         }
 
-        public OrderItemBuilder quantity(int quantity) {
+        public OrderItemBuilder quantity(Integer quantity) {
             this.quantity = quantity;
             return this;
         }
@@ -108,11 +108,11 @@ public class OrderItem {
         this.product = product;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 

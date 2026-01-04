@@ -27,6 +27,8 @@ const AdminUserManagement = () => {
             let data = [];
             if (activeTab === 'sellers') {
                 data = await adminApi.getSellers();
+            } else if (activeTab === 'agents') {
+                data = await adminApi.getAgents();
             } else {
                 data = await adminApi.getCustomers();
             }
@@ -36,6 +38,42 @@ const AdminUserManagement = () => {
             Swal.fire('Error', 'Failed to load user data', 'error');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleCreateAgent = async () => {
+        const { value: formValues } = await Swal.fire({
+            title: 'Add Delivery Agent',
+            html:
+                '<input id="swal-input1" class="swal2-input" placeholder="Full Name">' +
+                '<input id="swal-input2" class="swal2-input" placeholder="Email">' +
+                '<input id="swal-input3" class="swal2-input" placeholder="Phone">' +
+                '<input id="swal-input4" class="swal2-input" type="password" placeholder="Password">',
+            focusConfirm: false,
+            showCancelButton: true,
+            preConfirm: () => {
+                return {
+                    fullName: document.getElementById('swal-input1').value,
+                    email: document.getElementById('swal-input2').value,
+                    phoneNumber: document.getElementById('swal-input3').value,
+                    password: document.getElementById('swal-input4').value,
+                    role: 'customer' // Dummy role to pass validation, backend overrides to DELIVERY_AGENT
+                }
+            }
+        });
+
+        if (formValues) {
+            if (!formValues.fullName || !formValues.email || !formValues.password || !formValues.phoneNumber) {
+                Swal.fire('Error', 'All fields are required', 'error');
+                return;
+            }
+            try {
+                await adminApi.createAgent(formValues);
+                Swal.fire('Success', 'Agent created successfully', 'success');
+                fetchUsers();
+            } catch (error) {
+                Swal.fire('Error', error.response?.data?.message || 'Failed to create agent', 'error');
+            }
         }
     };
 
@@ -245,13 +283,15 @@ const AdminUserManagement = () => {
                         {params.row.blocked ? <Shield size={18} /> : <Ban size={18} />}
                     </button>
 
-                    <button
-                        onClick={() => navigate(`/admin/sellers/${params.row.id}`)}
-                        className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
-                        title="View Details"
-                    >
-                        <Eye size={18} />
-                    </button>
+                    {activeTab !== 'agents' && (
+                        <button
+                            onClick={() => navigate(`/admin/sellers/${params.row.id}`)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                            title="View Details"
+                        >
+                            <Eye size={18} />
+                        </button>
+                    )}
 
                     <button
                         onClick={() => handleDelete(params.row.id)}
@@ -286,19 +326,36 @@ const AdminUserManagement = () => {
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-fit">
-                <button
-                    onClick={() => setActiveTab('customers')}
-                    className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'customers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                    Customers
-                </button>
-                <button
-                    onClick={() => setActiveTab('sellers')}
-                    className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'sellers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                >
-                    Sellers
-                </button>
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-fit">
+                    <button
+                        onClick={() => setActiveTab('customers')}
+                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'customers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Customers
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('sellers')}
+                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'sellers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Sellers
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('agents')}
+                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'agents' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                    >
+                        Delivery Agents
+                    </button>
+                </div>
+
+                {activeTab === 'agents' && (
+                    <button
+                        onClick={handleCreateAgent}
+                        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded flex items-center gap-2"
+                    >
+                        + Add Agent
+                    </button>
+                )}
             </div>
 
             {/* Table */}

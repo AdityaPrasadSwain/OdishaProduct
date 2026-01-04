@@ -25,7 +25,8 @@ public class SellerDocuments {
     private String aadhaarFileUrl;
     private String gstFileUrl;
 
-    private boolean isVerified = false;
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
     private LocalDateTime verifiedAt;
 
     public SellerDocuments() {
@@ -97,10 +98,10 @@ public class SellerDocuments {
     }
 
     public boolean isVerified() {
-        return isVerified;
+        return Boolean.TRUE.equals(isVerified);
     }
 
-    public void setVerified(boolean verified) {
+    public void setVerified(Boolean verified) {
         isVerified = verified;
     }
 

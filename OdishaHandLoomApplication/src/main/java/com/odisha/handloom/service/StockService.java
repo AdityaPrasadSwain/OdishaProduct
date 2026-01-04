@@ -117,11 +117,10 @@ public class StockService {
                 .existsByProductAndCustomerEmailAndNotifiedFalse(product, customerEmail);
 
         if (uniqueSubscription) {
-            StockNotification notification = StockNotification.builder()
-                    .product(product)
-                    .customerEmail(customerEmail)
-                    .notified(false)
-                    .build();
+            StockNotification notification = new StockNotification();
+            notification.setProduct(product);
+            notification.setCustomerEmail(customerEmail);
+            notification.setNotified(false);
 
             if (userId != null) {
                 userRepository.findById(userId).ifPresent(notification::setCustomer);

@@ -15,18 +15,21 @@ public class Category {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(name = "category_code", unique = true)
+    private String categoryCode;
+
     private String description;
 
     @Column(name = "image_url")
     private String imageUrl;
 
     @Column(nullable = false)
-    private boolean active = true;
+    private Boolean active = true;
 
     public Category() {
     }
 
-    public Category(UUID id, String name, String description, String imageUrl, boolean active) {
+    public Category(UUID id, String name, String description, String imageUrl, Boolean active) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -50,6 +53,14 @@ public class Category {
         this.name = name;
     }
 
+    public String getCategoryCode() {
+        return categoryCode;
+    }
+
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -67,10 +78,10 @@ public class Category {
     }
 
     public boolean isActive() {
-        return active;
+        return Boolean.TRUE.equals(active);
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 }

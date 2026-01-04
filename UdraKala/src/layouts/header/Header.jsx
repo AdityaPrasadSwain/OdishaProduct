@@ -38,6 +38,11 @@ const Header = () => {
         return '/admin/analytics'; // Fallback or adjust if needed.
     };
 
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event) => setAnchorEl(event.currentTarget);
+    const handleClose = () => setAnchorEl(null);
+
     return (
         <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 h-16 flex items-center justify-between transition-colors duration-300">
 
@@ -78,94 +83,83 @@ const Header = () => {
                     <NotificationBell />
 
                     {/* Profile & Account Menu */}
-                    {/* Integrated Account Menu Logic directly here */}
-                    {(() => {
-                        const [anchorEl, setAnchorEl] = useState(null);
-                        const open = Boolean(anchorEl);
-                        const handleClick = (event) => setAnchorEl(event.currentTarget);
-                        const handleClose = () => setAnchorEl(null);
-
-                        return (
-                            <>
-                                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                                    <Tooltip title="Account settings">
-                                        <IconButton
-                                            onClick={handleClick}
-                                            size="small"
-                                            sx={{ ml: 2 }}
-                                            aria-controls={open ? 'account-menu' : undefined}
-                                            aria-haspopup="true"
-                                            aria-expanded={open ? 'true' : undefined}
-                                        >
-                                            <div className={`h-8 w-8 rounded-full ${user?.profileImage ? '' : 'bg-primary/10'} flex items-center justify-center text-primary font-bold overflow-hidden border border-gray-200 dark:border-gray-700`}>
-                                                {user?.profileImage ?
-                                                    <img src={user.profileImage} alt="User" className='w-full h-full object-cover' />
-                                                    : <User size={18} />
-                                                }
-                                            </div>
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    id="account-menu"
-                                    open={open}
-                                    onClose={handleClose}
-                                    onClick={handleClose}
-                                    slotProps={{
-                                        paper: {
-                                            elevation: 0,
-                                            sx: {
-                                                overflow: 'visible',
-                                                filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                                mt: 1.5,
-                                                bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Dark mode fix
-                                                color: theme === 'dark' ? 'white' : 'inherit',
-                                                '& .MuiAvatar-root': {
-                                                    width: 32,
-                                                    height: 32,
-                                                    ml: -0.5,
-                                                    mr: 1,
-                                                },
-                                                '&::before': {
-                                                    content: '""',
-                                                    display: 'block',
-                                                    position: 'absolute',
-                                                    top: 0,
-                                                    right: 14,
-                                                    width: 10,
-                                                    height: 10,
-                                                    bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Match arrow color
-                                                    transform: 'translateY(-50%) rotate(45deg)',
-                                                    zIndex: 0,
-                                                },
-                                            },
-                                        },
-                                    }}
-                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                >
-                                    <MenuItem onClick={() => { handleClose(); window.location.href = '#'; }}>
-                                        <Avatar sx={{ width: 28, height: 28, bgcolor: 'transparent', mr: 1 }} />
-                                        {user?.name || "Profile"}
-                                    </MenuItem>
-                                    <Divider />
-                                    <MenuItem onClick={() => { handleClose(); window.location.href = getDashboardPath(); }}>
-                                        <ListItemIcon>
-                                            <Settings fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
-                                        </ListItemIcon>
-                                        Dashboard
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleClose(); logout(); }}>
-                                        <ListItemIcon>
-                                            <Logout fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
-                                        </ListItemIcon>
-                                        Logout
-                                    </MenuItem>
-                                </Menu>
-                            </>
-                        );
-                    })()}
+                    {/* Integrated Account Menu Logic */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                        <Tooltip title="Account settings">
+                            <IconButton
+                                onClick={handleClick}
+                                size="small"
+                                sx={{ ml: 2 }}
+                                aria-controls={open ? 'account-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                            >
+                                <div className={`h-8 w-8 rounded-full ${user?.profileImage ? '' : 'bg-primary/10'} flex items-center justify-center text-primary font-bold overflow-hidden border border-gray-200 dark:border-gray-700`}>
+                                    {user?.profileImage ?
+                                        <img src={user.profileImage} alt="User" className='w-full h-full object-cover' />
+                                        : <User size={18} />
+                                    }
+                                </div>
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                    <Menu
+                        anchorEl={anchorEl}
+                        id="account-menu"
+                        open={open}
+                        onClose={handleClose}
+                        onClick={handleClose}
+                        slotProps={{
+                            paper: {
+                                elevation: 0,
+                                sx: {
+                                    overflow: 'visible',
+                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                                    mt: 1.5,
+                                    bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Dark mode fix
+                                    color: theme === 'dark' ? 'white' : 'inherit',
+                                    '& .MuiAvatar-root': {
+                                        width: 32,
+                                        height: 32,
+                                        ml: -0.5,
+                                        mr: 1,
+                                    },
+                                    '&::before': {
+                                        content: '""',
+                                        display: 'block',
+                                        position: 'absolute',
+                                        top: 0,
+                                        right: 14,
+                                        width: 10,
+                                        height: 10,
+                                        bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Match arrow color
+                                        transform: 'translateY(-50%) rotate(45deg)',
+                                        zIndex: 0,
+                                    },
+                                },
+                            },
+                        }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    >
+                        <MenuItem onClick={() => { handleClose(); window.location.href = '#'; }}>
+                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'transparent', mr: 1 }} />
+                            {user?.name || "Profile"}
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => { handleClose(); window.location.href = getDashboardPath(); }}>
+                            <ListItemIcon>
+                                <Settings fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
+                            </ListItemIcon>
+                            Dashboard
+                        </MenuItem>
+                        <MenuItem onClick={() => { handleClose(); logout(); }}>
+                            <ListItemIcon>
+                                <Logout fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
+                            </ListItemIcon>
+                            Logout
+                        </MenuItem>
+                    </Menu>
                 </div>
             </div>
         </header>

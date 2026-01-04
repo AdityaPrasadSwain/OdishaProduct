@@ -1,19 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Bell } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getUnreadNotificationCount } from '../../api/adminNotificationApi';
+import { getUnreadNotificationCount, getAdminNotifications } from '../../api/adminNotificationApi';
+import Swal from 'sweetalert2';
 
 const AdminNotificationBell = () => {
     const [unreadCount, setUnreadCount] = useState(0);
+    const lastNotificationIdRef = useRef(null);
 
-    const fetchCount = async () => {
-        const count = await getUnreadNotificationCount();
-        setUnreadCount(count);
+    const fetchData = async () => {
+        try {
+            const count = await getUnreadNotificationCount();
+            setUnreadCount(count);
+
+            // Fetch latest notification to check for new alerts
+            const data = await getAdminNotifications(0, 1);
+            if (data && data.content && data.content.length > 0) {
+                const latest = data.content[0];
+
+                // If we have a new notification that is unread
+                if (lastNotificationIdRef.current && latest.id !== lastNotificationIdRef.current && !latest.read) {
+                    Swal.fire({
+                        title: latest.title,
+                        text: latest.message,
+                        icon: 'info',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                }
+                lastNotificationIdRef.current = latest.id;
+            }
+        } catch (error) {
+            console.error("Error polling notifications:", error);
+        }
     };
 
     useEffect(() => {
-        fetchCount();
-        const interval = setInterval(fetchCount, 30000); // Poll every 30 seconds
+        fetchData();
+        const interval = setInterval(fetchData, 30000); // Poll every 30 seconds
         return () => clearInterval(interval);
     }, []);
 

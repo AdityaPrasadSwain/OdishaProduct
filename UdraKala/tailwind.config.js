@@ -11,31 +11,58 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: '#5D87FF',
-                'primary-light': '#ECF2FF',
-                secondary: '#49BEFF',
-                'secondary-light': '#E8F7FF',
-                success: '#13DEB9',
-                'success-light': '#E6FFFA',
-                info: '#539BFF',
-                'info-light': '#EBF3FE',
-                warning: '#FA896B',
-                'warning-light': '#FEF5F5',
-                danger: '#FA896B',
-                'danger-light': '#FEF5F5',
-                dark: '#2A3547',
-                'dark-light': '#F2F6FA',
-                muted: '#5A6A85',
-                border: '#EAEFF4',
+                primary: {
+                    DEFAULT: '#ea580c', // Premium Burnt Orange
+                    50: '#fff7ed',
+                    100: '#ffedd5',
+                    200: '#fed7aa',
+                    300: '#fdba74',
+                    400: '#fb923c',
+                    500: '#f97316',
+                    600: '#ea580c',
+                    700: '#c2410c',
+                    800: '#9a3412',
+                    900: '#7c2d12',
+                },
+                secondary: {
+                    DEFAULT: '#0f172a', // Slate 900
+                    50: '#f8fafc',
+                    100: '#f1f5f9',
+                    200: '#e2e8f0',
+                    300: '#cbd5e1',
+                    400: '#94a3b8',
+                    500: '#64748b',
+                    600: '#475569',
+                    700: '#334155',
+                    800: '#1e293b',
+                    900: '#0f172a',
+                },
+                success: '#16a34a', // Green 600
+                warning: '#ca8a04', // Yellow 600
+                danger: '#dc2626', // Red 600
+                info: '#2563eb', // Blue 600
+                dark: '#0f172a',
+                light: '#f8fafc',
+                muted: '#64748b',
+                border: '#e2e8f0',
             },
             fontFamily: {
-                sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                sans: ['"Outfit"', '"Inter"', 'sans-serif'],
+                serif: ['"Playfair Display"', 'serif'],
             },
             boxShadow: {
-                md: '0px 1px 4px rgba(0,0,0,0.08)',
-                lg: '0px 2px 20px rgba(0,0,0,0.04)',
+                sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+                DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+                md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+                xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
                 card: '0 0 20px 0 rgba(0,0,0,0.05)',
+                inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
             },
+            borderRadius: {
+                'xl': '1rem',
+                '2xl': '1.5rem',
+            }
         },
     },
     plugins: [],

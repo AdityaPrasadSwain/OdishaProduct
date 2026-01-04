@@ -66,4 +66,52 @@ public class ReelComment {
         }
         return this.replies;
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Product getReel() {
+        return reel;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setParent(ReelComment parent) {
+        this.parent = parent;
+    }
+
+    public ReelComment getParent() {
+        return parent;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setReel(Product reel) {
+        this.reel = reel;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setSellerResponse(boolean sellerResponse) {
+        this.sellerResponse = sellerResponse;
+    }
+
+    public void setReplies(java.util.List<ReelComment> replies) {
+        this.replies = replies;
+    }
 }

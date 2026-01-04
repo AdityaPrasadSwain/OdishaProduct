@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 // isLoggingOut removed
 
 const API = axios.create({
-  baseURL: "http://localhost:8085/api",
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8086/api",
   timeout: 60000,
   // headers: { "Content-Type": "application/json" } // Removed to allow auto-detection (JSON vs Multipart)
 });

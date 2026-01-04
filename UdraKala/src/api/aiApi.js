@@ -29,3 +29,13 @@ export const generateCommentReply = async (data) => {
         throw error;
     }
 };
+
+export const categorizeProduct = async (data) => {
+    try {
+        const response = await axios.post('/ai/product/categorize', data);
+        return response.data;
+    } catch (error) {
+        console.error("Error categorizing product:", error);
+        throw error;
+    }
+};

@@ -16,11 +16,14 @@ const CategoryNavItem = ({ category }) => {
                                 src={category.imageUrl}
                                 alt={category.name}
                                 className="w-full h-full object-cover"
+                                onError={(e) => { e.target.onerror = null; e.target.src = '/default_category_placeholder.png'; }}
                             />
                         ) : (
-                            <div className="w-full h-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs text-gray-400 dark:text-gray-500">
-                                No Img
-                            </div>
+                            <img
+                                src="/default_category_placeholder.png"
+                                alt={category.name}
+                                className="w-full h-full object-cover"
+                            />
                         )}
                     </div>
                 </div>

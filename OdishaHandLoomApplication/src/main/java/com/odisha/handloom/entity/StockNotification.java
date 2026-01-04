@@ -35,8 +35,58 @@ public class StockNotification {
     @Column(name = "customer_email", nullable = false)
     private String customerEmail;
 
-    private boolean notified;
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean notified = false;
 
     @CreationTimestamp
     private LocalDateTime requestedAt;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public boolean isNotified() {
+        return Boolean.TRUE.equals(notified);
+    }
+
+    public LocalDateTime getRequestedAt() {
+        return requestedAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public void setNotified(Boolean notified) {
+        this.notified = notified;
+    }
+
+    public void setRequestedAt(LocalDateTime requestedAt) {
+        this.requestedAt = requestedAt;
+    }
 }

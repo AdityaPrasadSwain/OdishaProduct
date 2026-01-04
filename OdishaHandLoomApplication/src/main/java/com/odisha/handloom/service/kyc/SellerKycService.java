@@ -136,23 +136,23 @@ public class SellerKycService {
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId)
                             .orElseThrow(() -> new RuntimeException("User not found"));
-                    return sellerKycRepository.save(SellerKyc.builder()
-                            .user(user)
-                            .kycStatus(KycStatus.NOT_STARTED)
-                            .build());
+                    SellerKyc newKyc = new SellerKyc();
+                    newKyc.setUser(user);
+                    newKyc.setKycStatus(KycStatus.NOT_STARTED);
+                    return sellerKycRepository.save(newKyc);
                 });
     }
 
     private SellerKycResponse mapToResponse(SellerKyc kyc) {
-        return SellerKycResponse.builder()
-                .status(kyc.getKycStatus().name())
-                .panVerified(kyc.isPanVerified())
-                .panMasked(kyc.getPanMasked())
-                .aadhaarVerified(kyc.isAadhaarVerified())
-                .aadhaarMasked(kyc.getAadhaarMasked())
-                .gstVerified(kyc.isGstVerified())
-                .rejectionReason(kyc.getRejectionReason())
-                .build();
+        SellerKycResponse response = new SellerKycResponse();
+        response.setStatus(kyc.getKycStatus().name());
+        response.setPanVerified(kyc.isPanVerified());
+        response.setPanMasked(kyc.getPanMasked());
+        response.setAadhaarVerified(kyc.isAadhaarVerified());
+        response.setAadhaarMasked(kyc.getAadhaarMasked());
+        response.setGstVerified(kyc.isGstVerified());
+        response.setRejectionReason(kyc.getRejectionReason());
+        return response;
     }
 
     private String maskString(String input, int visibleStart, int visibleEnd) {

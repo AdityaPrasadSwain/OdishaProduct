@@ -25,4 +25,28 @@ public class ReviewImage {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Review getReview() {
+        return review;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setReview(Review review) {
+        this.review = review;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

@@ -10,6 +10,10 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
         setIsVisible(true);
     }, []);
 
+    const confettiOffsets = React.useMemo(() => {
+        return [...Array(6)].map(() => Math.random() * 20);
+    }, []);
+
     const handleContinue = () => {
         if (onContinueShopping) {
             onContinueShopping();
@@ -36,7 +40,7 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
                             animate={{
                                 opacity: [0, 1, 0],
                                 y: [-20, -100],
-                                x: (i % 2 === 0 ? 50 : -50) + (Math.random() * 20),
+                                x: (i % 2 === 0 ? 50 : -50) + confettiOffsets[i],
                                 scale: [0, 1.2, 0]
                             }}
                             transition={{

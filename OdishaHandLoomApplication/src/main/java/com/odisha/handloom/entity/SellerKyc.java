@@ -32,24 +32,24 @@ public class SellerKyc {
     private String panMasked; // Format: ABCDE****F
 
     @Builder.Default
-    @Column(name = "pan_verified")
-    private boolean panVerified = false;
+    @Column(name = "pan_verified", nullable = false)
+    private Boolean panVerified = false;
 
     // Aadhaar Details
     @Column(name = "aadhaar_masked")
     private String aadhaarMasked; // Format: XXXX-XXXX-1234
 
     @Builder.Default
-    @Column(name = "aadhaar_verified")
-    private boolean aadhaarVerified = false;
+    @Column(name = "aadhaar_verified", nullable = false)
+    private Boolean aadhaarVerified = false;
 
     // GST Details
     @Column(name = "gstin")
     private String gstin;
 
     @Builder.Default
-    @Column(name = "gst_verified")
-    private boolean gstVerified = false;
+    @Column(name = "gst_verified", nullable = false)
+    private Boolean gstVerified = false;
 
     // Request ID for Aadhaar OTP (Transient usually, but storing for session
     // validity if needed,
@@ -69,4 +69,100 @@ public class SellerKyc {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getPanMasked() {
+        return panMasked;
+    }
+
+    public boolean isPanVerified() {
+        return Boolean.TRUE.equals(panVerified);
+    }
+
+    public String getAadhaarMasked() {
+        return aadhaarMasked;
+    }
+
+    public boolean isAadhaarVerified() {
+        return Boolean.TRUE.equals(aadhaarVerified);
+    }
+
+    public String getGstin() {
+        return gstin;
+    }
+
+    public boolean isGstVerified() {
+        return Boolean.TRUE.equals(gstVerified);
+    }
+
+    public KycStatus getKycStatus() {
+        return kycStatus;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPanMasked(String panMasked) {
+        this.panMasked = panMasked;
+    }
+
+    public void setPanVerified(Boolean panVerified) {
+        this.panVerified = panVerified;
+    }
+
+    public void setAadhaarMasked(String aadhaarMasked) {
+        this.aadhaarMasked = aadhaarMasked;
+    }
+
+    public void setAadhaarVerified(Boolean aadhaarVerified) {
+        this.aadhaarVerified = aadhaarVerified;
+    }
+
+    public void setGstin(String gstin) {
+        this.gstin = gstin;
+    }
+
+    public void setGstVerified(Boolean gstVerified) {
+        this.gstVerified = gstVerified;
+    }
+
+    public void setKycStatus(KycStatus kycStatus) {
+        this.kycStatus = kycStatus;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

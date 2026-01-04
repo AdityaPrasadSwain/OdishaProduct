@@ -246,7 +246,8 @@ public class AdminController {
                     item.setQuantity(1);
                     item.setPrice(new java.math.BigDecimal("4999.00"));
 
-                    emailService.sendOrderConfirmationEmail(to, "Test User", "TEST-123", 4999.00, List.of(item), null);
+                    emailService.sendOrderConfirmationEmail(to, "Test User", "TEST-123",
+                            new java.math.BigDecimal("4999.00"), List.of(item), null);
                     break;
                 case "seller-return":
                     emailService.sendSellerReturnRequestEmail(to, "Test Seller", "TEST-123", "Test Sambalpuri Saree",
@@ -264,5 +265,37 @@ public class AdminController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new MessageResponse("Failed to send email: " + e.getMessage()));
         }
+    }
+
+    @GetMapping("/agents")
+    public List<User> getAllAgents() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getRole() == Role.DELIVERY_AGENT && !user.isDeleted())
+                .collect(Collectors.toList());
+    }
+
+    @Autowired
+    org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    @PostMapping("/agents")
+    public ResponseEntity<?> createAgent(@RequestBody com.odisha.handloom.payload.request.SignupRequest signUpRequest) {
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+        }
+
+        User user = new User(signUpRequest.getEmail(), // Use email as username
+                signUpRequest.getEmail(),
+                passwordEncoder.encode(signUpRequest.getPassword()));
+
+        user.setFullName(signUpRequest.getFullName());
+        user.setPhoneNumber(signUpRequest.getPhoneNumber());
+        user.setRole(Role.DELIVERY_AGENT);
+        user.setApproved(true);
+        user.setBlocked(false);
+        user.setRegistrationStatus(com.odisha.handloom.entity.RegistrationStatus.COMPLETED); // Auto-approve
+
+        userRepository.save(user);
+
+        return ResponseEntity.ok(new MessageResponse("Delivery Agent registered successfully!"));
     }
 }

@@ -1,0 +1,59 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ----------------< com.odisha:OdishaHandLoomApplication >----------------
+[INFO] Building OdishaHandLoomApplication 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ OdishaHandLoomApplication ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 8 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ OdishaHandLoomApplication ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 250 source files with javac [debug parameters release 21] to target\classes
+[INFO] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/service/ChatService.java: C:\Users\swain\OneDrive\Desktop\Odisha\OdishaHandLoomApplication\src\main\java\com\odisha\handloom\service\ChatService.java uses unchecked or unsafe operations.
+[INFO] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/service/ChatService.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[277,64] cannot find symbol
+  symbol:   variable deliveryOtpRepository
+  location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[287,31] cannot find symbol
+  symbol:   variable cloudinaryService
+  location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[297,21] cannot find symbol
+  symbol:   variable deliveryProofRepository
+  location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[314,17] cannot find symbol
+  symbol:   variable settlementService
+  location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[INFO] 4 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  13.204 s
+[INFO] Finished at: 2025-12-29T19:48:57+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project OdishaHandLoomApplication: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[277,64] cannot find symbol
+[ERROR]   symbol:   variable deliveryOtpRepository
+[ERROR]   location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[287,31] cannot find symbol
+[ERROR]   symbol:   variable cloudinaryService
+[ERROR]   location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[297,21] cannot find symbol
+[ERROR]   symbol:   variable deliveryProofRepository
+[ERROR]   location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] /C:/Users/swain/OneDrive/Desktop/Odisha/OdishaHandLoomApplication/src/main/java/com/odisha/handloom/logistics/service/LogisticsServiceImpl.java:[314,17] cannot find symbol
+[ERROR]   symbol:   variable settlementService
+[ERROR]   location: class com.odisha.handloom.logistics.service.LogisticsServiceImpl
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

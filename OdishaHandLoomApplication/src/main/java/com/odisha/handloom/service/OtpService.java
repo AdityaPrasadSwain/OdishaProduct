@@ -100,16 +100,17 @@ public class OtpService {
 
         System.out.println("🕒 Generating OTP. Now: " + now + ", Expiry: " + expiry);
 
-        Otp otp = Otp.builder()
-                .otp(otpCode)
-                .expiryTime(expiry)
-                .used(false)
-                .attemptCount(0)
-                .lastSentAt(now)
-                .resendAt(now.plusSeconds(otpProperties.getResendCooldownSeconds()))
-                .createdAt(now) // Explicit creation time
-                .type(type)
-                .build();
+        System.out.println("🕒 Generating OTP. Now: " + now + ", Expiry: " + expiry);
+
+        Otp otp = new Otp();
+        otp.setOtp(otpCode);
+        otp.setExpiryTime(expiry);
+        otp.setUsed(false);
+        otp.setAttemptCount(0);
+        otp.setLastSentAt(now);
+        otp.setResendAt(now.plusSeconds(otpProperties.getResendCooldownSeconds()));
+        otp.setCreatedAt(now); // Explicit creation time
+        otp.setType(type);
 
         if ("MOBILE".equals(type)) {
             otp.setMobile(identifier);

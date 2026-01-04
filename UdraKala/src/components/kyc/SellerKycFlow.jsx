@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import api from '../../api/axios';
 import { CheckCircle, Circle, AlertCircle } from 'lucide-react';
 import PanVerification from './steps/PanVerification';
 import AadhaarVerification from './steps/AadhaarVerification';
@@ -18,9 +19,7 @@ const SellerKycFlow = () => {
 
     const fetchKycStatus = async () => {
         try {
-            const response = await axios.get('http://localhost:8085/api/kyc/status', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/seller/kyc/status');
             const status = response.data.status;
             setKycStatus(status);
             determineStep(status);
@@ -49,9 +48,7 @@ const SellerKycFlow = () => {
 
     const handleFinalSubmit = async () => {
         try {
-            await axios.post('http://localhost:8085/api/kyc/submit', {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/seller/kyc/submit', {});
             fetchKycStatus();
         } catch (error) {
             console.error("Failed to submit", error);

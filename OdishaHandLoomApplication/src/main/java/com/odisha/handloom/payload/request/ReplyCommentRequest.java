@@ -13,4 +13,20 @@ public class ReplyCommentRequest {
     // Optional: if parentId is passed in body instead of path, but path is
     // preferred for REST
     private UUID parentId;
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public UUID getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(UUID parentId) {
+        this.parentId = parentId;
+    }
 }

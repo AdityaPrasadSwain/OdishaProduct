@@ -21,14 +21,14 @@ public class AdminNotificationService {
     @Transactional
     public void createNotification(AdminNotificationType type, String title, String message, UUID entityId,
             AdminNotificationPriority priority) {
-        AdminNotification notification = AdminNotification.builder()
-                .type(type)
-                .title(title)
-                .message(message)
-                .entityId(entityId)
-                .priority(priority)
-                .isRead(false)
-                .build();
+        AdminNotification notification = new AdminNotification();
+        notification.setType(type);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setEntityId(entityId);
+        notification.setPriority(priority);
+        notification.setRead(false);
+
         adminNotificationRepository.save(notification);
     }
 

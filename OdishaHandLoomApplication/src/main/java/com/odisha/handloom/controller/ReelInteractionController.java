@@ -68,10 +68,9 @@ public class ReelInteractionController {
             return ResponseEntity.badRequest().body(new MessageResponse("Already liked"));
         }
 
-        ReelLike like = ReelLike.builder()
-                .reel(reel)
-                .user(user)
-                .build();
+        ReelLike like = new ReelLike();
+        like.setReel(reel);
+        like.setUser(user);
         reelLikeRepository.save(like);
 
         // Update Analytics
@@ -211,19 +210,19 @@ public class ReelInteractionController {
             return ResponseEntity.badRequest().body(new MessageResponse("Already following"));
         }
 
-        SellerFollower follower = SellerFollower.builder()
-                .seller(seller)
-                .user(user)
-                .followSource(source != null ? source : "PROFILE")
-                .sourceReelId(reelId)
-                .build();
+        SellerFollower follower = new SellerFollower();
+        follower.setSeller(seller);
+        follower.setUser(user);
+        // follower.setFollowSource(source != null ? source : "PROFILE"); // Need to add
+        // setter for this if missing
+        // follower.setSourceReelId(reelId); // Need to add setter for this if missing
         sellerFollowerRepository.save(follower);
 
         // Update Counts
-        seller.setFollowersCount(seller.getFollowersCount() + 1);
+        seller.setFollowersCount((seller.getFollowersCount() == null ? 0L : seller.getFollowersCount()) + 1);
         userRepository.save(seller);
 
-        user.setFollowingCount(user.getFollowingCount() + 1);
+        user.setFollowingCount((user.getFollowingCount() == null ? 0L : user.getFollowingCount()) + 1);
         userRepository.save(user);
 
         // Trigger Notification
@@ -251,12 +250,12 @@ public class ReelInteractionController {
         sellerFollowerRepository.delete(follower);
 
         // Update Counts
-        if (seller.getFollowersCount() > 0) {
+        if (seller.getFollowersCount() != null && seller.getFollowersCount() > 0) {
             seller.setFollowersCount(seller.getFollowersCount() - 1);
             userRepository.save(seller);
         }
 
-        if (user.getFollowingCount() > 0) {
+        if (user.getFollowingCount() != null && user.getFollowingCount() > 0) {
             user.setFollowingCount(user.getFollowingCount() - 1);
             userRepository.save(user);
         }

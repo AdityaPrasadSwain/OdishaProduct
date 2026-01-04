@@ -30,22 +30,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = null;
 
         // 1. Try Phone Number first (Normalize: remove spaces, +91, dashes)
-        // Keep only digits for checking
         String normalizedPhone = trimmedIdentifier.replaceAll("[^0-9]", "");
 
-        // If it looks like a phone number (e.g., last 10 digits)
+        // Strategy 1: Last 10 digits (Standard Indian format)
         if (normalizedPhone.length() >= 10) {
-            String param = normalizedPhone;
-            // If user entered +919861842856 -> 919861842856.
-            // If DB stores 9861842856, we might need to be careful.
-            // Assumption: DB stores 10 digit or full number.
-            // Let's try exact match on trimmed first, then normalized if needed?
-            // User prompt: "Strip country code if present"
-            if (normalizedPhone.length() > 10) {
-                param = normalizedPhone.substring(normalizedPhone.length() - 10);
-            }
-            System.out.println("DEBUG: Trying lookup by Phone: " + param);
-            user = userRepository.findByPhoneNumber(param).orElse(null);
+            String last10 = normalizedPhone.substring(normalizedPhone.length() - 10);
+            System.out.println("DEBUG: Trying lookup by Phone (Last 10): " + last10);
+            user = userRepository.findByPhoneNumber(last10).orElse(null);
+        }
+
+        // Strategy 2: Full Normalized Digits (e.g. 919861842856)
+        if (user == null && !normalizedPhone.isEmpty()) {
+            System.out.println("DEBUG: Trying lookup by Phone (Full Normalized): " + normalizedPhone);
+            user = userRepository.findByPhoneNumber(normalizedPhone).orElse(null);
         }
 
         // 2. If not found, try as Email
@@ -56,12 +53,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         if (user == null) {
             // Fallback: Try exact match on raw input just in case
-            System.out.println("DEBUG: Trying exact match backup: " + trimmedIdentifier);
+            System.out.println("DEBUG: Trying exact match backup for phone: " + trimmedIdentifier);
             user = userRepository.findByPhoneNumber(trimmedIdentifier).orElse(null);
         }
 
         if (user == null) {
-            System.out.println("DEBUG: User NOT found for: " + trimmedIdentifier);
+            System.out.println("DEBUG: User NOT found for input: " + trimmedIdentifier);
+            // Hint for developers: Check if 91 prefix is an issue
             throw new UsernameNotFoundException("User Not Found: " + trimmedIdentifier);
         }
 

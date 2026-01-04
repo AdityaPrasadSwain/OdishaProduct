@@ -34,4 +34,20 @@ public class CommentLike {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    public void setComment(ReelComment comment) {
+        this.comment = comment;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public ReelComment getComment() {
+        return comment;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

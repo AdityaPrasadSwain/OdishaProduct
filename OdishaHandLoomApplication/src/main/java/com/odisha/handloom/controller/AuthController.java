@@ -194,6 +194,7 @@ public class AuthController {
                     user.getProfilePictureUrl()));
         } catch (org.springframework.security.authentication.BadCredentialsException e) {
             System.out.println("DEBUG: BadCredentialsException occurred. Message: " + e.getMessage());
+
             throw e;
         }
     }

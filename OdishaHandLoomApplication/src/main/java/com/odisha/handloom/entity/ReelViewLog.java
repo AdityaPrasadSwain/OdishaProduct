@@ -3,7 +3,6 @@ package com.odisha.handloom.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -11,11 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "reel_view_logs", indexes = {
-        @Index(name = "idx_view_reel_user", columnList = "reel_id, viewer_id"),
-        @Index(name = "idx_view_reel_session", columnList = "reel_id, sessionId")
-})
-@Data
+@Table(name = "reel_view_logs")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,11 +25,51 @@ public class ReelViewLog {
     private Product reel;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "viewer_id", nullable = true) // Can be null if anonymous
-    private User viewer;
+    @JoinColumn(name = "user_id")
+    private User user; // Optional, for logged-in users
 
-    private String sessionId; // Helper for anonymous reach tracking (optional, or IP hash)
+    private String ipAddress; // For anonymous users
 
     @CreationTimestamp
     private LocalDateTime viewedAt;
+
+    public void setReel(Product reel) {
+        this.reel = reel;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public Product getReel() {
+        return reel;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setViewer(User viewer) {
+        this.user = viewer;
+    }
+
+    public User getViewer() {
+        return this.user;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.ipAddress = sessionId;
+    }
+
+    public String getSessionId() {
+        return this.ipAddress;
+    }
 }

@@ -30,6 +30,24 @@ public class ProductRequest {
     private String size;
     private String origin;
     private String packOf;
+    private String classificationData;
+    private java.util.Map<String, Object> specifications;
+
+    public java.util.Map<String, Object> getSpecifications() {
+        return specifications;
+    }
+
+    public void setSpecifications(java.util.Map<String, Object> specifications) {
+        this.specifications = specifications;
+    }
+
+    public String getClassificationData() {
+        return classificationData;
+    }
+
+    public void setClassificationData(String classificationData) {
+        this.classificationData = classificationData;
+    }
 
     public String getName() {
         return name;

@@ -45,18 +45,19 @@ public class ChatService {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             // Check for existing active session
-            Optional<ChatSession> existing = chatSessionRepository.findByUserIdAndActiveTrue(user.getId());
+            Optional<ChatSession> existing = chatSessionRepository.findByUserIdAndIsActiveTrue(user.getId());
             if (existing.isPresent())
                 return existing.get();
 
-            ChatSession session = ChatSession.builder()
-                    .userId(user.getId())
-                    .userRole(determineRole(user))
-                    .active(true)
-                    .build();
+            ChatSession session = new ChatSession();
+            session.setUserId(user.getId());
+            session.setUserRole(determineRole(user));
+            session.setActive(true);
             return chatSessionRepository.save(session);
         } else {
-            ChatSession session = ChatSession.builder().userRole("GUEST").active(true).build();
+            ChatSession session = new ChatSession();
+            session.setUserRole("GUEST");
+            session.setActive(true);
             return chatSessionRepository.save(session);
         }
     }
@@ -81,11 +82,11 @@ public class ChatService {
         }
 
         // 1. Save User Message
-        ChatMessage userMsg = ChatMessage.builder()
-                .session(session)
-                .sender("USER")
-                .message(userMessage)
-                .build();
+        ChatMessage userMsg = new ChatMessage();
+        userMsg.setSession(session);
+        userMsg.setSender("USER");
+        userMsg.setMessage(userMessage);
+
         chatMessageRepository.save(userMsg);
 
         // 2. Logic to determine Bot Response
@@ -111,13 +112,12 @@ public class ChatService {
         }
 
         // 3. Save Bot Message
-        ChatMessage botMsg = ChatMessage.builder()
-                .session(session)
-                .sender("BOT")
-                .message(response.text)
-                .options(response.options)
-                .payload(response.payload)
-                .build();
+        ChatMessage botMsg = new ChatMessage();
+        botMsg.setSession(session);
+        botMsg.setSender("BOT");
+        botMsg.setMessage(response.text);
+        botMsg.setOptions(response.options);
+        botMsg.setPayload(response.payload);
         return chatMessageRepository.save(botMsg);
     }
 

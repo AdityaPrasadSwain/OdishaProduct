@@ -22,7 +22,8 @@ public class SellerBankDetails {
     private String ifscCode;
     private String bankName;
 
-    private boolean isVerified = false;
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
     private LocalDateTime verifiedAt;
 
     public SellerBankDetails() {
@@ -78,10 +79,10 @@ public class SellerBankDetails {
     }
 
     public boolean isVerified() {
-        return isVerified;
+        return Boolean.TRUE.equals(isVerified);
     }
 
-    public void setVerified(boolean verified) {
+    public void setVerified(Boolean verified) {
         isVerified = verified;
     }
 

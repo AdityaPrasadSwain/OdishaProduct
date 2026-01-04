@@ -13,7 +13,7 @@ public interface SellerPayoutService {
     User getBankDetails(UUID sellerId);
 
     // Admin methods
-    List<User> getAllSellerBankDetails();
+    List<com.odisha.handloom.payload.dto.SellerPayoutDTO> getAllSellerBankDetails();
 
     User verifyBankDetails(UUID sellerId, boolean isVerified);
 
@@ -25,4 +25,6 @@ public interface SellerPayoutService {
     Payout initiatePayout(UUID sellerId);
 
     List<Payout> getPayoutHistory(UUID sellerId);
+
+    com.odisha.handloom.payload.response.WalletOverviewResponse getWalletOverview(UUID sellerId);
 }

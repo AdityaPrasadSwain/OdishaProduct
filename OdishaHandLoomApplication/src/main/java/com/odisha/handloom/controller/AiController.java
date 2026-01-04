@@ -45,4 +45,13 @@ public class AiController {
         String result = aiService.generateCommentReply(comment, context);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/product/categorize")
+    public ResponseEntity<String> categorizeProduct(@RequestBody Map<String, String> request) {
+        String title = request.get("title");
+        String description = request.get("description");
+
+        String result = aiService.categorizeProduct(title, description); // Uses the new categorization prompt
+        return ResponseEntity.ok(result);
+    }
 }

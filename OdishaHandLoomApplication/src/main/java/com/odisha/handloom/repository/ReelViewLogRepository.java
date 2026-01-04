@@ -12,8 +12,8 @@ import java.util.UUID;
 public interface ReelViewLogRepository extends JpaRepository<ReelViewLog, UUID> {
 
     // Check if user has viewed reel
-    boolean existsByReelAndViewer(Product reel, User viewer);
+    boolean existsByReelAndUser(Product reel, User user);
 
     // Check if anonymous session has viewed reel
-    boolean existsByReelAndSessionId(Product reel, String sessionId);
+    boolean existsByReelAndIpAddress(Product reel, String ipAddress);
 }

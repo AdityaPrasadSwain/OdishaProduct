@@ -6,6 +6,24 @@
   <link rel="icon" type="image/png" href="/logo_round.png?v=4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>udrakala</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in-up': 'fadeInUp 0.5s ease-out forwards'
+          },
+          keyframes: {
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
 </head>
 
 <body>

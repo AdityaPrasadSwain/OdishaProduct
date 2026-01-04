@@ -50,13 +50,27 @@ public class SellerController {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SellerController.class);
 
+    @Autowired
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+
+    private String convertMapToJson(java.util.Map<String, Object> map) {
+        if (map == null)
+            return null;
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (Exception e) {
+            logger.error("Error converting specifications to JSON", e);
+            return "{}";
+        }
+    }
+
     @PostMapping(value = "/products", consumes = { "multipart/form-data" })
     public ResponseEntity<?> addProduct(
             @jakarta.validation.Valid @RequestPart("product") ProductRequest productRequest,
             @RequestPart(value = "images", required = false) List<org.springframework.web.multipart.MultipartFile> images,
             @RequestPart(value = "reel", required = false) org.springframework.web.multipart.MultipartFile reel) {
 
-        logger.info("Received addProduct request: {}", productRequest);
+        logger.info("Received addProduct request, name: {}", productRequest.getName());
         logger.info("Received images: {}", images != null ? images.size() : "null");
 
         // Validation for Images
@@ -138,26 +152,33 @@ public class SellerController {
         }
 
         Category category = categoryRepository.findById(productRequest.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Error: Category not found"));
+                .orElse(null);
+
+        if (category == null) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("Error: Invalid Category. Please select a valid category."));
+        }
 
         // Build Product
-        Product product = Product.builder()
-                .name(productRequest.getName())
-                .description(productRequest.getDescription())
-                .price(productRequest.getPrice())
-                .discountPrice(productRequest.getDiscountPrice())
-                .stockQuantity(productRequest.getStockQuantity())
-                .category(category)
-                .seller(seller)
-                .isApproved(true)
-                .material(productRequest.getMaterial())
-                .color(productRequest.getColor())
-                .size(productRequest.getSize())
-                .origin(productRequest.getOrigin())
-                .packOf(productRequest.getPackOf())
-                .origin(productRequest.getOrigin())
-                .packOf(productRequest.getPackOf())
-                .build();
+        Product product = new Product();
+        product.setName(productRequest.getName());
+        product.setDescription(productRequest.getDescription());
+        product.setPrice(productRequest.getPrice());
+        product.setDiscountPrice(productRequest.getDiscountPrice());
+        product.setStockQuantity(productRequest.getStockQuantity());
+        product.setCategory(category);
+        product.setSeller(seller);
+        product.setApproved(true);
+        product.setMaterial(productRequest.getMaterial());
+        product.setColor(productRequest.getColor());
+        product.setSize(productRequest.getSize());
+        product.setOrigin(productRequest.getOrigin());
+
+        product.setPackOf(productRequest.getPackOf());
+        product.setClassificationData(productRequest.getClassificationData());
+
+        // Serialize specifications map to JSON String
+        product.setSpecifications(convertMapToJson(productRequest.getSpecifications()));
 
         logger.info("Building product with attributes - Material: {}, Color: {}, Size: {}, Origin: {}, PackOf: {}",
                 productRequest.getMaterial(), productRequest.getColor(), productRequest.getSize(),
@@ -183,8 +204,6 @@ public class SellerController {
             }
         } catch (java.io.IOException e) {
             logger.error("Error uploading image to Cloudinary", e);
-            // Optional: Delete product if image upload fails?
-            // productRepository.delete(savedProduct);
             return ResponseEntity.badRequest()
                     .body(new MessageResponse("Error uploading image: " + e.getMessage()));
         }
@@ -255,10 +274,17 @@ public class SellerController {
         product.setSize(productRequest.getSize());
         product.setOrigin(productRequest.getOrigin());
         product.setPackOf(productRequest.getPackOf());
+        product.setClassificationData(productRequest.getClassificationData());
 
-        Category category = categoryRepository.findById(productRequest.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Error: Category not found"));
-        product.setCategory(category);
+        // Serialize specifications map to JSON String
+        product.setSpecifications(convertMapToJson(productRequest.getSpecifications()));
+
+        java.util.Optional<Category> categoryOpt = categoryRepository.findById(productRequest.getCategoryId());
+        if (categoryOpt.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(new MessageResponse("Error: Invalid Category. Please select a valid category."));
+        }
+        product.setCategory(categoryOpt.get());
 
         // Update isOutOfStock status
         if (product.getStockQuantity() > 0) {

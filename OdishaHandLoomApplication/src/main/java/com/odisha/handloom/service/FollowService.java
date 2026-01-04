@@ -38,10 +38,9 @@ public class FollowService {
                 }
 
                 // Save Follow
-                SellerFollower follow = SellerFollower.builder()
-                                .seller(seller)
-                                .user(follower)
-                                .build();
+                SellerFollower follow = new SellerFollower();
+                follow.setSeller(seller);
+                follow.setUser(follower);
 
                 sellerFollowerRepository.save(follow);
 

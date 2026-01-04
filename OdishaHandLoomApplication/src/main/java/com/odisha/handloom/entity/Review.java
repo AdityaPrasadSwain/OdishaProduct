@@ -41,14 +41,14 @@ public class Review {
     private User customer;
 
     @Column(nullable = false)
-    private int rating; // 1 to 5
+    private Integer rating; // 1 to 5
 
     @Column(length = 1000)
     private String reviewText;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
     @Builder.Default
-    private boolean edited = false;
+    private Boolean edited = false;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
@@ -63,5 +63,85 @@ public class Review {
     public void addImage(ReviewImage image) {
         images.add(image);
         image.setReview(this);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public OrderItem getOrderItem() {
+        return orderItem;
+    }
+
+    public User getCustomer() {
+        return customer;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public String getReviewText() {
+        return reviewText;
+    }
+
+    public boolean isEdited() {
+        return Boolean.TRUE.equals(edited);
+    }
+
+    public List<ReviewImage> getImages() {
+        return images;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setOrderItem(OrderItem orderItem) {
+        this.orderItem = orderItem;
+    }
+
+    public void setCustomer(User customer) {
+        this.customer = customer;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    public void setReviewText(String reviewText) {
+        this.reviewText = reviewText;
+    }
+
+    public void setEdited(Boolean edited) {
+        this.edited = edited;
+    }
+
+    public void setImages(List<ReviewImage> images) {
+        this.images = images;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

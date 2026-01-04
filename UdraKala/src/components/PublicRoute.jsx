@@ -27,6 +27,8 @@ const PublicRoute = ({ children }) => {
         // Redirect based on role
         if (roles.some(r => r.includes('ADMIN'))) {
             return <Navigate to="/admin/dashboard" replace />;
+        } else if (roles.some(r => r.includes('DELIVERY_AGENT') || r.includes('AGENT'))) {
+            return <Navigate to="/agent/dashboard" replace />;
         } else if (roles.some(r => r.includes('SELLER'))) {
             return <Navigate to="/seller/dashboard" replace />;
         } else if (roles.some(r => r.includes('CUSTOMER'))) {

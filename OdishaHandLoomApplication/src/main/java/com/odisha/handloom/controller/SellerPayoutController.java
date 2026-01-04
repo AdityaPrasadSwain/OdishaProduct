@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/seller")
+@RequestMapping("/api/seller/payouts")
 @PreAuthorize("hasRole('SELLER')")
 public class SellerPayoutController {
 
@@ -36,6 +36,22 @@ public class SellerPayoutController {
         User seller = getAuthenticatedSeller();
         User details = payoutService.getBankDetails(seller.getId());
         return ResponseEntity.ok(details);
+    }
+
+    @GetMapping("/wallet")
+    public ResponseEntity<?> getWalletOverview() {
+        User seller = getAuthenticatedSeller();
+        return ResponseEntity.ok(payoutService.getWalletOverview(seller.getId()));
+    }
+
+    @PostMapping("/initiate")
+    public ResponseEntity<?> initiatePayout() {
+        User seller = getAuthenticatedSeller();
+        try {
+            return ResponseEntity.ok(payoutService.initiatePayout(seller.getId()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     private User getAuthenticatedSeller() {

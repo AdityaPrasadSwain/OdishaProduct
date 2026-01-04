@@ -51,72 +51,84 @@ const Home = () => {
             </section>
 
             {/* Section 2: Cultural Storytelling */}
-            <section className="py-24 px-4 bg-gray-50 dark:bg-gray-900">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12">
-                    <ScrollReveal variant="fadeInLeft" className="flex-1">
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+            <section className="py-24 px-4 bg-secondary-50 dark:bg-dark">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+                    <ScrollReveal variant="fadeInLeft" className="flex-1 w-full relative group">
+                        <div className="absolute -inset-4 bg-primary-100 dark:bg-primary-900/20 rounded-xl rotate-2 group-hover:rotate-1 transition-transform duration-500 blur-xl opacity-70"></div>
+                        <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px]">
                             {/* Placeholder for Artisan Image - using a gradient for now as placeholder */}
-                            <div className="h-[400px] w-full bg-gradient-to-br from-orange-100 to-orange-50 dark:from-gray-800 dark:to-gray-700 flex items-center justify-center">
-                                <span className="text-muted font-serif italic text-xl">Artisan at work</span>
+                            <div className="h-full w-full bg-gradient-to-br from-primary-100 to-orange-50 dark:from-secondary-800 dark:to-secondary-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                                <span className="text-secondary-400 font-serif italic text-2xl">Master Weaver at Work</span>
+                            </div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+                                <p className="text-white font-medium">Bargarh, Odisha</p>
                             </div>
                         </div>
                     </ScrollReveal>
 
-                    <ScrollReveal variant="fadeInRight" className="flex-1 space-y-6">
-                        <h2 className="text-3xl md:text-4xl font-bold font-serif text-dark dark:text-white">
-                            Handcrafted by Master Weavers
-                        </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                    <ScrollReveal variant="fadeInRight" className="flex-1 space-y-8">
+                        <div>
+                            <span className="text-primary-600 font-bold tracking-widest uppercase text-sm mb-2 block">Our Heritage</span>
+                            <h2 className="text-4xl md:text-5xl font-bold font-serif text-secondary-900 dark:text-white leading-tight">
+                                Handcrafted by <br /><span className="text-primary-600 italic">Master Weavers</span>
+                            </h2>
+                        </div>
+                        <p className="text-xl text-secondary-600 dark:text-gray-300 leading-relaxed">
                             Every thread tells a story. Our Sambalpuri and Ikat sarees are not just garments; they are canvases of culture, woven with precision and passion by third-generation artisans from Western Odisha.
                         </p>
-                        <div className="flex gap-4 pt-4">
-                            <div className="text-center">
-                                <h4 className="text-2xl font-bold text-primary">500+</h4>
-                                <p className="text-sm text-muted">Artisans</p>
+
+                        <div className="grid grid-cols-2 gap-8 pt-4">
+                            <div className="p-4 rounded-xl bg-white dark:bg-secondary-800 shadow-sm border border-secondary-100 dark:border-secondary-700">
+                                <h4 className="text-3xl font-bold text-primary-600 mb-1">500+</h4>
+                                <p className="text-sm text-secondary-500 underline decoration-primary-300 decoration-2 underline-offset-4">Artisan Families</p>
                             </div>
-                            <div className="w-px bg-gray-300 dark:bg-gray-700"></div>
-                            <div className="text-center">
-                                <h4 className="text-2xl font-bold text-primary">100%</h4>
-                                <p className="text-sm text-muted">Authentic</p>
+                            <div className="p-4 rounded-xl bg-white dark:bg-secondary-800 shadow-sm border border-secondary-100 dark:border-secondary-700">
+                                <h4 className="text-3xl font-bold text-primary-600 mb-1">100%</h4>
+                                <p className="text-sm text-secondary-500 underline decoration-primary-300 decoration-2 underline-offset-4">Handloom Mark</p>
                             </div>
                         </div>
+
+                        <Button variant="outline" size="lg" className="mt-4 border-secondary-900 text-secondary-900 hover:bg-secondary-900 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-secondary-900">
+                            Read Their Stories
+                        </Button>
                     </ScrollReveal>
                 </div>
             </section>
 
-
-
             {/* Section 3: Products Grid */}
-            <section className="py-20 px-4">
-                <ScrollReveal variant="fadeInUp">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4 font-serif">Curated Masterpieces</h2>
-                        <p className="text-muted max-w-2xl mx-auto">Explore our exclusive collection of handwoven sarees, dupattas, and fabrics.</p>
-                    </div>
-                </ScrollReveal>
+            <section className="py-24 px-4 bg-white dark:bg-secondary-900">
+                <div className="max-w-7xl mx-auto">
+                    <ScrollReveal variant="fadeInUp">
+                        <div className="text-center mb-20">
+                            <span className="text-primary-600 font-bold tracking-widest uppercase text-xs mb-3 block">New Arrivals</span>
+                            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-serif text-secondary-900 dark:text-white">Curated Masterpieces</h2>
+                            <div className="w-24 h-1 bg-primary-500 mx-auto rounded-full mb-6"></div>
+                            <p className="text-secondary-500 text-lg max-w-2xl mx-auto">Explore our exclusive collection of handwoven sarees, dupattas, and fabrics directly from the loom.</p>
+                        </div>
+                    </ScrollReveal>
 
-                <FeatureGrid />
+                    <FeatureGrid />
+                </div>
             </section>
 
             {/* Minimalist Trust Section */}
-            <div className="py-16 border-t border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-gray-900 transition-colors duration-200">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center opacity-70">
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">500+</h3>
-                        <p className="text-sm">Artisans Empowered</p>
-                    </div>
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">12k+</h3>
-                        <p className="text-sm">Happy Customers</p>
-                    </div>
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">100%</h3>
-                        <p className="text-sm">Authentic Handloom</p>
-                    </div>
-                    <div>
-                        <h3 className="text-3xl font-bold text-gray-900 dark:text-white">24/7</h3>
-                        <p className="text-sm">Support</p>
-                    </div>
+            <div className="py-20 border-t border-secondary-100 bg-secondary-50 dark:border-secondary-800 dark:bg-dark transition-colors duration-200">
+                <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+                    {[
+                        { val: '500+', label: 'Artisans Empowered' },
+                        { val: '12k+', label: 'Happy Customers' },
+                        { val: '100%', label: 'Authentic Handloom' },
+                        { val: '24/7', label: 'Premium Support' }
+                    ].map((item, idx) => (
+                        <motion.div
+                            key={idx}
+                            whileHover={{ y: -5 }}
+                            className="bg-white dark:bg-secondary-800 p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-secondary-100 dark:border-secondary-700"
+                        >
+                            <h3 className="text-4xl font-bold text-primary-600 mb-2">{item.val}</h3>
+                            <p className="text-sm font-medium text-secondary-500 uppercase tracking-wider">{item.label}</p>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </div>

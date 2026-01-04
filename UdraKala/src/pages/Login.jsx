@@ -23,15 +23,30 @@ const Login = () => {
         try {
             const user = await login(form.identifier, form.password);
 
-            if (user.roles?.includes('ROLE_ADMIN')) {
+            // DEBUG: Log user object and roles
+            console.log('Login User Object:', user);
+            const userRoles = user.roles || [];
+            console.log('Login Roles:', userRoles);
+
+            const isDeliveryAgent = userRoles.some(r => {
+                const roleStr = String(r).toUpperCase();
+                return roleStr.includes('DELIVERY_AGENT') || roleStr.includes('AGENT');
+            });
+
+            if (userRoles.some(r => String(r).includes('ADMIN'))) {
+                console.log('Redirecting to Admin Dashboard');
                 navigate('/admin/dashboard');
-            } else if (user.roles?.includes('ROLE_SELLER')) {
+            } else if (isDeliveryAgent) {
+                console.log('Redirecting to Agent Dashboard');
+                navigate('/agent/dashboard');
+            } else if (userRoles.some(r => String(r).includes('SELLER'))) {
                 if (user.isApproved) {
                     navigate('/seller/dashboard');
                 } else {
                     navigate('/seller/status');
                 }
             } else {
+                console.log('Redirecting to Customer Dashboard (Default)');
                 navigate('/customer/dashboard');
             }
 

@@ -25,6 +25,7 @@ const ExRadio = lazy(() => import("../views/form-elements/ExRadio"));
 const ExSlider = lazy(() => import("../views/form-elements/ExSlider"));
 const ExSwitch = lazy(() => import("../views/form-elements/ExSwitch"));
 const FormLayouts = lazy(() => import("../views/form-layouts/FormLayouts"));
+const ProductWizard = lazy(() => import("../views/seller/product/ProductWizard"));
 
 const Router = [
   {
@@ -45,6 +46,7 @@ const Router = [
       { path: "/form-elements/radio", element: <ExRadio /> },
       { path: "/form-elements/slider", element: <ExSlider /> },
       { path: "/form-elements/switch", element: <ExSwitch /> },
+      { path: "/seller/products/create", element: <ProductWizard /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

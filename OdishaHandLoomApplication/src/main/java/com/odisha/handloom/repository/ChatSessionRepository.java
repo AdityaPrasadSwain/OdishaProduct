@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface ChatSessionRepository extends JpaRepository<ChatSession, UUID> {
-    Optional<ChatSession> findByUserIdAndActiveTrue(UUID userId);
+    Optional<ChatSession> findByUserIdAndIsActiveTrue(UUID userId);
 }

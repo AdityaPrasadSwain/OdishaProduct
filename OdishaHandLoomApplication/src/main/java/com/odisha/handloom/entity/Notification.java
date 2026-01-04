@@ -37,8 +37,9 @@ public class Notification {
 
     @Column(name = "is_read", nullable = false)
     @Builder.Default
-    private boolean isRead = false;
+    private Boolean isRead = false;
 
+    // Order ID reference
     @Column(name = "order_id")
     private UUID orderId;
 
@@ -60,5 +61,73 @@ public class Notification {
         REEL,
         PAYOUT,
         SYSTEM
+    }
+
+    public UUID getOrderId() {
+        return orderId;
+    }
+
+    public UUID getReelId() {
+        return reelId;
+    }
+
+    public UUID getCommentId() {
+        return commentId;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public User getSender() {
+        return sender;
+    }
+
+    public NotificationType getType() {
+        return type;
+    }
+
+    public boolean isRead() {
+        return Boolean.TRUE.equals(isRead);
+    }
+
+    public void setRead(Boolean read) {
+        isRead = read;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
+
+    public void setType(NotificationType type) {
+        this.type = type;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setOrderId(UUID orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setReelId(UUID reelId) {
+        this.reelId = reelId;
+    }
+
+    public void setCommentId(UUID commentId) {
+        this.commentId = commentId;
     }
 }

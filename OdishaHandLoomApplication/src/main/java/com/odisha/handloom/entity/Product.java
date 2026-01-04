@@ -16,6 +16,7 @@ import java.util.UUID;
 @lombok.Builder
 @lombok.NoArgsConstructor
 @lombok.AllArgsConstructor
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +33,12 @@ public class Product {
 
     private BigDecimal discountPrice;
 
-    private int stockQuantity;
+    @jakarta.validation.constraints.Min(value = 0, message = "Stock quantity cannot be negative")
+    private Integer stockQuantity;
+
+    @Version
+    @lombok.Builder.Default
+    private Long version = 0L;
 
     private String material;
     private String color;
@@ -45,11 +51,30 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String reelCaption;
 
+    @Column(columnDefinition = "TEXT")
+    private String classificationData;
+
+    @Column(columnDefinition = "TEXT")
+    private String specifications;
+
     @lombok.Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy("position ASC")
     @com.fasterxml.jackson.annotation.JsonManagedReference
     private List<ProductImage> images = new java.util.ArrayList<>();
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private ProductPricing pricing;
+
+    @lombok.Builder.Default
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private List<ProductSpecification> specsList = new java.util.ArrayList<>();
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
+    private ProductPolicy policy;
 
     public void addImage(ProductImage image) {
         images.add(image);
@@ -75,7 +100,9 @@ public class Product {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private boolean isApproved;
+    @Column(name = "is_approved", nullable = false)
+    @lombok.Builder.Default
+    private Boolean isApproved = false;
 
     @Column(name = "is_out_of_stock", nullable = false)
     @lombok.Builder.Default
@@ -84,7 +111,7 @@ public class Product {
     @PrePersist
     @PreUpdate
     public void syncOutOfStock() {
-        this.isOutOfStock = this.stockQuantity <= 0;
+        this.isOutOfStock = this.stockQuantity == null || this.stockQuantity <= 0;
     }
 
     // Custom getter to return primitive boolean (safe)
@@ -142,11 +169,11 @@ public class Product {
         this.discountPrice = discountPrice;
     }
 
-    public int getStockQuantity() {
+    public Integer getStockQuantity() {
         return stockQuantity;
     }
 
-    public void setStockQuantity(int stockQuantity) {
+    public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
 
@@ -191,10 +218,10 @@ public class Product {
     }
 
     public boolean isApproved() {
-        return isApproved;
+        return Boolean.TRUE.equals(isApproved);
     }
 
-    public void setApproved(boolean approved) {
+    public void setApproved(Boolean approved) {
         isApproved = approved;
     }
 
@@ -252,5 +279,21 @@ public class Product {
 
     public void setPackOf(String packOf) {
         this.packOf = packOf;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Integer getTotalReviews() {
+        return totalReviews;
+    }
+
+    public void setTotalReviews(Integer totalReviews) {
+        this.totalReviews = totalReviews;
     }
 }

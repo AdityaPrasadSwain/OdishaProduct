@@ -153,6 +153,9 @@ export const sendOrderEmail = async (customerEmail, customerName, orderId, total
 export const sendStatusUpdateEmail = async (customerEmail, customerName, orderId, newStatus, courier, trackingId) => {
     const templateParams = {
         to_email: customerEmail,
+        email: customerEmail,        // Fallback 1
+        user_email: customerEmail,   // Fallback 2
+        recipient: customerEmail,    // Fallback 3
         to_name: customerName,
         order_id: orderId,
         status: newStatus,
@@ -161,6 +164,7 @@ export const sendStatusUpdateEmail = async (customerEmail, customerName, orderId
         subject: `Update on Order #${orderId}: ${newStatus}`,
         message: `Your order #${orderId} status has been updated to ${newStatus}.`,
     };
+    console.log("Sending Email Payload:", templateParams);
     return await sendEmailWrapper(TEMPLATE_ID_CUSTOMER, templateParams, customerEmail);
 };
 

@@ -127,7 +127,7 @@ public class EmailService {
     }
 
     @Async
-    public void sendOrderConfirmationEmail(String to, String name, String orderId, double amount,
+    public void sendOrderConfirmationEmail(String to, String name, String orderId, java.math.BigDecimal amount,
             List<OrderItem> items, byte[] invoicePdf) {
         String subject = "Order Confirmed! Order #" + orderId;
 
@@ -507,5 +507,19 @@ public class EmailService {
                 .formatted(productName, productId);
 
         sendHtmlEmail(to, subject, getHtmlTemplate("Good News!", content));
+    }
+
+    @Async
+    public void sendOrderFormattedEmail(String to, String subject, String bodyContent, String name) {
+        String content = """
+                <p>Dear <strong>%s</strong>,</p>
+                <p>%s</p>
+                <div style="text-align: center;">
+                    <a href="http://localhost:5173/orders" class="button">View Order</a>
+                </div>
+                """
+                .formatted(name, bodyContent);
+
+        sendHtmlEmail(to, subject, getHtmlTemplate(subject, content));
     }
 }

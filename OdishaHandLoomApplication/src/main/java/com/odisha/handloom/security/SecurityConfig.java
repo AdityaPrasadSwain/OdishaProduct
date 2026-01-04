@@ -92,8 +92,22 @@ public class SecurityConfig {
                                 "/api/help/chat/**", "/api/categories", "/api/categories/**",
                                 "/api/customer/products/**",
                                 "/api/products/search", "/api/reviews/product/**",
-                                "/uploads/**") // Allow access to uploaded files
+                                "/uploads/**",
+                                "/api/label/**") // Allow access to labels
                         .permitAll()
+
+                        .requestMatchers("/ws/**").permitAll() // Allow WebSocket Handshake (Auth handled in STOMP
+                                                               // headers if needed, or via Cookie if session based. For
+                                                               // now permit handshake for sockjs)
+                        .requestMatchers("/api/shipments/{id}/track").permitAll() // Public tracking
+
+                        .requestMatchers("/api/admin/**", "/api/shipments/admin/**").hasRole("ADMIN") // Protect admin
+                                                                                                      // shipment routes
+                                                                                                      // (mapped via
+                                                                                                      // /api/admin/shipments
+                                                                                                      // so covered by
+                                                                                                      // /api/admin/**)
+                        .requestMatchers("/api/agent/**").hasAnyRole("DELIVERY_AGENT", "ADMIN")
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")

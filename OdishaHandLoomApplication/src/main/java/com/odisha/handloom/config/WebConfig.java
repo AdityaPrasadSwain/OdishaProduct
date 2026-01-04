@@ -18,4 +18,15 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations(uploadPath);
     }
+
+    @Override
+    public void addFormatters(org.springframework.format.FormatterRegistry registry) {
+        registry.addConverter(String.class, com.odisha.handloom.entity.OrderStatus.class, source -> {
+            try {
+                return com.odisha.handloom.entity.OrderStatus.valueOf(source.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        });
+    }
 }

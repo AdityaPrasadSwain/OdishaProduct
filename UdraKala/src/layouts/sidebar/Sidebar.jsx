@@ -11,7 +11,11 @@ const Sidebar = ({ isMobile, setMobileSidebarOpen }) => {
 
     // Determine role-based items. Assuming user.roles is an array.
     // We pick the primary role for the dashboard view.
-    const primaryRole = user?.roles?.find(r => ['ROLE_ADMIN', 'ROLE_SELLER', 'ROLE_CUSTOMER'].includes(r)) || 'ROLE_CUSTOMER';
+    // Determine role-based items with priority
+    let primaryRole = 'ROLE_CUSTOMER';
+    if (user?.roles?.includes('ROLE_ADMIN')) primaryRole = 'ROLE_ADMIN';
+    else if (user?.roles?.includes('ROLE_SELLER')) primaryRole = 'ROLE_SELLER';
+    else if (user?.roles?.includes('ROLE_DELIVERY_AGENT')) primaryRole = 'ROLE_DELIVERY_AGENT';
     const items = splitRoleItems(primaryRole);
 
     const handleLogout = () => {

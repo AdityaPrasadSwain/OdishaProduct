@@ -27,8 +27,14 @@ public class PaymentService {
     private final EmailService emailService;
     private final UserRepository userRepository;
 
+    private final com.odisha.handloom.finance.service.PlatformWalletService platformWalletService;
+
     @Transactional
     public Payment initiatePayment(UUID userId, UUID orderId, PaymentMethod method) {
+        if (orderId == null) {
+            throw new IllegalArgumentException("Order ID must not be null");
+        }
+
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
 
@@ -79,6 +85,13 @@ public class PaymentService {
             payment.setStatus(PaymentStatus.SUCCESS);
             payment.setGatewayRef(paymentId); // Update with actual Charge ID
 
+            // Credit Platform Wallet
+            platformWalletService.credit(
+                    payment.getAmount(),
+                    com.odisha.handloom.finance.entity.WalletTransaction.TransactionSource.ORDER_PAYMENT,
+                    orderId.toString(),
+                    "Payment for Order #" + orderId);
+
             Order order = payment.getOrder();
             order.setStatus(OrderStatus.CONFIRMED);
             order.setPaymentMethod(payment.getPaymentMethod().toString());
@@ -96,8 +109,15 @@ public class PaymentService {
 
     private void sendOrderConfirmationEmail(Order order) {
         try {
-            emailService.sendHtmlEmail(order.getUser().getEmail(), "Order Confirmed",
-                    "<h1>Thank you for your order!</h1><p>Order ID: " + order.getId() + " has been confirmed.</p>");
+            emailService.sendOrderConfirmationEmail(
+                    order.getUser().getEmail(),
+                    order.getUser().getFullName(),
+                    order.getId().toString(),
+                    order.getTotalAmount(),
+                    order.getOrderItems(),
+                    null // Invoice PDF will be generated and sent later if needed, or we can integrate
+                         // it here if we had the service
+            );
         } catch (Exception e) {
             System.err.println("Failed to send order confirmation email: " + e.getMessage());
         }

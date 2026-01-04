@@ -46,6 +46,19 @@ const mockReturns = [
     { name: 'Other', value: 200, color: '#60A5FA' },
 ];
 
+// --- Reusable Card Component ---
+const DashboardCard = ({ title, children, className = "" }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm dark:shadow-lg border border-gray-100 dark:border-white/5 ${className}`}
+    >
+        {title && <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-4 uppercase tracking-wider">{title}</h3>}
+        {children}
+    </motion.div>
+);
+
 const AnalyticsDashboard = () => {
     // We can hook up real data later, for now we use state to simulate fetching or defaults
     const [loading, setLoading] = useState(false); // Set to true if fetching real data
@@ -59,18 +72,7 @@ const AnalyticsDashboard = () => {
             maximumFractionDigits: 0,
         }).format(value);
 
-    // --- Reusable Card Component ---
-    const DashboardCard = ({ title, children, className = "" }) => (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm dark:shadow-lg border border-gray-100 dark:border-white/5 ${className}`}
-        >
-            {title && <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-4 uppercase tracking-wider">{title}</h3>}
-            {children}
-        </motion.div>
-    );
+
 
     // Helper for chart tooltips based on theme
     const tooltipStyle = {
@@ -350,8 +352,8 @@ const AnalyticsDashboard = () => {
                                         </td>
                                         <td className="py-3">
                                             <span className={`text-xs px-2 py-1 rounded-full ${product.stock === 0 ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' :
-                                                    product.stock < 50 ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400' :
-                                                        'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
+                                                product.stock < 50 ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400' :
+                                                    'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
                                                 }`}>
                                                 {product.stock} sold
                                             </span>

@@ -31,16 +31,15 @@ public class NotificationService {
             return;
         }
 
-        Notification notification = Notification.builder()
-                .user(recipient)
-                .sender(sender) // Can be null
-                .type(type)
-                .message(message)
-                .isRead(false)
-                .orderId(orderId)
-                .reelId(reelId)
-                .commentId(commentId)
-                .build();
+        Notification notification = new Notification();
+        notification.setUser(recipient);
+        notification.setSender(sender);
+        notification.setType(type);
+        notification.setMessage(message);
+        notification.setRead(false);
+        notification.setOrderId(orderId);
+        notification.setReelId(reelId);
+        notification.setCommentId(commentId);
 
         notificationRepository.save(notification);
     }
@@ -110,16 +109,16 @@ public class NotificationService {
 
     private NotificationResponse mapToResponse(Notification n) {
         // FIX: Null-safe sender check as requested
-        return NotificationResponse.builder()
-                .id(n.getId())
-                .message(n.getMessage())
-                .type(n.getType().name())
-                .isRead(n.isRead())
-                .senderName(n.getSender() == null ? "System" : n.getSender().getFullName())
-                .createdAt(n.getCreatedAt())
-                .orderId(n.getOrderId())
-                .reelId(n.getReelId())
-                .commentId(n.getCommentId())
-                .build();
+        NotificationResponse response = new NotificationResponse();
+        response.setId(n.getId());
+        response.setMessage(n.getMessage());
+        response.setType(n.getType().name());
+        response.setRead(n.isRead());
+        response.setSenderName(n.getSender() == null ? "System" : n.getSender().getFullName());
+        response.setCreatedAt(n.getCreatedAt());
+        response.setOrderId(n.getOrderId());
+        response.setReelId(n.getReelId());
+        response.setCommentId(n.getCommentId());
+        return response;
     }
 }

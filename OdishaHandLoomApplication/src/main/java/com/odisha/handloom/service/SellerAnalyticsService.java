@@ -30,7 +30,8 @@ public class SellerAnalyticsService {
                 });
 
         // Increment Views (always)
-        analytics.setTotalViews(analytics.getTotalViews() + 1);
+        long currentViews = analytics.getTotalViews() != null ? analytics.getTotalViews() : 0L;
+        analytics.setTotalViews(currentViews + 1);
 
         // Check Reach (Distinct Viewer)
         boolean isNewViewer = false;
@@ -38,17 +39,18 @@ public class SellerAnalyticsService {
 
         if (email != null) {
             viewer = userRepository.findByEmail(email).orElse(null);
-            if (viewer != null && !reelViewLogRepository.existsByReelAndViewer(reel, viewer)) {
+            if (viewer != null && !reelViewLogRepository.existsByReelAndUser(reel, viewer)) {
                 isNewViewer = true;
             }
         } else if (sessionId != null) {
-            if (!reelViewLogRepository.existsByReelAndSessionId(reel, sessionId)) {
+            if (!reelViewLogRepository.existsByReelAndIpAddress(reel, sessionId)) {
                 isNewViewer = true;
             }
         }
 
         if (isNewViewer) {
-            analytics.setTotalReach(analytics.getTotalReach() + 1);
+            long currentReach = analytics.getTotalReach() != null ? analytics.getTotalReach() : 0L;
+            analytics.setTotalReach(currentReach + 1);
 
             ReelViewLog log = new ReelViewLog();
             log.setReel(reel);
@@ -70,7 +72,8 @@ public class SellerAnalyticsService {
                     return reelAnalyticsRepository.save(ra);
                 });
 
-        long newLikes = analytics.getTotalLikes() + delta;
+        long currentLikes = analytics.getTotalLikes() != null ? analytics.getTotalLikes() : 0L;
+        long newLikes = currentLikes + delta;
         if (newLikes < 0)
             newLikes = 0;
         analytics.setTotalLikes(newLikes);

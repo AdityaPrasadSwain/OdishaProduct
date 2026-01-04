@@ -39,4 +39,20 @@ public class SellerFollower {
     private String followSource; // PROFILE, REEL
 
     private UUID sourceReelId; // If source is REEL
+
+    public void setSeller(User seller) {
+        this.seller = seller;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getSeller() {
+        return seller;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

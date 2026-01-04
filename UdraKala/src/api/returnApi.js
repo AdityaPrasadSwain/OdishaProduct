@@ -51,11 +51,11 @@ export const processReturnRequest = async (id, action, remarks) => {
         decisionData.approved = false;
     } else {
         // Handle explicit status updates
-        // SellerDashboard passes 'PICKED_UP' for button, we map to Enum 'PICKUP_SCHEDULED'
-        if (action === 'PICKED_UP') {
-            decisionData.status = 'PICKUP_SCHEDULED';
-        } else if (action === 'COMPLETED') {
-            decisionData.status = 'COMPLETED';
+        // SellerDashboard passes 'PICKUP_INITIATED' for button
+        if (action === 'PICKUP_INITIATED') {
+            decisionData.status = 'PICKUP_INITIATED';
+        } else if (action === 'PASS_CHECK') {
+            decisionData.status = 'PICKUP_COMPLETED';
         } else {
             // Fallback
             decisionData.status = action;

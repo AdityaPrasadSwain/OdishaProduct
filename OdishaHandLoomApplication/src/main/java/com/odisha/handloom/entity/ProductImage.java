@@ -14,7 +14,7 @@ public class ProductImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    private int position; // To maintain order (0 = main image)
+    private Integer position; // To maintain order (0 = main image)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -24,7 +24,7 @@ public class ProductImage {
     public ProductImage() {
     }
 
-    public ProductImage(String imageUrl, int position, Product product) {
+    public ProductImage(String imageUrl, Integer position, Product product) {
         this.imageUrl = imageUrl;
         this.position = position;
         this.product = product;
@@ -46,11 +46,11 @@ public class ProductImage {
         this.imageUrl = imageUrl;
     }
 
-    public int getPosition() {
+    public Integer getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(Integer position) {
         this.position = position;
     }
 

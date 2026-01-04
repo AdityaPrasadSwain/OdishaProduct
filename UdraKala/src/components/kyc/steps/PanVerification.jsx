@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import api from '../../../api/axios';
 import Swal from 'sweetalert2';
 
 const PanVerification = ({ onNext, token }) => {
@@ -26,9 +27,7 @@ const PanVerification = ({ onNext, token }) => {
 
         setLoading(true);
         try {
-            const response = await axios.post('http://localhost:8085/api/kyc/pan/verify', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.post('/seller/kyc/pan/verify', formData);
             Swal.fire('Success', 'PAN Verified Successfully', 'success');
             onNext(response.data); // Pass updated status
         } catch (error) {
