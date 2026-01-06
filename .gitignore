@@ -44,3 +44,5 @@ target/
 .project
 .settings/
 .factorypath
+
+build_log_compile.txt

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import { motion as Motion } from 'motion/react';
 import { Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { login } = useAuth();
 
@@ -77,16 +79,16 @@ const Login = () => {
                     className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200 dark:border-white/20 p-8 rounded-2xl shadow-2xl dark:shadow-none transition-all duration-300"
                 >
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Welcome Back</h2>
-                        <p className="text-gray-600 dark:text-gray-300 transition-colors">Sign in to continue your journey</p>
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">{t('welcome_back')}</h2>
+                        <p className="text-gray-600 dark:text-gray-300 transition-colors">{t('sign_in_continue')}</p>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Email or Mobile</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">{t('email_or_mobile')}</label>
                             <input
                                 name="identifier"
-                                placeholder="Enter your credentials"
+                                placeholder={t('enter_credentials')}
                                 value={form.identifier}
                                 onChange={handleChange}
                                 required
@@ -95,12 +97,12 @@ const Login = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Password</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">{t('password')}</label>
                             <div className="relative">
                                 <input
                                     name="password"
                                     type={showPassword ? 'text' : 'password'}
-                                    placeholder="Enter your password"
+                                    placeholder={t('enter_password')}
                                     value={form.password}
                                     onChange={handleChange}
                                     required
@@ -120,20 +122,20 @@ const Login = () => {
                             disabled={loading}
                             className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Signing in...' : 'Sign In'}
+                            {loading ? t('signing_in') : t('sign_in')}
                         </button>
 
                         <div className="flex justify-center mt-4">
                             <Link to="/login-otp" className="text-sm text-gray-500 hover:text-orange-600 transition-colors">
-                                Login with OTP
+                                {t('login_with_otp')}
                             </Link>
                         </div>
 
                         <div className="text-center mt-6">
                             <p className="text-gray-500 dark:text-gray-400 text-sm transition-colors">
-                                Don't have an account?{' '}
+                                {t('dont_have_account')}{' '}
                                 <Link to="/register" className="text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 font-medium transition-colors">
-                                    Create Account
+                                    {t('create_account')}
                                 </Link>
                             </p>
                         </div>

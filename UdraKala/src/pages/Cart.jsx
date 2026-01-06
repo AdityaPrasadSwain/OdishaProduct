@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { applyCoupon, clearCoupon, resetError } from '../store/slices/couponSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
-import { Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Trash2, ArrowRight, ShoppingBag, Tag } from 'lucide-react';
 import { motion as Motion } from 'motion/react';
 import Swal from 'sweetalert2';
 
@@ -15,6 +17,31 @@ const Cart = () => {
     const total = useMemo(() => cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), [cart]);
 
 
+
+    const [couponCode, setCouponCode] = useState('');
+    const dispatch = useDispatch();
+    const { activeCoupon, discount, applicationLoading, applicationError, successMessage } = useSelector(state => state.coupon);
+
+    useEffect(() => {
+        if (successMessage) Swal.fire({ icon: 'success', title: 'Success', text: successMessage, timer: 2000, showConfirmButton: false });
+        if (applicationError) Swal.fire({ icon: 'error', title: 'Oops...', text: applicationError });
+        if (applicationError || successMessage) dispatch(resetError());
+    }, [successMessage, applicationError, dispatch]);
+
+    const handleApplyCoupon = () => {
+        if (!couponCode.trim()) return;
+        if (!user) {
+            Swal.fire({ icon: 'info', title: 'Login Required', text: 'Please login to apply coupons', showCancelButton: true, confirmButtonText: 'Login' })
+                .then((result) => { if (result.isConfirmed) navigate('/login'); });
+            return;
+        }
+        dispatch(applyCoupon({ code: couponCode, orderAmount: total, userId: user.id }));
+    };
+
+    const handleRemoveCoupon = () => {
+        dispatch(clearCoupon());
+        setCouponCode('');
+    };
 
     const handleCheckout = () => {
         if (!user) {
@@ -106,15 +133,66 @@ const Cart = () => {
                         </Motion.li>
                     ))}
                 </ul>
+
+                {/* Coupon Section */}
+                <div className="bg-secondary-50 dark:bg-secondary-900/30 px-8 py-6 border-t border-secondary-100 dark:border-secondary-700">
+                    <div className="flex items-center gap-4 max-w-md">
+                        <Tag className="text-primary-600" size={20} />
+                        <div className="flex-1 flex gap-2">
+                            <input
+                                type="text"
+                                placeholder="Enter Coupon Code"
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                disabled={!!activeCoupon}
+                                className="flex-1 px-4 py-2 rounded-lg border border-secondary-300 dark:border-secondary-600 focus:ring-2 focus:ring-primary-500 bg-white dark:bg-secondary-800 text-secondary-900 dark:text-white"
+                            />
+                            {activeCoupon ? (
+                                <button
+                                    onClick={handleRemoveCoupon}
+                                    className="px-4 py-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-lg font-medium transition"
+                                >
+                                    Remove
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleApplyCoupon}
+                                    disabled={applicationLoading || !couponCode}
+                                    className="px-4 py-2 bg-secondary-900 dark:bg-white text-white dark:text-secondary-900 hover:opacity-90 rounded-lg font-medium transition disabled:opacity-50"
+                                >
+                                    {applicationLoading ? 'Applying...' : 'Apply'}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    {activeCoupon && (
+                        <p className="text-green-600 mt-2 text-sm font-medium flex items-center gap-1">
+                            <Tag size={14} /> Coupon {activeCoupon.code} applied!
+                        </p>
+                    )}
+                </div>
+
                 <div className="bg-secondary-50 dark:bg-secondary-900/50 px-8 py-8 border-t border-secondary-200 dark:border-secondary-700 transition-colors">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="text-secondary-500 text-sm">
                             <p>Taxes and shipping calculated at checkout</p>
                         </div>
                         <div className="flex flex-col md:flex-row items-center gap-8 w-full md:w-auto">
-                            <div className="flex items-center gap-4">
-                                <span className="text-xl text-secondary-600 dark:text-secondary-300">Subtotal</span>
-                                <span className="text-3xl font-bold text-secondary-900 dark:text-white">₹{total.toLocaleString()}</span>
+                            <div className="flex flex-col items-end gap-1">
+                                <div className="flex items-center gap-4 text-secondary-500">
+                                    <span className="text-lg">Subtotal</span>
+                                    <span className="text-xl font-medium">₹{total.toLocaleString()}</span>
+                                </div>
+                                {discount > 0 && (
+                                    <div className="flex items-center gap-4 text-green-600">
+                                        <span className="text-lg">Discount</span>
+                                        <span className="text-xl font-bold">-₹{discount.toLocaleString()}</span>
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-4 mt-2">
+                                    <span className="text-2xl text-secondary-600 dark:text-secondary-300 font-bold">Total</span>
+                                    <span className="text-4xl font-bold text-primary-600">₹{(total - discount).toLocaleString()}</span>
+                                </div>
                             </div>
                             <button
                                 onClick={handleCheckout}

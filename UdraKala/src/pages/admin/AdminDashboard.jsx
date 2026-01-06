@@ -9,8 +9,10 @@ import {
     ShoppingBag,
     Users,
     Package,
-    Layers
+    Layers,
+    Ticket
 } from 'lucide-react';
+import AdminCouponList from './coupons/AdminCouponList'; // New Import
 import API from '../../api/api';
 import Swal from 'sweetalert2';
 import { sendSellerApprovalEmail } from '../../utils/emailService';
@@ -33,6 +35,7 @@ const AdminDashboard = () => {
     // Local state for admin data
     const [products, setProducts] = useState([]);
     const [sellers, setSellers] = useState([]);
+    const [coupons, setCoupons] = useState([]); // New state for coupon stats
 
     // Categories now handled by AdminCategories component
 
@@ -71,6 +74,9 @@ const AdminDashboard = () => {
                 setProducts(prodRes.data || []);
                 const sellerRes = await API.get('/admin/sellers');
                 setSellers(sellerRes.data || []);
+
+                const couponRes = await API.get('/admin/coupons'); // Fetch coupons for stats
+                setCoupons(couponRes.data || []);
 
                 // Categories fetch removed as AdminCategories handles it
 
@@ -243,7 +249,7 @@ const AdminDashboard = () => {
 
                 {/* Tabs */}
                 <div className="flex bg-white dark:bg-gray-800 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto">
-                    {['overview', 'sellers', 'products', 'categories', 'returns', 'features'].map(tab => (
+                    {['overview', 'sellers', 'products', 'categories', 'coupons', 'returns', 'features'].map(tab => (
                         <motion.button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
@@ -272,7 +278,7 @@ const AdminDashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <StatsCard title="Total Sellers" value={sellers.length} icon={Users} color="blue" trend="up" trendValue={5} />
                             <StatsCard title="Total Products" value={products.length} icon={Package} color="purple" trend="up" trendValue={12} />
-                            <StatsCard title="Categories" value="--" icon={Layers} color="orange" />
+                            <StatsCard title="Active Coupons" value={coupons.filter(c => c.isActive).length} icon={Ticket} color="pink" trend="neutral" />
                             <StatsCard title="Active Orders" value={156} icon={ShoppingBag} color="green" trend="up" trendValue={8} /> {/* Mock value for orders */}
                         </div>
 
@@ -322,6 +328,14 @@ const AdminDashboard = () => {
                 {activeTab === 'categories' && (
                     <motion.div key="categories" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <AdminCategories />
+                    </motion.div>
+                )}
+
+                {activeTab === 'coupons' && (
+                    <motion.div key="coupons" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+                        <Card title="Coupon Management">
+                            <AdminCouponList />
+                        </Card>
                     </motion.div>
                 )}
 

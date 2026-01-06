@@ -1,4 +1,4 @@
-import { LayoutDashboard, ShoppingBag, Users, FileText, Settings, ShoppingCart, User, Heart, Truck, BookOpen, BadgeIndianRupee } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Users, FileText, Settings, ShoppingCart, User, Heart, Truck, BookOpen, BadgeIndianRupee, Ticket } from 'lucide-react';
 
 export const splitRoleItems = (role) => {
     const common = [];
@@ -7,6 +7,7 @@ export const splitRoleItems = (role) => {
         return [
             { id: 1, title: 'Dashboard', icon: LayoutDashboard, href: '/admin/dashboard' },
             { id: 2, title: 'Analytics', icon: FileText, href: '/admin/analytics' },
+            { id: 9, title: 'Coupons', icon: Ticket, href: '/admin/coupons' }, // Added Coupon Link
             { id: 4, title: 'Shipments', icon: Truck, href: '/admin/shipments' },
             { id: 8, title: 'Proof Requests', icon: FileText, href: '/admin/proof-requests' },
             { id: 6, title: 'Delivery Agents', icon: Users, href: '/admin/agents' },

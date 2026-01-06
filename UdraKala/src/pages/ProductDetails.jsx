@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { motion as Motion } from 'motion/react';
 import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film, AlertTriangle, XCircle, RefreshCcw } from 'lucide-react';
 import { useData } from '../context/DataContext';
@@ -21,6 +22,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 
 const ProductDetails = () => {
+    const { t } = useTranslation();
     const { productId } = useParams();
     const { addToCart, cart, updateCartQuantity, removeFromCart } = useData();
 
@@ -124,8 +126,8 @@ const ProductDetails = () => {
 
     if (!product) return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Product not found</h2>
-            <Link to="/products" className="text-orange-600 hover:underline">Return to Shop</Link>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">{t('product_out_of_stock')}</h2>
+            <Link to="/products" className="text-orange-600 hover:underline">{t('return_shop')}</Link>
         </div>
     );
 
@@ -153,9 +155,9 @@ const ProductDetails = () => {
                 // but stockController requires login currently.
                 Swal.fire({
                     icon: 'info',
-                    title: 'Please Log In',
-                    text: 'You need to be logged in to subscribe for notifications.',
-                    confirmButtonText: 'Log In',
+                    title: t('please_login'),
+                    text: t('need_login_notify'),
+                    confirmButtonText: t('login'),
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed) navigate('/login');
@@ -166,11 +168,11 @@ const ProductDetails = () => {
             const response = await API.post(`/stock/${product.id}/notify-me`);
 
             Swal.fire({
-                title: "You’re All Set 😊",
+                title: t('all_set'),
                 html: `
-                  <p>Thank you for your interest.</p>
-                  <p>This product is currently out of stock.</p>
-                  <p>We will notify you as soon as it becomes available again.</p>
+                  <p>${t('thank_you_interest')}</p>
+                  <p>${t('product_out_of_stock')}</p>
+                  <p>${t('notify_msg')}</p>
                   <p class="mt-2 text-sm text-gray-500">We truly appreciate your patience and your choice to shop with us.</p>
                 `,
                 icon: 'success',
@@ -191,9 +193,9 @@ const ProductDetails = () => {
             <div className="bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md border-b border-secondary-200 dark:border-secondary-800 sticky top-16 z-30">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
                     <nav className="flex items-center gap-2 text-sm text-secondary-500 dark:text-secondary-400">
-                        <Link to="/" className="hover:text-primary-600 transition">Home</Link>
+                        <Link to="/" className="hover:text-primary-600 transition">{t('home')}</Link>
                         <ChevronRight size={14} />
-                        <Link to="/products" className="hover:text-primary-600 transition">Collection</Link>
+                        <Link to="/products" className="hover:text-primary-600 transition">{t('collection')}</Link>
                         <ChevronRight size={14} />
                         <span className="text-primary-600 dark:text-primary-400 font-medium truncate max-w-[200px]">{product.name}</span>
                     </nav>
@@ -324,14 +326,14 @@ const ProductDetails = () => {
                                             onClick={() => addToCart(product)}
                                             className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-secondary-900 text-white hover:bg-black transition-all active:scale-95 shadow-lg dark:bg-white dark:text-secondary-900 dark:hover:bg-secondary-200"
                                         >
-                                            <ShoppingBag size={20} /> ADD TO CART
+                                            <ShoppingBag size={20} /> {t('add_to_cart')}
                                         </button>
                                     ) : (
                                         <button
                                             onClick={handleNotifyMe}
                                             className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition active:scale-95 shadow-lg shadow-blue-100 dark:shadow-none col-span-2"
                                         >
-                                            <AlertTriangle size={20} /> NOTIFY ME
+                                            <AlertTriangle size={20} /> {t('notify_me')}
                                         </button>
                                     )}
                                 </>
@@ -345,7 +347,7 @@ const ProductDetails = () => {
                                     }}
                                     className="flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold bg-primary-600 text-white hover:bg-primary-700 transition-all active:scale-95 shadow-lg shadow-primary-200 dark:shadow-none"
                                 >
-                                    <Zap size={20} /> BUY NOW
+                                    <Zap size={20} /> {t('buy_now')}
                                 </button>
                             )}
 
@@ -353,7 +355,7 @@ const ProductDetails = () => {
                                 onClick={() => navigate(`/reels?productId=${product.id}`)}
                                 className="col-span-2 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-pink-600 border-2 border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all active:scale-95"
                             >
-                                <Film size={20} /> WATCH REEL
+                                <Film size={20} /> {t('watch_reel')}
                             </button>
                         </div>
                     </div>
@@ -365,7 +367,7 @@ const ProductDetails = () => {
                                 <Link to={product.seller?.id ? `/seller/${product.seller.id}` : '#'} className="hover:text-primary-600 transition flex items-center gap-2 w-fit">
                                     {product.seller?.shopName || 'Odisha Handloom'}
                                     <span className="w-1 h-1 rounded-full bg-secondary-300"></span>
-                                    <span>Verified Seller</span>
+                                    <span>{t('verified_seller')}</span>
                                 </Link>
                             </p>
                             <h1 className="text-3xl md:text-5xl font-bold font-serif text-secondary-900 dark:text-white mb-4 leading-tight">
@@ -396,7 +398,7 @@ const ProductDetails = () => {
                         {/* Offers Section */}
                         <div className="bg-white dark:bg-secondary-800 p-6 rounded-2xl border border-secondary-100 dark:border-secondary-700 shadow-sm">
                             <h3 className="text-base font-bold flex items-center gap-2 mb-4 text-secondary-900 dark:text-white">
-                                <Tag size={18} className="text-primary-600" /> Available Offers
+                                <Tag size={18} className="text-primary-600" /> {t('available_offers')}
                             </h3>
                             <div className="space-y-3">
                                 {[
@@ -415,22 +417,22 @@ const ProductDetails = () => {
                         {/* Highlights & Services Toggle/List */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-y border-secondary-200 dark:border-secondary-700 py-8">
                             <div>
-                                <h3 className="text-secondary-400 dark:text-secondary-500 font-bold text-xs uppercase tracking-widest mb-4">Highlights & Services</h3>
+                                <h3 className="text-secondary-400 dark:text-secondary-500 font-bold text-xs uppercase tracking-widest mb-4">{t('highlights_services')}</h3>
                                 <ul className="space-y-4 text-sm text-secondary-700 dark:text-secondary-200">
-                                    <li className="flex gap-3 items-center"><Award size={18} className="text-primary-600 shrink-0" /> 100% Authentic Handloom</li>
-                                    <li className="flex gap-3 items-center"><Truck size={18} className="text-primary-600 shrink-0" /> Free Delivery across India</li>
+                                    <li className="flex gap-3 items-center"><Award size={18} className="text-primary-600 shrink-0" /> {t('authentic_handloom')}</li>
+                                    <li className="flex gap-3 items-center"><Truck size={18} className="text-primary-600 shrink-0" /> {t('free_delivery')}</li>
                                     <li className="flex gap-3 items-center">
                                         <RefreshCcw size={18} className="text-primary-600 shrink-0" />
-                                        <span>7 Days <span className="font-semibold text-secondary-900 dark:text-white">Return & Exchange</span></span>
+                                        <span>7 Days <span className="font-semibold text-secondary-900 dark:text-white">{t('return_exchange_policy')}</span></span>
                                     </li>
                                     <li className="flex gap-3 items-center">
                                         <ShieldCheck size={18} className="text-primary-600 shrink-0" />
-                                        <span>Securely Packed & Insured</span>
+                                        <span>{t('secure_packing')}</span>
                                     </li>
                                 </ul>
                             </div>
                             <div>
-                                <h3 className="text-secondary-400 dark:text-secondary-500 font-bold text-xs uppercase tracking-widest mb-4">Seller Information</h3>
+                                <h3 className="text-secondary-400 dark:text-secondary-500 font-bold text-xs uppercase tracking-widest mb-4">{t('seller_info')}</h3>
                                 <div className="bg-secondary-50 dark:bg-secondary-800/50 p-4 rounded-xl border border-secondary-100 dark:border-secondary-700">
                                     <div className="flex items-center justify-between mb-2">
                                         <Link to={`/seller/${product.seller?.id}`} className="font-bold text-secondary-900 dark:text-white hover:text-primary-600 transition">
@@ -446,7 +448,7 @@ const ProductDetails = () => {
 
                         {/* Description */}
                         <div>
-                            <h3 className="text-xl font-serif font-bold mb-4 text-secondary-900 dark:text-white">Product Story</h3>
+                            <h3 className="text-xl font-serif font-bold mb-4 text-secondary-900 dark:text-white">{t('product_story')}</h3>
                             <p className="text-secondary-600 dark:text-secondary-300 leading-relaxed text-base whitespace-pre-line font-light">
                                 {product.description}
                             </p>
@@ -454,28 +456,28 @@ const ProductDetails = () => {
 
                         {/* Tabular Specifications */}
                         <div>
-                            <h3 className="text-xl font-serif font-bold mb-6 text-secondary-900 dark:text-white">Specifications</h3>
+                            <h3 className="text-xl font-serif font-bold mb-6 text-secondary-900 dark:text-white">{t('specifications')}</h3>
                             <div className="border border-secondary-200 dark:border-secondary-700 rounded-2xl overflow-hidden">
                                 <table className="w-full text-sm text-left">
                                     <tbody className="divide-y divide-secondary-100 dark:divide-secondary-800">
                                         <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">Material</td>
+                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('material')}</td>
                                             <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.material || 'N/A'}</td>
                                         </tr>
                                         <tr className="flex flex-col md:table-row">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">Color</td>
+                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('color')}</td>
                                             <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.color || 'N/A'}</td>
                                         </tr>
                                         <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">Size / Dimensions</td>
+                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('dimensions')}</td>
                                             <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.size || 'N/A'}</td>
                                         </tr>
                                         <tr className="flex flex-col md:table-row">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">Origin</td>
+                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('origin')}</td>
                                             <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.origin || 'Odisha'}</td>
                                         </tr>
                                         <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">Pack Of</td>
+                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('pack_of')}</td>
                                             <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.packOf || '1'}</td>
                                         </tr>
                                     </tbody>
@@ -487,7 +489,7 @@ const ProductDetails = () => {
                         <div className="border-t border-secondary-200 dark:border-secondary-700 pt-10 mt-10">
                             <div className="flex justify-between items-center mb-8">
                                 <h3 className="text-2xl font-serif font-bold text-secondary-900 dark:text-white flex items-center gap-3">
-                                    Customer Reviews
+                                    {t('customer_reviews')}
                                     <span className="text-sm font-sans font-normal text-secondary-500 bg-secondary-100 dark:bg-secondary-800 px-3 py-1 rounded-full">
                                         {reviews.length}
                                     </span>
@@ -497,7 +499,7 @@ const ProductDetails = () => {
                                         onClick={() => setReviewModalOpen(true)}
                                         className="bg-secondary-900 text-white dark:bg-white dark:text-secondary-900 px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-black transition shadow-sm flex items-center gap-2"
                                     >
-                                        <Star size={16} /> Write a Review
+                                        <Star size={16} /> {t('write_review')}
                                     </button>
                                 )}
                             </div>
@@ -507,7 +509,7 @@ const ProductDetails = () => {
                                     <div className="bg-secondary-50 dark:bg-secondary-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Star size={32} className="text-secondary-300" />
                                     </div>
-                                    <p className="text-secondary-500 font-medium">No reviews yet. Be the first to rate this masterpiece!</p>
+                                    <p className="text-secondary-500 font-medium">{t('no_reviews')}</p>
                                     {eligibleOrderItemId && (
                                         <button
                                             onClick={() => setReviewModalOpen(true)}
@@ -596,7 +598,7 @@ const ProductDetails = () => {
                                     onClick={() => addToCart(product)}
                                     className="py-4 font-bold text-secondary-900 dark:text-white bg-white dark:bg-secondary-900 hover:bg-secondary-50 transition border-r border-secondary-200 dark:border-secondary-800 uppercase tracking-wide text-xs"
                                 >
-                                    Add to Cart
+                                    {t('add_to_cart')}
                                 </button>
                                 <button
                                     onClick={() => {
@@ -605,7 +607,7 @@ const ProductDetails = () => {
                                     }}
                                     className="py-4 font-bold text-white bg-primary-600 hover:bg-primary-700 transition uppercase tracking-wide text-xs"
                                 >
-                                    Buy Now
+                                    {t('buy_now')}
                                 </button>
                             </>
                         ) : (
@@ -622,7 +624,7 @@ const ProductDetails = () => {
                     onClick={() => navigate(`/reels?productId=${product.id}`)}
                     className="col-span-2 py-3 font-bold text-pink-600 bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 transition uppercase tracking-wide text-xs flex items-center justify-center gap-2"
                 >
-                    <Film size={16} /> Watch Reel
+                    <Film size={16} /> {t('watch_reel')}
                 </button>
             </div>
 

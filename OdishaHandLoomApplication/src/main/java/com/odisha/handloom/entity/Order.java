@@ -56,6 +56,9 @@ public class Order {
     private LocalDateTime invoiceSentAt;
     private String invoiceNumber;
 
+    @Column(name = "discount_amount")
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
     // Transient fields for Frontend UI (Not stored in DB)
     @Transient
     private BigDecimal listingPrice;
@@ -415,5 +418,13 @@ public class Order {
 
     public void setInvoiceAvailable(Boolean invoiceAvailable) {
         this.invoiceAvailable = invoiceAvailable;
+    }
+
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
+
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
     }
 }

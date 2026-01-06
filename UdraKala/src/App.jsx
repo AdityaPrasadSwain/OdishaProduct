@@ -57,6 +57,9 @@ import SellerReturnDashboard from './pages/seller/SellerReturnDashboard';
 import AdminReturnManagement from './pages/admin/AdminReturnManagement';
 import AdminShipmentManager from './pages/admin/shipment/AdminShipmentManager';
 import ProofRequestManager from './pages/admin/shipment/ProofRequestManager'; // New Import
+import AdminCouponList from './pages/admin/coupons/AdminCouponList';
+import AdminCouponEditor from './pages/admin/coupons/AdminCouponEditor';
+import AdminCouponDashboard from './pages/admin/coupons/AdminCouponDashboard';
 // ... imports
 import DeliveryDashboard from './pages/agent/DeliveryDashboard'; // Updated Import
 import MyProofs from './pages/agent/MyProofs'; // New Import
@@ -107,11 +110,16 @@ function App() {
         <Route path="/admin/proof-requests" element={<ProtectedRoute allowedRoles={['ADMIN']}><ProofRequestManager /></ProtectedRoute>} />
         <Route path="/admin/delivery-proofs" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminProofList /></ProtectedRoute>} />
         <Route path="/admin/returns" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminReturnManagement /></ProtectedRoute>} />
-        <Route path="/admin/returns" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminReturnManagement /></ProtectedRoute>} />
 
         <Route path="/admin/analytics" element={<ProtectedRoute allowedRoles={['ADMIN']}><AnalyticsDashboard /></ProtectedRoute>} />
+
+        {/* Coupon Management */}
+        <Route path="/admin/coupons" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCouponList /></ProtectedRoute>} />
+        <Route path="/admin/coupons/create" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCouponEditor /></ProtectedRoute>} />
+        <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCouponEditor /></ProtectedRoute>} />
+        <Route path="/admin/coupons/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCouponDashboard /></ProtectedRoute>} />
+
         <Route path="/admin/payouts" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminPayoutDashboard /></ProtectedRoute>} />
-        <Route path="/admin/settings/commission" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCommissionSettings /></ProtectedRoute>} />
         <Route path="/admin/settings/commission" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminCommissionSettings /></ProtectedRoute>} />
         <Route path="/admin/payouts/history" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminPayoutHistory /></ProtectedRoute>} />
         <Route path="/admin/settlements" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminSettlements /></ProtectedRoute>} />
@@ -121,7 +129,6 @@ function App() {
 
         {/* Seller Routes */}
         <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerDashboard /></ProtectedRoute>} />
-        <Route path="/seller/dashboard/analytics" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerAnalyticsDashboard /></ProtectedRoute>} />
         <Route path="/seller/dashboard/analytics" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerAnalyticsDashboard /></ProtectedRoute>} />
         <Route path="/seller/returns" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerReturnDashboard /></ProtectedRoute>} />
         <Route path="/seller/status" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerStatus /></ProtectedRoute>} />

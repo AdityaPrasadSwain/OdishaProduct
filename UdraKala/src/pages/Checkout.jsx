@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux'; // Import useSelector
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { createOrder } from '../api/orderApi';
@@ -14,6 +15,7 @@ import { sendOrderEmail, sendSellerOrderNotification } from '../utils/emailServi
 const Checkout = () => {
     const { user } = useAuth();
     const { cart, clearCart } = useData();
+    const { activeCoupon, discount } = useSelector(state => state.coupon); // Get coupon state
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
@@ -25,7 +27,8 @@ const Checkout = () => {
 
     const [paymentMethod, setPaymentMethod] = useState('COD');
 
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const totalAmount = subTotal - (discount || 0);
 
     const isFormValid = selectedAddressId != null;
 
@@ -111,7 +114,9 @@ const Checkout = () => {
                 addressId: selectedAddressId,
                 shippingAddress: formattedAddress,
                 paymentMethod: paymentMethod, // 'COD' or 'ONLINE'
-                paymentId: null // Pending
+                paymentMethod: paymentMethod, // 'COD' or 'ONLINE'
+                paymentId: null, // Pending
+                couponCode: activeCoupon ? activeCoupon.code : null // Send coupon code
             };
 
             const createdData = await createOrder(orderPayload);
@@ -398,6 +403,12 @@ const Checkout = () => {
                             <span className="text-lg font-medium text-secondary-900 dark:text-white">Total Amount</span>
                             <span className="text-2xl font-bold text-primary-600">₹{totalAmount.toLocaleString()}</span>
                         </div>
+                        {discount > 0 && (
+                            <div className="flex justify-between items-center mt-2 text-green-600">
+                                <span className="font-medium">Discount ({activeCoupon?.code})</span>
+                                <span className="font-bold">-₹{discount.toLocaleString()}</span>
+                            </div>
+                        )}
                         <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 text-xs font-bold rounded-lg text-center border border-green-200 dark:border-green-800">
                             You are saving money on this order with free delivery!
                         </div>

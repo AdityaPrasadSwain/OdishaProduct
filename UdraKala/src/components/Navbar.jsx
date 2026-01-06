@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, LogOut, Sun, Moon, User, Heart, Settings, LayoutDashboard, Menu, X, RotateCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { languages } from '../config/languages';
 import NotificationBell from './NotificationBell';
 import AdminNotificationBell from './admin/AdminNotificationBell';
 import udraKalaLogo from '../assets/logo.jpg';
@@ -56,6 +58,7 @@ const DropdownItem = ({ to, icon: Icon, label, onClick, setIsUserMenuOpen, class
 };
 
 const CustomNavbar = () => {
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, logout, loading } = useAuth();
     const { cart } = useData();
@@ -151,17 +154,37 @@ const CustomNavbar = () => {
                                             <span className="block text-xs text-secondary-500 truncate dark:text-gray-400 mt-0.5">{user.email}</span>
                                         </div>
                                         <div className="py-2">
-                                            {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label="Admin Dashboard" setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                            {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label="Seller Dashboard" setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                            {isAgent && <DropdownItem to="/agent/dashboard" icon={LayoutDashboard} label="Agent Dashboard" setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                            {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label="My Dashboard" setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                            {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label="Returns & Orders" setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                            {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label={t('admin_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                            {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label={t('seller_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                            {isAgent && <DropdownItem to="/agent/dashboard" icon={LayoutDashboard} label={t('agent_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                            {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label={t('my_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                            {isCustomer && <DropdownItem to="/customer/returns" icon={RotateCw} label={t('returns_orders')} setIsUserMenuOpen={setIsUserMenuOpen} />}
 
-                                            <DropdownItem to="/profile" icon={User} label="My Profile" setIsUserMenuOpen={setIsUserMenuOpen} />
-                                            <DropdownItem icon={Settings} label="Settings" setIsUserMenuOpen={setIsUserMenuOpen} />
+                                            <DropdownItem to="/profile" icon={User} label={t('profile')} setIsUserMenuOpen={setIsUserMenuOpen} />
+                                            <DropdownItem icon={Settings} label={t('settings')} setIsUserMenuOpen={setIsUserMenuOpen} />
+
+                                            {/* Language Switcher Section */}
+                                            <div className="border-t border-secondary-100 dark:border-secondary-700 my-1 pt-1">
+                                                <div className="px-4 py-1 text-xs font-semibold text-secondary-500 uppercase tracking-wider dark:text-gray-400">
+                                                    Language / ଭାଷା
+                                                </div>
+                                                {languages.map((lang) => (
+                                                    <button
+                                                        key={lang.code}
+                                                        onClick={() => {
+                                                            i18n.changeLanguage(lang.code);
+                                                            setIsUserMenuOpen(false);
+                                                        }}
+                                                        className={`flex items-center w-full px-4 py-2 text-sm text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ${i18n.language === lang.code ? 'bg-secondary-50 dark:bg-secondary-700 font-bold text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-200'}`}
+                                                    >
+                                                        <span className="mr-2 text-lg">{lang.flag}</span>
+                                                        {lang.label}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                         <div className="py-2">
-                                            <DropdownItem onClick={handleLogout} icon={LogOut} label="Sign out" isDanger setIsUserMenuOpen={setIsUserMenuOpen} />
+                                            <DropdownItem onClick={handleLogout} icon={LogOut} label={t('logout')} isDanger setIsUserMenuOpen={setIsUserMenuOpen} />
                                         </div>
                                     </div>
                                 )}
@@ -172,9 +195,9 @@ const CustomNavbar = () => {
                     {/* Guest Actions */}
                     {isGuest && (
                         <div className="flex items-center gap-3">
-                            <Link to="/login" className="text-secondary-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-white font-medium text-sm transition-colors">Login</Link>
+                            <Link to="/login" className="text-secondary-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-white font-medium text-sm transition-colors">{t('login')}</Link>
                             <Link to="/register" className="text-white bg-primary-600 hover:bg-primary-700 shadow-md shadow-primary-500/20 font-medium rounded-full text-sm px-5 py-2 transition-all transform hover:-translate-y-0.5">
-                                Join Us
+                                {t('signup')}
                             </Link>
                         </div>
                     )}
@@ -197,12 +220,12 @@ const CustomNavbar = () => {
                             <>
                                 <li>
                                     <Link to="/" className={`block py-2 pl-3 pr-4 rounded-lg md:p-0 transition-colors ${window.location.pathname === '/' ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-secondary-600 hover:bg-secondary-100 md:hover:bg-transparent md:hover:text-primary-600 dark:text-gray-300 dark:hover:text-white'}`}>
-                                        Home
+                                        {t('home')}
                                     </Link>
                                 </li>
                                 <li>
                                     <Link to="/products" className={`block py-2 pl-3 pr-4 rounded-lg md:p-0 transition-colors ${window.location.pathname === '/products' ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-secondary-600 hover:bg-secondary-100 md:hover:bg-transparent md:hover:text-primary-600 dark:text-gray-300 dark:hover:text-white'}`}>
-                                        Shop
+                                        {t('products')}
                                     </Link>
                                 </li>
                                 {/* Become a Seller Button */}
@@ -211,7 +234,7 @@ const CustomNavbar = () => {
                                         to="/register/seller"
                                         className="block py-2 pl-3 pr-4 rounded-lg md:p-0 text-primary-600 font-semibold hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
                                     >
-                                        Become a Seller
+                                        {t('become_seller')}
                                     </Link>
                                 </li>
                             </>
@@ -220,19 +243,19 @@ const CustomNavbar = () => {
                         {/* Role Specific Links - kept similar but with updated text colors if needed */}
                         {isAdmin && (
                             <>
-                                <li><Link to="/admin/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">Dashboard</Link></li>
+                                <li><Link to="/admin/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">{t('dashboard')}</Link></li>
                                 <li><Link to="/admin/users" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">Users</Link></li>
                             </>
                         )}
                         {isSeller && (
                             <>
-                                <li><Link to="/seller/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">Dashboard</Link></li>
-                                <li><Link to="/profile" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">Profile</Link></li>
+                                <li><Link to="/seller/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">{t('dashboard')}</Link></li>
+                                <li><Link to="/profile" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">{t('profile')}</Link></li>
                             </>
                         )}
                         {isAgent && (
                             <>
-                                <li><Link to="/agent/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">Dashboard</Link></li>
+                                <li><Link to="/agent/dashboard" className="block py-2 pl-3 pr-4 rounded text-secondary-700 hover:text-primary-600 md:p-0 dark:text-gray-300 dark:hover:text-white">{t('dashboard')}</Link></li>
                             </>
                         )}
                     </ul>
