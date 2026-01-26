@@ -116,7 +116,7 @@ const ProductList = () => {
                                                 <SwiperSlide key={img.id || index}>
                                                     <div className="block w-full h-full">
                                                         <img
-                                                            src={img.imageUrl}
+                                                            src={img.imagePath}
                                                             alt={`${product.name} - ${index + 1}`}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -127,7 +127,7 @@ const ProductList = () => {
                                     ) : (
                                         <div className="block w-full h-full">
                                             <img
-                                                src={product.images[0].imageUrl}
+                                                src={product.images[0].imagePath}
                                                 alt={product.name}
                                                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                             />

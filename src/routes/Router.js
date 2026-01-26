@@ -26,6 +26,10 @@ const ExSlider = lazy(() => import("../views/form-elements/ExSlider"));
 const ExSwitch = lazy(() => import("../views/form-elements/ExSwitch"));
 const FormLayouts = lazy(() => import("../views/form-layouts/FormLayouts"));
 const ProductWizard = lazy(() => import("../views/seller/product/ProductWizard"));
+const DraftList = lazy(() => import("../views/seller/product/DraftList"));
+const Orders = lazy(() => import("../views/seller/orders/Orders"));
+const Payments = lazy(() => import("../views/seller/payments/Payments"));
+const Profile = lazy(() => import("../views/seller/profile/Profile"));
 
 const Router = [
   {
@@ -47,6 +51,11 @@ const Router = [
       { path: "/form-elements/slider", element: <ExSlider /> },
       { path: "/form-elements/switch", element: <ExSwitch /> },
       { path: "/seller/products/create", element: <ProductWizard /> },
+      { path: "/seller/products/edit/:id", element: <ProductWizard /> },
+      { path: "/seller/drafts", element: <DraftList /> },
+      { path: "/seller/orders", element: <Orders /> },
+      { path: "/seller/payments", element: <Payments /> },
+      { path: "/seller/profile", element: <Profile /> },
       { path: '*', element: <Navigate to="/auth/404" /> },
     ],
   },

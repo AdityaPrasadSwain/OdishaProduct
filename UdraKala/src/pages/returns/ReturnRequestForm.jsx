@@ -72,11 +72,17 @@ const ReturnRequestForm = () => {
 
             {/* Product Info */}
             <div className="flex items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <img
-                    src={orderItem.product?.images?.[0] || 'https://via.placeholder.com/100'}
-                    alt={orderItem.product?.productTitle}
-                    className="w-20 h-20 object-cover rounded-md"
-                />
+                {orderItem.product?.images?.[0] ? (
+                    <img
+                        src={orderItem.product.images[0]}
+                        alt={orderItem.product?.productTitle}
+                        className="w-20 h-20 object-cover rounded-md"
+                    />
+                ) : (
+                    <div className="w-20 h-20 bg-gray-200 dark:bg-gray-600 rounded-md flex items-center justify-center">
+                        <PhotoIcon className="h-8 w-8 text-gray-400 dark:text-gray-300" />
+                    </div>
+                )}
                 <div>
                     <h3 className="font-semibold text-gray-800 dark:text-white">{orderItem.product?.productTitle}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-300">Qty: {orderItem.quantity} | Price: ₹{orderItem.price}</p>

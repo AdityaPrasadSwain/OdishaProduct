@@ -66,14 +66,48 @@ import {
 const Menuitems = [
   {
     navlabel: true,
-    subheader: 'Home',
+    subheader: 'Seller Panel',
   },
-
   {
     id: uniqueId(),
     title: 'Dashboard',
     icon: IconLayoutDashboard,
     href: '/dashboard',
+  },
+  {
+    id: uniqueId(),
+    title: 'New Product',
+    icon: IconBox,
+    href: '/seller/products/create',
+  },
+  {
+    id: uniqueId(),
+    title: 'My Drafts',
+    icon: IconFiles,
+    href: '/seller/drafts',
+  },
+  {
+    id: uniqueId(),
+    title: 'Orders',
+    icon: IconShoppingCart,
+    href: '/seller/orders',
+  },
+  {
+    id: uniqueId(),
+    title: 'Payments',
+    icon: IconCurrencyDollar,
+    href: '/seller/payments',
+  },
+  {
+    id: uniqueId(),
+    title: 'Profile',
+    icon: IconUserCircle,
+    href: '/seller/profile',
+  },
+
+  {
+    navlabel: true,
+    subheader: 'Home',
   },
 
   {
@@ -219,7 +253,7 @@ const Menuitems = [
     icon: IconCopy,
     href: '/ui/shadow',
   },
- 
+
   {
     navlabel: true,
     subheader: 'Apps',

@@ -193,7 +193,7 @@ const MyOrders = () => {
                                             {order.orderItems?.slice(0, 4).map((item, idx) => (
                                                 <img
                                                     key={idx}
-                                                    src={item.product?.images?.[0]?.imageUrl || item.product?.imageUrl || '/placeholder.png'}
+                                                    src={item.product?.images?.[0]?.imagePath || item.product?.imagePath || '/placeholder.png'}
                                                     alt={item.product?.name}
                                                     className="inline-block h-10 w-10 rounded-full ring-2 ring-white dark:ring-gray-800 object-cover bg-gray-50"
                                                     title={item.product?.name}

@@ -114,7 +114,6 @@ const Checkout = () => {
                 addressId: selectedAddressId,
                 shippingAddress: formattedAddress,
                 paymentMethod: paymentMethod, // 'COD' or 'ONLINE'
-                paymentMethod: paymentMethod, // 'COD' or 'ONLINE'
                 paymentId: null, // Pending
                 couponCode: activeCoupon ? activeCoupon.code : null // Send coupon code
             };
@@ -389,7 +388,7 @@ const Checkout = () => {
                             {cart.map((item) => (
                                 <div key={item.id} className="flex gap-4 items-center border-b border-secondary-100 dark:border-secondary-700 pb-4 last:border-0">
                                     <div className="w-16 h-16 rounded-lg bg-secondary-100 dark:bg-secondary-700 overflow-hidden shrink-0 border border-secondary-200 dark:border-secondary-600">
-                                        <img src={item.images?.[0]?.imageUrl || item.imageUrl || '/placeholder.png'} alt={item.name} className="w-full h-full object-cover" />
+                                        <img src={item.images?.[0]?.imagePath || item.imagePath || '/placeholder.png'} alt={item.name} className="w-full h-full object-cover" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="text-sm font-bold text-secondary-900 dark:text-white truncate">{item.name}</h3>

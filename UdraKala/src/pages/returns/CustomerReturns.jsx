@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getCustomerReturns, cancelReturnRequest } from '../../api/returnApi';
 import Swal from 'sweetalert2';
 import { format } from 'date-fns';
-import { TrashIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, ChevronDownIcon, ChevronUpIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import ReturnTimeline from './ReturnTimeline';
 
 const CustomerReturns = () => {
@@ -91,16 +91,22 @@ const CustomerReturns = () => {
 
                                 {/* Product Info */}
                                 <div className="flex gap-4 items-center">
-                                    <img
-                                        src={req.productImage || 'https://via.placeholder.com/80'}
-                                        alt={req.productName}
-                                        className="w-16 h-16 object-cover rounded-lg border dark:border-gray-700"
-                                    />
+                                    {req.productImage ? (
+                                        <img
+                                            src={req.productImage}
+                                            alt={req.productName}
+                                            className="w-16 h-16 object-cover rounded-lg border dark:border-gray-700"
+                                        />
+                                    ) : (
+                                        <div className="w-16 h-16 rounded-lg border dark:border-gray-700 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                            <PhotoIcon className="w-8 h-8 text-gray-400" />
+                                        </div>
+                                    )}
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-md border ${req.type === 'REPLACE'
-                                                    ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-900'
-                                                    : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:border-orange-900'
+                                                ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:border-blue-900'
+                                                : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:border-orange-900'
                                                 }`}>
                                                 {req.type}
                                             </span>

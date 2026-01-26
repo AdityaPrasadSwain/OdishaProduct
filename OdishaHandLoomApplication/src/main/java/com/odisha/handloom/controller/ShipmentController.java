@@ -34,28 +34,11 @@ public class ShipmentController {
         return ResponseEntity.ok(shipmentService.getAllShipments());
     }
 
-    @PutMapping("/admin/assign/{id}/{agentId}")
-    public ResponseEntity<ShipmentDto> assignAgent(@PathVariable UUID id, @PathVariable UUID agentId) {
-        return ResponseEntity.ok(shipmentService.assignAgent(id, agentId));
-    }
-
     // --- Agent Endpoints ---
-
-    @GetMapping("/agent/assigned/{agentId}")
-    public ResponseEntity<List<ShipmentDto>> getAgentShipments(@PathVariable UUID agentId) {
-        // Ideally extract agentId from JWT context for security
-        return ResponseEntity.ok(shipmentService.getShipmentsByAgent(agentId));
-    }
 
     @PutMapping("/agent/update-status/{id}")
     public ResponseEntity<ShipmentDto> updateStatus(@PathVariable UUID id, @RequestParam ShipmentStatus status) {
         return ResponseEntity.ok(shipmentService.updateStatus(id, status));
-    }
-
-    @PostMapping("/agent/update-location/{id}")
-    public ResponseEntity<Void> updateLocation(@PathVariable UUID id, @RequestBody LocationUpdateDto locationDto) {
-        shipmentService.updateLocation(id, locationDto);
-        return ResponseEntity.ok().build();
     }
 
     // --- Public/Customer Endpoints ---

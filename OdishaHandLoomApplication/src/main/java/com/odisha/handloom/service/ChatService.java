@@ -2,6 +2,7 @@ package com.odisha.handloom.service;
 
 import com.odisha.handloom.entity.*;
 import com.odisha.handloom.repository.*;
+import com.odisha.handloom.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,9 @@ public class ChatService {
 
     @Autowired
     private com.odisha.handloom.repository.OrderRepository orderRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
 
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
 
@@ -201,29 +205,101 @@ public class ChatService {
     private BotResponse handleNewIntent(ChatSession session, String userMessage) {
         String msg = userMessage.toLowerCase();
 
-        // 1. Order Support
-        if (msg.contains("order") || msg.contains("delivery") || msg.contains("return") || msg.contains("refund")) {
+        // 1. Greeting
+        if (msg.matches(".*(hi|hello|hey|namaste).*")) {
+            return new BotResponse("Namaste! 🙏 How can I assist you with our Handloom & Handicrafts today?", null,
+                    null);
+        }
+
+        // 2. Shipping & Delivery
+        if (msg.contains("shipping") || msg.contains("delivery") || msg.contains("track") || msg.contains("time")) {
+            return handleShippingIntent(session, msg);
+        }
+
+        // 3. Product Help (Buy, Saree, Price, Show)
+        if (msg.contains("buy") || msg.contains("saree") || msg.contains("craft") || msg.contains("show")
+                || msg.contains("price") || msg.contains("looking for")) {
+            return startProductFlow(session, msg);
+        }
+
+        // 4. Order Support
+        if (msg.contains("order") || msg.contains("return") || msg.contains("refund")) {
             return startOrderSupportFlow(session);
         }
 
-        // 2. Payment Issue
-        if (msg.contains("payment") || msg.contains("money") || msg.contains("refund") || msg.contains("transaction")) {
+        // 5. Lead Collection (Interest)
+        if (msg.contains("interested") || msg.contains("call me") || msg.contains("contact")) {
+            return handleLeadCollection(session);
+        }
+
+        // 6. Payment Issue
+        if (msg.contains("payment") || msg.contains("money") || msg.contains("transaction")) {
             return startStaticFlow(session, "PAYMENT_ISSUE", "STEP_1");
         }
 
-        // 3. Internet/Technical (Example)
-        if (msg.contains("internet") || msg.contains("slow") || msg.contains("network") || msg.contains("site")) {
-            // Maybe map to a Technical flow if exists
-        }
-
-        // 4. FAQ Match (Knowledge Base)
+        // 7. FAQ Match (Knowledge Base)
         Optional<FAQ> faqMatch = findFAQ(session, msg);
         if (faqMatch.isPresent()) {
             return new BotResponse(faqMatch.get().getAnswer(), null, null);
         }
 
-        // 5. Fallback (LAST RESORT)
-        return new BotResponse("Sorry, I couldn't understand. Do you want to create a support ticket?", null, null);
+        // 8. Fallback (LAST RESORT)
+        return new BotResponse(
+                "Apologies, I didn't quite catch that. Could you please rephrase? Or I can connect you to our support team.",
+                null, null);
+    }
+
+    private BotResponse handleShippingIntent(ChatSession session, String msg) {
+        if (msg.contains("track")) {
+            return new BotResponse(
+                    "To track your order, please go to 'My Orders' section or provide your Order ID here.", null, null);
+        }
+        return new BotResponse(
+                "We deliver across India 🇮🇳. Delivery usually takes 3–7 working days depending on your location.",
+                null, null);
+    }
+
+    private BotResponse startProductFlow(ChatSession session, String msg) {
+        // Simple Keyword Search Strategy
+        String searchKey = null;
+        if (msg.contains("saree"))
+            searchKey = "saree";
+        else if (msg.contains("decor"))
+            searchKey = "decor";
+        else if (msg.contains("craft"))
+            searchKey = "craft";
+        else if (msg.contains("silk"))
+            searchKey = "silk";
+        else if (msg.contains("cotton"))
+            searchKey = "cotton";
+
+        if (searchKey != null) {
+            List<Product> products = productRepository.findByNameContainingIgnoreCase(searchKey);
+            if (products.isEmpty()) {
+                return new BotResponse("I couldn't find any specific items for '" + searchKey
+                        + "' right now, but we have a beautiful collection. Would you like to browse categories?",
+                        objectMapper.valueToTree(List.of("Sarees", "Home Decor", "Fabric")).toString(), null);
+            }
+
+            // Format top 3 products
+            StringBuilder sb = new StringBuilder("Here are some exquisite handcrafted options for you:\n");
+            products.stream().limit(3).forEach(p -> {
+                sb.append("• ").append(p.getName()).append(" - ₹").append(p.getPrice()).append("\n");
+            });
+            sb.append("\nWould you like to see more?");
+
+            return new BotResponse(sb.toString(), null, null);
+        }
+
+        // Ask for preference
+        return new BotResponse(
+                "I'd love to help you find the perfect item. Are you looking for Sarees, Home Decor, or Fabrics?",
+                "[\"Sarees\", \"Home Decor\", \"Fabrics\"]", null);
+    }
+
+    private BotResponse handleLeadCollection(ChatSession session) {
+        return new BotResponse("That's great! May I have your Name and Email so our team can personally assist you?",
+                null, null);
     }
 
     // --- Helpers ---

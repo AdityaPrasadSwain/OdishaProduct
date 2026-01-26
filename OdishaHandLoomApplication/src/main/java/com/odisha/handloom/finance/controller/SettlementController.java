@@ -32,9 +32,6 @@ public class SettlementController {
     @Autowired
     private com.odisha.handloom.finance.repository.WalletTransactionRepository transactionRepository;
 
-    @Autowired
-    private com.odisha.handloom.logistics.repository.AgentEarningRepository agentEarningRepository;
-
     private User getAuthenticatedUser(UserDetails userDetails) {
         if (userDetails == null)
             return null;
@@ -85,12 +82,4 @@ public class SettlementController {
         return ResponseEntity.ok(settlementService.getSettlementsBySeller(seller.getId()));
     }
 
-    // --- Agent Endpoints ---
-
-    @GetMapping("/agent/finance/earnings")
-    public ResponseEntity<List<com.odisha.handloom.logistics.entity.AgentEarning>> getMyEarnings(
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User agent = getAuthenticatedUser(userDetails);
-        return ResponseEntity.ok(agentEarningRepository.findByAgentId(agent.getId()));
-    }
 }

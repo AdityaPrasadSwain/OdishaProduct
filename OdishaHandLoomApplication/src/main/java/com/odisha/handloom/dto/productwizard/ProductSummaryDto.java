@@ -35,6 +35,7 @@ public class ProductSummaryDto {
 
     // Step 3: Images
     private List<String> imageUrls;
+    private String reelUrl;
 
     // Step 4: Specs
     private List<ProductSpecEntry> specifications;

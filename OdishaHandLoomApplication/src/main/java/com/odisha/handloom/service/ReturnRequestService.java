@@ -289,7 +289,7 @@ public class ReturnRequestService {
         String img = "";
         if (request.getOrderItem().getProduct().getImages() != null
                 && !request.getOrderItem().getProduct().getImages().isEmpty()) {
-            img = request.getOrderItem().getProduct().getImages().get(0).getImageUrl();
+            img = request.getOrderItem().getProduct().getImages().get(0).getImagePath();
         }
         response.setProductImage(img);
 

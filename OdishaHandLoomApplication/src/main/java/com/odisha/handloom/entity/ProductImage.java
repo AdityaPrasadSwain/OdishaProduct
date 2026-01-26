@@ -11,8 +11,8 @@ public class ProductImage {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
-    private String imageUrl;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String imagePath;
 
     private Integer position; // To maintain order (0 = main image)
 
@@ -24,8 +24,8 @@ public class ProductImage {
     public ProductImage() {
     }
 
-    public ProductImage(String imageUrl, Integer position, Product product) {
-        this.imageUrl = imageUrl;
+    public ProductImage(String imagePath, Integer position, Product product) {
+        this.imagePath = imagePath;
         this.position = position;
         this.product = product;
     }
@@ -38,12 +38,12 @@ public class ProductImage {
         this.id = id;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImagePath() {
+        return imagePath;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 
     public Integer getPosition() {

@@ -165,7 +165,7 @@ const ManifestView = () => {
                                 <Typography variant="subtitle2" gutterBottom>ORDER QR CODE</Typography>
                                 <Box sx={{ border: '2px solid #eee', p: 1, borderRadius: 2 }}>
                                     <img
-                                        src={`http://localhost:8085/api/label/qr/${currentLabelOrder.orderId || currentLabelOrder.id}`}
+                                        src={`http://localhost:8086/api/label/qr/${currentLabelOrder.orderId || currentLabelOrder.id}`}
                                         alt="QR Code"
                                         style={{ width: 200, height: 200 }}
                                     />
@@ -181,7 +181,7 @@ const ManifestView = () => {
                                 <Typography variant="subtitle2" gutterBottom>TRACKING BARCODE</Typography>
                                 <Box sx={{ border: '2px solid #eee', p: 2, borderRadius: 2, bgcolor: '#fff' }}>
                                     <img
-                                        src={`http://localhost:8085/api/label/barcode/${currentLabelOrder.trackingId}`}
+                                        src={`http://localhost:8086/api/label/barcode/${currentLabelOrder.trackingId}`}
                                         alt="Barcode"
                                         style={{ maxWidth: '100%', height: 80 }}
                                     />

@@ -1,121 +1,140 @@
-import React, { useEffect, useState } from 'react';
-import { getProductSummary } from '../../../../api/productWizardApi';
+import React, { useState } from 'react';
+import { useProductContext } from '../../../../context/ProductContext';
+import { Chip, Paper } from '@mui/material';
 
-const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-
-    useEffect(() => {
-        const fetchSummary = async () => {
-            try {
-                const res = await getProductSummary(productId);
-                setData(res);
-            } catch (err) {
-                alert("Failed to load summary: " + err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchSummary();
-    }, [productId]);
+const ReviewVerify = ({ onEditStep, onSubmit }) => {
+    const { productData, loading } = useProductContext();
+    const [submitLoading, setSubmitLoading] = useState(false);
 
     const handlePublish = async () => {
-        setSubmitting(true);
-        await onSubmit();
-        setSubmitting(false);
+        setSubmitLoading(true);
+        await onSubmit(); // Calls handleFinish in wizard
+        setSubmitLoading(false);
     };
 
-    if (loading) return <div className="text-center py-10">Loading summary...</div>;
-    if (!data) return <div className="text-center py-10 text-red-500">Error loading data.</div>;
+    if (loading) return <p className="text-center py-8">Loading verification data...</p>;
+    if (!productData) return <p className="text-center py-8">No data found.</p>;
 
-    const Section = ({ title, stepIndex, children }) => (
-        <div className="mb-6 border border-gray-100 rounded-xl overflow-hidden">
-            <div className="bg-gray-50 px-6 py-3 flex justify-between items-center border-b border-gray-100">
-                <h4 className="font-bold text-gray-700">{title}</h4>
-                <button
-                    onClick={() => onEditStep(stepIndex)}
-                    className="text-blue-600 text-sm font-semibold hover:underline"
-                >
-                    Edit
-                </button>
-            </div>
-            <div className="p-6 bg-white">
-                {children}
-            </div>
+    const SectionHeader = ({ title, editIndex }) => (
+        <div className="flex justify-between items-center mb-3 mt-6">
+            <h4 className="font-bold text-gray-700 uppercase tracking-widest text-sm">{title}</h4>
+            <button
+                onClick={() => onEditStep(editIndex)}
+                className="text-blue-600 text-sm font-semibold hover:underline bg-blue-50 px-3 py-1 rounded-full"
+            >
+                Edit
+            </button>
         </div>
     );
 
-    const Row = ({ label, value }) => (
-        <div className="flex justify-between py-1 border-b border-gray-50 last:border-0">
-            <span className="text-gray-500 text-sm">{label}</span>
-            <span className="text-gray-800 font-medium text-sm text-right">{value || '-'}</span>
+    const InfoRow = ({ label, value }) => (
+        <div className="flex justify-between py-2 border-b border-gray-50 last:border-0">
+            <span className="text-gray-500 font-medium text-sm">{label}</span>
+            <span className="text-gray-800 font-semibold text-sm text-right px-4">{value || '-'}</span>
         </div>
     );
 
     return (
         <div className="animate-fade-in-up">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Review Product Details</h3>
-
-            <Section title="Basic Information" stepIndex={0}>
-                <Row label="Name" value={data.name} />
-                <Row label="Category" value={data.categoryName || 'N/A'} />
-                <Row label="Description" value={data.description} />
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                    <Row label="Material" value={data.material} />
-                    <Row label="Color" value={data.color} />
-                    <Row label="Size" value={data.size} />
-                    <Row label="Origin" value={data.origin} />
-                    <Row label="Pack Of" value={data.packOf} />
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 flex gap-4 items-start">
+                <span className="text-3xl">📝</span>
+                <div>
+                    <h5 className="font-bold text-yellow-800">Final Review</h5>
+                    <p className="text-sm text-yellow-700">Please review all details carefully before publishing. Once published, the product will be live on the marketplace.</p>
                 </div>
-            </Section>
+            </div>
 
-            <Section title="Pricing & Stock" stepIndex={1}>
-                <Row label="MRP" value={`₹${data.price}`} />
-                <Row label="Selling Price" value={`₹${data.discountPrice}`} />
-                <Row label="Stock" value={data.stockQuantity} />
-                <Row label="Min Order" value={data.minOrderQuantity} />
-                <Row label="Max Order" value={data.maxOrderQuantity} />
-                <Row label="COD Available" value={data.isCodAvailable ? 'Yes' : 'No'} />
-            </Section>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Left Column: Basic Info & Pricing */}
+                <div className="space-y-6">
+                    <Paper elevation={0} className="p-6 border border-gray-200 rounded-2xl">
+                        <SectionHeader title="Basic Info" editIndex={0} />
+                        <InfoRow label="Product Name" value={productData.name} />
+                        <InfoRow label="Category" value={productData.categoryName || productData.categoryId} />
+                        <InfoRow label="Material" value={productData.material} />
+                        <InfoRow label="Color" value={productData.color} />
+                        <InfoRow label="Size" value={productData.size} />
+                        <InfoRow label="Origin" value={productData.origin} />
+                        <InfoRow label="Pack Of" value={productData.packOf} />
+                    </Paper>
 
-            <Section title="Images" stepIndex={2}>
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                    {data.imageUrls && data.imageUrls.map((url, i) => (
-                        <img key={i} src={url} className="w-20 h-20 object-cover rounded-lg border border-gray-200" alt="" />
-                    ))}
+                    <Paper elevation={0} className="p-6 border border-gray-200 rounded-2xl">
+                        <SectionHeader title="Pricing & Stock" editIndex={1} />
+                        <InfoRow label="MRP" value={`₹${productData.price}`} />
+                        <InfoRow label="Selling Price" value={`₹${productData.discountPrice}`} />
+                        <InfoRow label="Stock" value={productData.stockQuantity} />
+                        <InfoRow label="Min Order" value={productData.minOrderQuantity} />
+                        <InfoRow label="Max Order" value={productData.maxOrderQuantity} />
+                        <div className="flex justify-between py-2">
+                            <span className="text-gray-500 font-medium text-sm">COD Available</span>
+                            {productData.isCodAvailable ? <Chip label="Yes" color="success" size="small" /> : <Chip label="No" color="error" size="small" />}
+                        </div>
+                    </Paper>
                 </div>
-            </Section>
 
-            <Section title="Specifications" stepIndex={3}>
-                {data.specifications && data.specifications.map((spec, i) => (
-                    <Row key={i} label={spec.key} value={spec.value} />
-                ))}
-            </Section>
+                {/* Right Column: Images, Specs, Policy */}
+                <div className="space-y-6">
+                    <Paper elevation={0} className="p-6 border border-gray-200 rounded-2xl">
+                        <SectionHeader title="Images & Reel" editIndex={2} />
+                        {productData.imageUrls && productData.imageUrls.length > 0 ? (
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                                {productData.imageUrls.map((url, i) => (
+                                    <img key={i} src={url} alt={`preview-${i}`} className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-gray-400 italic">No images uploaded</p>
+                        )}
 
-            <Section title="Shipping Policy" stepIndex={4}>
-                <Row label="Dispatch Days" value={data.dispatchDays} />
-                <Row label="Return Available" value={data.returnAvailable ? 'Yes' : 'No'} />
-                {data.returnAvailable && (
-                    <>
-                        <Row label="Return Window" value={`${data.returnWindowDays} Days`} />
-                        <Row label="Return Policy" value={data.returnPolicyDescription} />
-                    </>
-                )}
-                <Row label="Cancellation" value={data.cancellationAvailable ? 'Yes' : 'No'} />
-            </Section>
+                        {productData.reelUrl && (
+                            <div className="mt-4 border-t pt-4">
+                                <p className="text-xs font-bold text-gray-500 uppercase mb-2">Product Reel</p>
+                                <div className="w-24 aspect-[9/16] bg-black rounded-lg overflow-hidden shadow-sm">
+                                    <video src={productData.reelUrl} className="w-full h-full object-cover" controls />
+                                </div>
+                            </div>
+                        )}
+                    </Paper>
 
-            <div className="flex justify-end pt-6">
+                    <Paper elevation={0} className="p-6 border border-gray-200 rounded-2xl">
+                        <SectionHeader title="Specifications" editIndex={3} />
+                        {productData.specifications && productData.specifications.length > 0 ? (
+                            productData.specifications.map((s, i) => (
+                                <InfoRow key={i} label={s.key} value={s.value} />
+                            ))
+                        ) : (
+                            <p className="text-sm text-gray-400 italic">No specific attributes</p>
+                        )}
+                    </Paper>
+
+                    <Paper elevation={0} className="p-6 border border-gray-200 rounded-2xl">
+                        <SectionHeader title="Shipping Policy" editIndex={4} />
+                        <InfoRow label="Dispatch In" value={`${productData.dispatchDays} Days`} />
+                        <div className="flex justify-between py-2">
+                            <span className="text-gray-500 font-medium text-sm">Returns</span>
+                            {productData.returnAvailable ? <Chip label="Allowed" color="success" size="small" /> : <Chip label="No" color="default" size="small" />}
+                        </div>
+                        {productData.returnAvailable && (
+                            <InfoRow label="Window" value={`${productData.returnWindowDays} Days`} />
+                        )}
+                    </Paper>
+                </div>
+            </div>
+
+            <div className="mt-8 flex justify-between items-center bg-gray-800 text-white p-6 rounded-2xl shadow-xl">
+                <div>
+                    <h4 className="font-bold text-lg">Ready to Publish?</h4>
+                    <p className="text-gray-400 text-sm">The product will be visible to customers immediately.</p>
+                </div>
                 <button
                     onClick={handlePublish}
-                    disabled={submitting}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-lg shadow-green-200 transition-all transform hover:-translate-y-1 ${submitting ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}
+                    disabled={submitLoading}
+                    className={`px-8 py-4 rounded-xl font-bold uppercase tracking-wider transition-all transform hover:scale-105 shadow-2xl ${submitLoading ? 'bg-gray-600' : 'bg-green-500 hover:bg-green-600 text-white'}`}
                 >
-                    {submitting ? 'Publishing...' : 'Verify & Publish'}
+                    {submitLoading ? 'Publishing...' : 'Publish Product'}
                 </button>
             </div>
         </div>
     );
 };
-
 export default ReviewVerify;

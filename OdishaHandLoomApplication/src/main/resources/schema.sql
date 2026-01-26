@@ -24,8 +24,9 @@ ALTER TABLE categories ADD COLUMN IF NOT EXISTS image_url VARCHAR(255);
 -- Migration for Review Edit feature
 
 -- Migration for Shipments Status Constraint (Fixing "shipments_status_check" violation)
-ALTER TABLE shipments DROP CONSTRAINT IF EXISTS shipments_status_check;
-ALTER TABLE shipments ADD CONSTRAINT shipments_status_check 
+ALTER TABLE shipments DROP CONSTRAINT IF EXISTS shipments_status_check CASCADE;
+ALTER TABLE shipments DROP CONSTRAINT IF EXISTS shipments_status_check_v2 CASCADE;
+ALTER TABLE shipments ADD CONSTRAINT shipments_status_check_v2 
 CHECK (status IN (
     'CREATED', 'ASSIGNED', 'PACKED', 'READY_TO_SHIP', 'DISPATCHED', 'IN_TRANSIT', 
     'OUT_FOR_DELIVERY', 'DELIVERED', 'DELIVERY_FAILED', 'RTO_INITIATED', 
@@ -74,8 +75,9 @@ ALTER TABLE shipments ADD COLUMN IF NOT EXISTS seller_latitude DOUBLE PRECISION;
 ALTER TABLE shipments ADD COLUMN IF NOT EXISTS seller_longitude DOUBLE PRECISION;
 
 -- Migration for Orders Status Constraint (Fixing "orders_status_check" violation)
-ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check;
-ALTER TABLE orders ADD CONSTRAINT orders_status_check
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check CASCADE;
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check_v2 CASCADE;
+ALTER TABLE orders ADD CONSTRAINT orders_status_check_v2
 CHECK (status IN (
     'PENDING', 'CONFIRMED', 'SELLER_CONFIRMED', 'PACKED', 'READY_TO_SHIP', 
     'DISPATCHED', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED', 

@@ -9,13 +9,18 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "product_policies")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@lombok.Getter
+@lombok.Setter
+@lombok.Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
+@lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@lombok.ToString(onlyExplicitlyIncluded = true)
 public class ProductPolicy {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @lombok.EqualsAndHashCode.Include
+    @lombok.ToString.Include
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)

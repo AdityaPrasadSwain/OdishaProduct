@@ -42,7 +42,7 @@ API.interceptors.response.use(
       console.error(`[API Error] ${error.response.status} - ${error.config.url}`, error.response.data);
 
       // Global 401/403 Handler
-      if (error.response.status === 401 || error.response.status === 403) {
+      if ((error.response.status === 401 || error.response.status === 403) && !error.config.url.includes('/auth/')) {
         // Dispatch custom event so AuthContext can hear it and logout
         // We use a custom event to decouple API from Context
         window.dispatchEvent(new Event('auth:unauthorized'));

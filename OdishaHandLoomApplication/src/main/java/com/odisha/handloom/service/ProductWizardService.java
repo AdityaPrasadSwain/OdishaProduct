@@ -2,7 +2,10 @@ package com.odisha.handloom.service;
 
 import com.odisha.handloom.dto.productwizard.*;
 import com.odisha.handloom.entity.*;
+import com.odisha.handloom.enums.ProductStatus;
 import com.odisha.handloom.repository.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +20,18 @@ public class ProductWizardService {
 
     private final ProductRepository productRepository;
     private final ProductPricingRepository pricingRepository;
-    private final ProductSpecificationRepository specRepository;
     private final ProductPolicyRepository policyRepository;
-    private final ProductImageRepository imageRepository;
+
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+
+    // Injected via @RequiredArgsConstructor (Constructor Injection)
+    private final ImageStorageService imageStorageService;
 
     @Transactional
     public Product createProductStep1(ProductBasicInfoRequest request, String sellerId) {
         Product product = new Product();
+        product.setStatus(ProductStatus.DRAFT);
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setMaterial(request.getMaterial());
@@ -40,25 +46,47 @@ public class ProductWizardService {
             product.setCategory(category);
         }
 
-        // Assign seller (For demo without auth, we need a valid seller)
-        // We expect sellerId to be passed or we fetch a default
+        // Assign seller
         User seller;
         if (sellerId != null && !sellerId.isEmpty()) {
             seller = userRepository.findById(UUID.fromString(sellerId))
                     .orElseThrow(() -> new RuntimeException("Seller not found"));
         } else {
-            // Fallback: fetch first available user or similar.
-            // Ideally should fail if not provided, but per instructions, we must ensure it
-            // works.
-            seller = userRepository.findAll().stream().findFirst()
-                    .orElseThrow(() -> new RuntimeException("No users found to assign as seller"));
+            // Use logged-in user
+            org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication();
+            if (auth == null || !auth.isAuthenticated()) {
+                throw new RuntimeException("User is not authenticated");
+            }
+            String email = auth.getName();
+            seller = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Authenticated user not found in database"));
         }
         product.setSeller(seller);
 
-        // Initialize other relations as null or default?
-        // We will create them in subsequent steps.
-
         return productRepository.save(product);
+    }
+
+    @Transactional
+    public void updateBasicInfoStep1(UUID productId, ProductBasicInfoRequest request) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setMaterial(request.getMaterial());
+        product.setColor(request.getColor());
+        product.setSize(request.getSize());
+        product.setOrigin(request.getOrigin());
+        product.setPackOf(request.getPackOf());
+
+        if (request.getCategoryId() != null) {
+            Category category = categoryRepository.findById(UUID.fromString(request.getCategoryId()))
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            product.setCategory(category);
+        }
+
+        productRepository.save(product);
     }
 
     @Transactional
@@ -66,7 +94,7 @@ public class ProductWizardService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        ProductPricing pricing = pricingRepository.findByProductId(productId)
+        ProductPricing pricing = pricingRepository.findByProduct_Id(productId)
                 .orElse(new ProductPricing());
 
         pricing.setProduct(product);
@@ -87,24 +115,56 @@ public class ProductWizardService {
     }
 
     @Transactional
-    public void updateImagesStep3(UUID productId, List<String> imageUrls) {
+    public void updateImagesStep3(UUID productId, List<MultipartFile> newImages, List<String> keptImages,
+            MultipartFile reel) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Clear existing? Or append? Wizard usually overwrites or appends.
-        // For simplicity, let's assume we replace or we add.
-        // If we want to replace, we should delete old ones.
-        // But Product.images has CascadeType.ALL, orphanRemoval=true.
+        // 2. Identify images to remove
+        List<ProductImage> toRemove = new java.util.ArrayList<>(product.getImages());
+        if (keptImages != null) {
+            toRemove.removeIf(img -> keptImages.contains(img.getImagePath()));
+        } else {
+            // If keptImages is null/empty, it means user removed ALL existing images
+        }
 
-        // We can just clear the list and add new ones.
-        product.getImages().clear();
+        product.getImages().removeAll(toRemove);
 
-        int pos = 0;
-        for (String url : imageUrls) {
-            ProductImage img = new ProductImage();
-            img.setImageUrl(url);
-            img.setPosition(pos++);
-            product.addImage(img);
+        // 3. Upload and add NEW images
+        int currentMaxPos = product.getImages().stream()
+                .mapToInt(ProductImage::getPosition)
+                .max().orElse(-1);
+        int pos = currentMaxPos + 1;
+
+        if (newImages != null) {
+            for (MultipartFile file : newImages) {
+                try {
+                    String path = imageStorageService.store(file, product.getId().toString());
+                    ProductImage img = new ProductImage();
+                    img.setImagePath(path);
+                    img.setPosition(pos++);
+                    img.setProduct(product); // Ensure relationship
+                    product.addImage(img);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to upload image: " + e.getMessage());
+                }
+            }
+        }
+
+        // Upload Reel if provided
+        if (reel != null && !reel.isEmpty()) {
+            try {
+                String reelUrl = imageStorageService.store(reel, product.getId().toString());
+                product.setReelUrl(reelUrl);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload reel: " + e.getMessage());
+            }
+        }
+
+        // 4. Re-normalize positions (Optional but good practice)
+        int p = 0;
+        for (ProductImage img : product.getImages()) {
+            img.setPosition(p++);
         }
 
         productRepository.save(product);
@@ -122,24 +182,9 @@ public class ProductWizardService {
             ProductSpecification spec = new ProductSpecification();
             spec.setSpecKey(entry.getKey());
             spec.setSpecValue(entry.getValue());
-            spec.setProduct(product); // Manual set needed?
-            // Since we are adding to the list mapped by "product", we need to maintain
-            // bidirectional relationship
-            // The list in Product is: specsList
-            // Helper method in product would be good, but we can do it here
-            product.getSpecsList().add(spec); // This adds to list
-        }
-
-        // Since we modified the collection and it has CascadeType.ALL, saving product
-        // should work.
-        // IMPORTANT: We need to set the back-reference 'product' on the spec objects.
-        // product.getSpecsList().add(spec) does NOT automatically set
-        // spec.setProduct(product) unless we have a helper method.
-        // Product.java likely doesn't have a helper for specsList yet. We just added
-        // the field.
-
-        for (ProductSpecification spec : product.getSpecsList()) {
+            // Manual set needed for bidirectional relationship if helper missing
             spec.setProduct(product);
+            product.getSpecsList().add(spec);
         }
 
         productRepository.save(product);
@@ -150,7 +195,7 @@ public class ProductWizardService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        ProductPolicy policy = policyRepository.findByProductId(productId)
+        ProductPolicy policy = policyRepository.findByProduct_Id(productId)
                 .orElse(new ProductPolicy());
 
         policy.setProduct(product);
@@ -192,8 +237,10 @@ public class ProductWizardService {
 
         dto.setImageUrls(product.getImages().stream()
                 .sorted((a, b) -> a.getPosition().compareTo(b.getPosition()))
-                .map(ProductImage::getImageUrl)
+                .map(img -> img.getImagePath()) // Cloudinary returns full URL now
                 .collect(Collectors.toList()));
+
+        dto.setReelUrl(product.getReelUrl());
 
         dto.setSpecifications(product.getSpecsList().stream()
                 .map(s -> new ProductSpecEntry(s.getSpecKey(), s.getSpecValue()))
@@ -215,8 +262,7 @@ public class ProductWizardService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // In a real app, this might set status to 'PENDING_APPROVAL'
-        // For this demo wizard, make it live immediately:
+        product.activateProduct();
         product.setApproved(true);
         product.syncOutOfStock();
 

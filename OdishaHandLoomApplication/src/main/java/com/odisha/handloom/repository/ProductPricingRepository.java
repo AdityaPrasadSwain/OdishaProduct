@@ -7,5 +7,5 @@ import java.util.UUID;
 
 @Repository
 public interface ProductPricingRepository extends JpaRepository<ProductPricing, UUID> {
-    java.util.Optional<ProductPricing> findByProductId(UUID productId);
+    java.util.Optional<ProductPricing> findByProduct_Id(UUID productId);
 }

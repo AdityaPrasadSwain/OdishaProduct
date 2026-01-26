@@ -162,6 +162,12 @@ public class AuthController {
         System.out.println("DEBUG: Raw password provided: " + loginRequest.getPassword());
 
         try {
+            // Check if user exists (Email or Phone)
+            String identifier = loginRequest.getIdentifier();
+            if (!userRepository.existsByEmail(identifier) && !userRepository.existsByPhoneNumber(identifier)) {
+                return ResponseEntity.badRequest().body(new MessageResponse("This User not Exist"));
+            }
+
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getIdentifier(), loginRequest.getPassword()));
 

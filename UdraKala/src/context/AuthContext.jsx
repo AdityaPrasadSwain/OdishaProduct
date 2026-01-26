@@ -53,7 +53,9 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('user');
             setUser(null);
             // Use replace to prevent back-button navigation to protected pages
-            window.location.replace('/login');
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+                window.location.replace('/login');
+            }
         }
     }, []);
 
@@ -65,14 +67,12 @@ export const AuthProvider = ({ children }) => {
             if (token && isTokenExpired(token)) {
                 console.warn('Token expired during session, logging out');
                 logout();
-                window.location.href = '/login';
             }
         }, 60000); // Check every minute
 
         const handleUnauthorized = () => {
             console.warn('Received global 401/403 event. Logging out.');
             logout();
-            window.location.href = '/login';
         };
         window.addEventListener('auth:unauthorized', handleUnauthorized);
 

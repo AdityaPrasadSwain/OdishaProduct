@@ -19,27 +19,31 @@ const ChatWindow = ({ onClose }) => {
     }, [messages]);
 
     useEffect(() => {
-        const initChat = async () => {
-            try {
-                let sid = sessionId;
-                if (!sid) {
+        const initializeChat = async () => {
+            let sid = sessionId;
+            if (!sid) {
+                // Try to start a new session
+                try {
                     const session = await chatApi.startSession();
                     sid = session.id;
                     setSessionId(sid);
                     localStorage.setItem('chatSessionId', sid);
-                    // Initial Greeting
+
                     setMessages([{
                         id: 'init',
                         sender: 'BOT',
-                        message: 'Hello! 👋 Welcome to UdraKala 24x7 Help Center. How can I assist you today?',
+                        message: 'Namaste! 🙏 Welcome to UdraKala. I am here to help you find the best Handloom & Handicrafts. How can I assist you today?',
                         sentAt: new Date().toISOString()
                     }]);
-                } else {
+                } catch (e) {
+                    console.error("Init failed", e);
+                }
+            } else {
+                try {
                     const history = await chatApi.getHistory(sid);
                     if (history.length > 0) {
                         setMessages(history);
                     } else {
-                        // Session exists locally but maybe backend was reset or empty
                         setMessages([{
                             id: 'init',
                             sender: 'BOT',
@@ -47,21 +51,51 @@ const ChatWindow = ({ onClose }) => {
                             sentAt: new Date().toISOString()
                         }]);
                     }
+                } catch (e) {
+                    console.error("History failed", e);
+                    localStorage.removeItem('chatSessionId');
                 }
-            } catch (error) {
-                console.error("Failed to init chat", error);
-                localStorage.removeItem('chatSessionId'); // Retry next time
             }
         };
 
-        initChat();
+        initializeChat();
     }, []);
 
+    const initSession = async () => {
+        try {
+            const session = await chatApi.startSession();
+            const sid = session.id;
+            setSessionId(sid);
+            localStorage.setItem('chatSessionId', sid);
+            return sid;
+        } catch (error) {
+            console.error("Failed to start session", error);
+            return null;
+        }
+    };
+
     const handleSend = async (text) => {
+        // If triggered by form submit, prevent default reload
+        if (text && typeof text.preventDefault === 'function') {
+            text.preventDefault();
+        }
+
         // Allow text to be passed directly (from options) or use state input
         const userMsgText = typeof text === 'string' ? text : input;
 
-        if (!userMsgText.trim() || !sessionId) return;
+        if (!userMsgText.trim()) return;
+
+        // Auto-connect if no session
+        let currentSessionId = sessionId;
+        if (!currentSessionId) {
+            setLoading(true);
+            currentSessionId = await initSession();
+            if (!currentSessionId) {
+                setMessages(prev => [...prev, { id: Date.now(), sender: 'BOT', message: 'Could not connect to server. Please try again later.', sentAt: new Date().toISOString() }]);
+                setLoading(false);
+                return;
+            }
+        }
 
         if (typeof text !== 'string') setInput(''); // Clear input if it was typed
 
@@ -72,7 +106,7 @@ const ChatWindow = ({ onClose }) => {
         setLoading(true);
 
         try {
-            const response = await chatApi.sendMessage(sessionId, userMsgText);
+            const response = await chatApi.sendMessage(currentSessionId, userMsgText);
             setMessages(prev => [...prev, response]); // Append Bot Response
         } catch (error) {
             console.error("Message send failed", error);

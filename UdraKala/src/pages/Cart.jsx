@@ -82,7 +82,7 @@ const Cart = () => {
                         >
                             <div className="flex items-center space-x-6">
                                 <Link to={`/products/${item.id}`} className="block h-24 w-24 bg-secondary-100 dark:bg-secondary-700 rounded-xl overflow-hidden border border-secondary-200 dark:border-secondary-600 flex-shrink-0">
-                                    <img src={item.images?.[0]?.imageUrl || item.imageUrl || '/placeholder.png'} alt={item.name} className="h-full w-full object-cover" />
+                                    <img src={item.images?.[0]?.imagePath || item.imagePath || '/placeholder.png'} alt={item.name} className="h-full w-full object-cover" />
                                 </Link>
                                 <div>
                                     <Link to={`/products/${item.id}`} className="text-xl font-bold text-secondary-900 dark:text-white font-serif hover:text-primary-600 transition">

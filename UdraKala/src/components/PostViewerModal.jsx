@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Heart, MessageCircle, Send, Share2, MoreHorizontal } from 'lucide-react';
+import { X, Heart, MessageCircle, Send, Share2, MoreHorizontal, User, Image } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { formatDistanceToNow } from 'date-fns';
+import defaultUser from '../assets/default-user.jpg';
 
 const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
     const { user } = useAuth();
@@ -30,7 +31,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
                 ? `/api/reels/${post.id}/comments`
                 : `/api/reels/${post.id}/comments`; // Fallback/Universal for now
 
-            const response = await axios.get(`http://localhost:8085${endpoint}`, {
+            const response = await axios.get(`http://localhost:8086${endpoint}`, {
                 withCredentials: true
             });
             setComments(response.data);
@@ -44,7 +45,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
     const fetchLikeStatus = async () => {
         try {
             // Reusing Reel endpoints as they are attached to Products
-            const response = await axios.get(`http://localhost:8085/api/reels/${post.id}/likes/count`, {
+            const response = await axios.get(`http://localhost:8086/api/reels/${post.id}/likes/count`, {
                 withCredentials: true
             });
             setLikesCount(response.data.count);
@@ -60,10 +61,10 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
         if (!user) return alert("Please login to like");
         try {
             if (isLiked) {
-                await axios.delete(`http://localhost:8085/api/reels/${post.id}/like`, { withCredentials: true });
+                await axios.delete(`http://localhost:8086/api/reels/${post.id}/like`, { withCredentials: true });
                 setLikesCount(prev => prev - 1);
             } else {
-                await axios.post(`http://localhost:8085/api/reels/${post.id}/like`, {}, { withCredentials: true });
+                await axios.post(`http://localhost:8086/api/reels/${post.id}/like`, {}, { withCredentials: true });
                 setLikesCount(prev => prev + 1);
             }
             setIsLiked(!isLiked);
@@ -77,7 +78,7 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
         if (!newComment.trim() || !user) return;
 
         try {
-            const response = await axios.post(`http://localhost:8085/api/reels/${post.id}/comments`,
+            const response = await axios.post(`http://localhost:8086/api/reels/${post.id}/comments`,
                 { comment: newComment },
                 { withCredentials: true }
             );
@@ -113,11 +114,17 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
                             loop
                         />
                     ) : (
-                        <img
-                            src={post.thumbnail || 'https://via.placeholder.com/600'}
-                            alt={post.name}
-                            className="w-full h-full object-contain"
-                        />
+                        post.thumbnail ? (
+                            <img
+                                src={post.thumbnail}
+                                alt={post.name}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <Image size={64} className="text-gray-600" />
+                            </div>
+                        )
                     )}
                 </div>
 
@@ -128,11 +135,19 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
                     <div className="p-4 border-b dark:border-gray-800 flex items-center justify-between shrink-0">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-fuchsia-600 p-[2px]">
-                                <img
-                                    className="w-full h-full rounded-full border-2 border-white dark:border-gray-900 object-cover"
-                                    src={post.sellerImage || 'https://via.placeholder.com/150'}
-                                    alt="Seller"
-                                />
+                                {post.sellerImage ? (
+                                    <img
+                                        className="w-full h-full rounded-full border-2 border-white dark:border-gray-900 object-cover"
+                                        src={post.sellerImage}
+                                        alt="Seller"
+                                    />
+                                ) : (
+                                    <img
+                                        className="w-full h-full rounded-full border-2 border-white dark:border-gray-900 object-cover"
+                                        src={defaultUser}
+                                        alt="Seller"
+                                    />
+                                )}
                             </div>
                             <div>
                                 <h3 className="text-sm font-semibold text-gray-900 dark:text-white hover:underline cursor-pointer">
@@ -150,11 +165,19 @@ const PostViewerModal = ({ isOpen, onClose, post, isReel = false }) => {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                         {/* Caption as first comment */}
                         <div className="flex gap-3">
-                            <img
-                                src={post.sellerImage || 'https://via.placeholder.com/150'}
-                                className="w-8 h-8 rounded-full object-cover shrink-0 mt-1"
-                                alt="Seller"
-                            />
+                            {post.sellerImage ? (
+                                <img
+                                    src={post.sellerImage}
+                                    className="w-8 h-8 rounded-full object-cover shrink-0 mt-1"
+                                    alt="Seller"
+                                />
+                            ) : (
+                                <img
+                                    src={defaultUser}
+                                    className="w-8 h-8 rounded-full object-cover shrink-0 mt-1"
+                                    alt="Seller"
+                                />
+                            )}
                             <div className="text-sm">
                                 <span className="font-semibold text-gray-900 dark:text-white mr-2">
                                     {post.sellerName}

@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import java.util.List;
 
 import java.util.UUID;
 
@@ -35,11 +38,13 @@ public class ProductWizardController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{id}/images")
+    @PostMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateImagesStep3(
             @PathVariable UUID id,
-            @RequestBody ProductImageRequest request) {
-        productWizardService.updateImagesStep3(id, request.getImageUrls());
+            @RequestParam(value = "images", required = false) List<MultipartFile> images,
+            @RequestParam(value = "keptImages", required = false) List<String> keptImages,
+            @RequestParam(value = "reel", required = false) MultipartFile reel) {
+        productWizardService.updateImagesStep3(id, images, keptImages, reel);
         return ResponseEntity.ok().build();
     }
 
@@ -62,6 +67,14 @@ public class ProductWizardController {
     @GetMapping("/{id}/summary")
     public ResponseEntity<ProductSummaryDto> getProductSummary(@PathVariable UUID id) {
         return ResponseEntity.ok(productWizardService.getProductSummary(id));
+    }
+
+    @PatchMapping("/{id}/basic")
+    public ResponseEntity<Void> updateBasicInfoStep1(
+            @PathVariable UUID id,
+            @RequestBody ProductBasicInfoRequest request) {
+        productWizardService.updateBasicInfoStep1(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/{id}/publish")

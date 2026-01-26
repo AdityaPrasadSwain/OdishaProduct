@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -54,7 +54,6 @@ import ManifestView from './ManifestView';
 import DashboardSkeleton from '../../components/skeletons/DashboardSkeleton';
 import AiAssistButton from '../../components/AiAssistButton';
 import { generateProductDescription } from '../../api/aiApi';
-import { MASTER_CATALOG } from '../../data/masterCatalog';
 
 const StatCard = ({ label, value, icon: Icon, colorClass }) => (
     <Card className="flex items-center gap-4 relative overflow-hidden">
@@ -70,6 +69,7 @@ const StatCard = ({ label, value, icon: Icon, colorClass }) => (
 
 const SellerDashboard = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { theme } = useTheme();
     const { user } = useAuth();
 
@@ -133,6 +133,14 @@ const SellerDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
 
+    // Handle initial tab from navigation state
+    useEffect(() => {
+        if (location.state?.activeTab) {
+            setActiveTab(location.state.activeTab);
+            window.history.replaceState({}, document.title);
+        }
+    }, [location.state]);
+
     // Reset filters on tab change
     useEffect(() => {
         setSearchTerm('');
@@ -167,49 +175,7 @@ const SellerDashboard = () => {
     const filteredData = getFilteredData();
     const paginationModel = { page: 0, pageSize: 5 };
 
-    // Modal State
-    const [showModal, setShowModal] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
-    const [productForm, setProductForm] = useState({
-        name: '',
-        description: '',
-        price: '',
-        stockQuantity: '',
-        categoryName: '',
-        imageUrl: '',
-        material: '',
-        color: '',
-        size: '',
-        origin: '',
-        packOf: ''
-    });
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [reelFile, setReelFile] = useState(null);
 
-    // Classification State
-    const [selectedMainId, setSelectedMainId] = useState('');
-    const [selectedGroupId, setSelectedGroupId] = useState('');
-    const [selectedSubId, setSelectedSubId] = useState('');
-
-    const mainCategory = useMemo(() => MASTER_CATALOG.find(c => c.id === selectedMainId), [selectedMainId]);
-    const categoryGroup = useMemo(() => mainCategory?.groups.find(g => g.id === selectedGroupId), [mainCategory, selectedGroupId]);
-    const subCategory = useMemo(() => categoryGroup?.subcategories.find(s => s.id === selectedSubId), [categoryGroup, selectedSubId]);
-
-    const generateClassificationData = () => {
-        if (!mainCategory || !categoryGroup || !subCategory) return null;
-        return JSON.stringify({
-            category_main: mainCategory.name,
-            category_group: categoryGroup.name,
-            subcategory_name: subCategory.name,
-            category_id: subCategory.id,
-            breadcrumbs: `${mainCategory.name} > ${categoryGroup.name} > ${subCategory.name}`,
-            seo_title: `${subCategory.name} - Buy Authentic ${categoryGroup.name} Online`,
-            seo_slug: subCategory.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-            seo_keywords: [mainCategory.name, categoryGroup.name, subCategory.name, 'Handloom', 'Odisha', 'Authentic'],
-            search_tags: [subCategory.name, categoryGroup.name, mainCategory.name, 'Handmade'],
-            confidence_score: "100"
-        });
-    };
 
     // Initial Data Fetch
     const fetchData = async () => {
@@ -282,115 +248,7 @@ const SellerDashboard = () => {
         return data;
     }, [myOrders]);
 
-    // Product Handlers
-    const handleProductSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (editingProduct) {
-                // For edit, we might need a different approach if backend supports image update 
-                // but checking the Controller, updateProduct (PUT) only takes RequestBody ProductRequest.
-                // So image update might be missing in backend or require a different endpoint.
-                // For now, simpler to just support image upload on CREATE.
 
-                // If backend PUT /products/{id} supports only JSON, we can't upload new images via this specific call unless updated.
-                // Looking at Controller: @PutMapping("/products/{id}") takes @RequestBody ProductRequest.
-                // So NO image update support there. 
-                // I will proceed with standard JSON update for now, focusing on ADD (POST) for images.
-
-                const category = categories.find(c => c.name === productForm.categoryName);
-                if (!category) {
-                    Swal.fire('Error', 'Invalid Category', 'error');
-                    return;
-                }
-
-                const payload = {
-                    ...productForm,
-                    categoryId: category.id
-                };
-
-                await API.put(`/seller/products/${editingProduct.id}`, payload);
-                Swal.fire('Success', 'Product updated successfully', 'success');
-            } else {
-                // Add New Product with Images
-                // Use selectedSubCategory logic if available, else fallback to standard selection
-                let categoryId = null;
-                let classificationData = null;
-
-                if (selectedSubId && subCategory) {
-                    // Try to find the category in backend system by Name
-                    const backendCategory = categories.find(c => c.name === subCategory.name);
-                    if (backendCategory) {
-                        categoryId = backendCategory.id;
-                    } else {
-                        // Fallback: If strict category matching is required but missing, we might error or use a default.
-                        // For now, let's warn.
-                        Swal.fire('Error', `Category '${subCategory.name}' not found in system. Please contact Admin.`, 'error');
-                        return;
-                    }
-                    classificationData = generateClassificationData();
-                } else {
-                    // Fallback to legacy behavior if user didn't use the hierarchy (should be enforced though)
-                    const category = categories.find(c => c.name === productForm.categoryName);
-                    if (category) categoryId = category.id;
-                }
-
-                if (!categoryId) {
-                    Swal.fire('Error', 'Invalid Category Selection', 'error');
-                    return;
-                }
-
-                // Image Validation
-                if (selectedFiles.length < 1) {
-                    Swal.fire('Error', 'Please upload at least 1 product image.', 'warning');
-                    return;
-                }
-                if (selectedFiles.length > 8) {
-                    Swal.fire('Error', 'You can upload a maximum of 8 images.', 'warning');
-                    return;
-                }
-
-                const formData = new FormData();
-                const productBlob = new Blob([JSON.stringify({
-                    name: productForm.name,
-                    description: productForm.description,
-                    price: productForm.price,
-                    stockQuantity: productForm.stockQuantity,
-                    categoryId: categoryId,
-                    discountPrice: 0,
-                    material: productForm.material,
-                    color: productForm.color,
-                    size: productForm.size,
-                    origin: productForm.origin,
-                    packOf: productForm.packOf,
-                    classificationData: classificationData,
-                    specifications: JSON.stringify(productForm.specifications || {})
-                })], { type: "application/json" });
-
-                formData.append("product", productBlob);
-
-                if (selectedFiles.length > 0) {
-                    selectedFiles.forEach(file => {
-                        formData.append("images", file);
-                    });
-                }
-
-                // Append Reel File if exists
-                if (reelFile) {
-                    formData.append("reel", reelFile);
-                }
-
-                await addProduct(formData);
-                Swal.fire('Success', 'Product added successfully', 'success');
-            }
-            setShowModal(false);
-            setSelectedFiles([]); // Reset files
-            setReelFile(null); // Reset reel
-            fetchData();
-        } catch (error) {
-            console.error(error);
-            Swal.fire('Error', error.response?.data?.message || 'Failed to save product', 'error');
-        }
-    };
 
     const handleDeleteProduct = async (id) => {
         const result = await Swal.fire({
@@ -414,65 +272,11 @@ const SellerDashboard = () => {
         }
     };
 
-    const openEditModal = (product) => {
-        setEditingProduct(product);
-        setProductForm({
-            name: product.name,
-            description: product.description,
-            price: product.price,
-            stockQuantity: product.stockQuantity,
-            categoryName: product.category?.name || '',
-            imageUrl: product.imageUrls?.[0] || '',
-            material: product.material || '',
-            color: product.color || '',
-            size: product.size || '',
-            origin: product.origin || '',
-            packOf: product.packOf || '',
-            specifications: JSON.parse(product.specifications || '{}')
-        });
-
-        // Reverse lookup category hierarchy
-        let foundMain = '', foundGroup = '', foundSub = '';
-        if (product.category?.name) {
-            for (const main of MASTER_CATALOG) {
-                for (const group of main.groups) {
-                    const sub = group.subcategories.find(s => s.name === product.category.name);
-                    if (sub) {
-                        foundMain = main.id;
-                        foundGroup = group.id;
-                        foundSub = sub.id;
-                        break;
-                    }
-                }
-                if (foundSub) break;
-            }
-        }
-        setSelectedMainId(foundMain);
-        setSelectedGroupId(foundGroup);
-        setSelectedSubId(foundSub);
-
-        setShowModal(true);
-
+    const handleEditProduct = (product) => {
+        navigate(`/seller/products/edit/${product.id}`);
     };
 
-    const handleGenerateDescription = async () => {
-        if (!productForm.name || !productForm.categoryName) {
-            Swal.fire("Info", "Please enter Product Name and Category first.", "info");
-            return;
-        }
 
-        try {
-            const description = await generateProductDescription({
-                title: productForm.name,
-                features: `${productForm.material || ''}, ${productForm.color || ''}, ${productForm.pattern || ''}`,
-                category: productForm.categoryName
-            });
-            // Append or replace? Let's replace for now or append if exists
-            setProductForm(prev => ({ ...prev, description: description }));
-        } catch (error) {
-            Swal.fire("Error", "Could not generate description", "error");
-        }
-    };
 
 
     const openAddModal = () => {
@@ -569,7 +373,7 @@ const SellerDashboard = () => {
             width: 80,
             renderCell: (params) => (
                 <img
-                    src={params.row.images?.[0]?.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
+                    src={params.row.images?.[0]?.imagePath || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
                     alt={params.row.name}
                     className="w-10 h-10 rounded object-cover"
                 />
@@ -594,7 +398,7 @@ const SellerDashboard = () => {
             width: 150,
             renderCell: (params) => (
                 <div className="flex items-center gap-2 mt-2">
-                    <button onClick={() => openEditModal(params.row)} className="text-blue-600 hover:text-blue-800"><Pencil size={18} /></button>
+                    <button onClick={() => handleEditProduct(params.row)} className="text-blue-600 hover:text-blue-800"><Pencil size={18} /></button>
                     <button onClick={() => handleDeleteProduct(params.row.id)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
                 </div>
             ),
@@ -656,7 +460,7 @@ const SellerDashboard = () => {
             renderCell: (params) => (
                 <div className="flex items-center gap-2">
                     <img
-                        src={params.row.orderItem?.product?.images?.[0]?.imageUrl || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
+                        src={params.row.orderItem?.product?.images?.[0]?.imagePath || 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2RkZCIvPjwvc3ZnPg=='}
                         className="w-8 h-8 rounded"
                         alt=""
                     />
@@ -904,249 +708,6 @@ const SellerDashboard = () => {
             )
             }
 
-            {/* Simple Add/Edit Product Modal */}
-            <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editingProduct ? 'Edit Product' : 'Add New Product'}>
-                <form onSubmit={handleProductSubmit} className="space-y-4">
-                    {/* ... existing fields ... */}
-
-                    {/* Reel Upload Section */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Reel (Video) - Optional</label>
-                        <div className="flex items-center gap-4">
-                            <label className="flex items-center gap-2 px-4 py-2 bg-pink-50 text-pink-600 rounded-lg cursor-pointer hover:bg-pink-100 transition border border-pink-200">
-                                <UploadCloud size={20} />
-                                {reelFile ? 'Change Reel' : 'Upload Reel'}
-                                <input
-                                    type="file"
-                                    accept="video/mp4,video/webm"
-                                    className="hidden"
-                                    onChange={(e) => {
-                                        const file = e.target.files[0];
-                                        if (file) {
-                                            if (file.size > 50 * 1024 * 1024) {
-                                                Swal.fire('Error', 'File size exceeds 50MB limit.', 'error');
-                                                return;
-                                            }
-                                            setReelFile(file);
-                                        }
-                                    }}
-                                />
-                            </label>
-                            {reelFile && (
-                                <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded text-sm">
-                                    <span className="truncate max-w-[150px]">{reelFile.name}</span>
-                                    <button type="button" onClick={() => setReelFile(null)} className="text-red-500 hover:text-red-700"><X size={16} /></button>
-                                </div>
-                            )}
-                        </div>
-                        <p className="text-xs text-gray-400 mt-1">Max 50MB. MP4 or WebM only.</p>
-                    </div>
-
-                    <Input
-                        label="Product Name"
-                        value={productForm.name}
-                        onChange={e => setProductForm({ ...productForm, name: e.target.value })}
-                        required
-                    />
-                    <div className="flex gap-2 items-end">
-                        <div className="flex-1">
-                            <Input
-                                label="Description"
-                                value={productForm.description}
-                                onChange={e => setProductForm({ ...productForm, description: e.target.value })}
-                                required
-                                multiline
-                                rows={4}
-                            />
-                        </div>
-                        <div className="mb-1">
-                            <AiAssistButton onClick={handleGenerateDescription} label="AI Write" className="whitespace-nowrap" />
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            label="Price"
-                            type="number"
-                            value={productForm.price}
-                            onChange={e => setProductForm({ ...productForm, price: e.target.value })}
-                            required
-                        />
-                        <Input
-                            label="Stock Quantity"
-                            type="number"
-                            value={productForm.stockQuantity}
-                            onChange={e => setProductForm({ ...productForm, stockQuantity: e.target.value })}
-                            required
-                        />
-                    </div>
-
-                    {/* Dynamic Specifications Form */}
-                    {selectedMainId === 'HL' && (
-                        <div className="bg-purple-50 dark:bg-gray-800 p-4 rounded-md border border-purple-100 dark:border-gray-700 space-y-4">
-                            <h4 className="font-semibold text-purple-700 dark:text-purple-300">Handloom Details</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Material (e.g., Cotton, Silk)" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} required />
-                                <Input label="Weaving Type" value={productForm.specifications?.weavingType || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, weavingType: e.target.value } })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Pattern / Design" value={productForm.specifications?.pattern || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, pattern: e.target.value } })} />
-                                <Input label="Occasion" value={productForm.specifications?.occasion || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, occasion: e.target.value } })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Color" value={productForm.color} onChange={e => setProductForm({ ...productForm, color: e.target.value })} required />
-                                <Input label="Length / Size" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} required />
-                            </div>
-                        </div>
-                    )}
-
-                    {selectedMainId === 'HC' && (
-                        <div className="bg-orange-50 dark:bg-gray-800 p-4 rounded-md border border-orange-100 dark:border-gray-700 space-y-4">
-                            <h4 className="font-semibold text-orange-700 dark:text-orange-300">Handicraft Details</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Material" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} required />
-                                <Input label="Technique (e.g., Carved, Cast)" value={productForm.specifications?.technique || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, technique: e.target.value } })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Finish Type" value={productForm.specifications?.finishType || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, finishType: e.target.value } })} />
-                                <Input label="Artisan Region" value={productForm.specifications?.artisanRegion || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, artisanRegion: e.target.value } })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Input label="Dimensions (L x W x H)" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} required />
-                                <Input label="Weight (kg/g)" value={productForm.specifications?.weight || ''} onChange={e => setProductForm({ ...productForm, specifications: { ...productForm.specifications, weight: e.target.value } })} />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Fallback/Generic fields if no specific category selected (though validation requires it) */}
-                    {!selectedMainId && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <Input label="Material" value={productForm.material} onChange={e => setProductForm({ ...productForm, material: e.target.value })} />
-                            <Input label="Color" value={productForm.color} onChange={e => setProductForm({ ...productForm, color: e.target.value })} />
-                            <Input label="Size" value={productForm.size} onChange={e => setProductForm({ ...productForm, size: e.target.value })} />
-                        </div>
-                    )}
-
-                    <Input label="Origin" value={productForm.origin} onChange={e => setProductForm({ ...productForm, origin: e.target.value })} />
-
-                    <div>
-                        <Input
-                            label="Pack Of"
-                            value={productForm.packOf}
-                            onChange={e => setProductForm({ ...productForm, packOf: e.target.value })}
-                            placeholder="e.g., 1, 2, Set of 3"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Category</label>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {/* Main Category */}
-                            <select
-                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
-                                value={selectedMainId}
-                                onChange={e => {
-                                    setSelectedMainId(e.target.value);
-                                    setSelectedGroupId('');
-                                    setSelectedSubId('');
-                                }}
-                                required={!editingProduct}
-                            >
-                                <option value="">Select Main Category</option>
-                                {MASTER_CATALOG.map(c => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                ))}
-                            </select>
-
-                            {/* Group */}
-                            <select
-                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
-                                value={selectedGroupId}
-                                onChange={e => {
-                                    setSelectedGroupId(e.target.value);
-                                    setSelectedSubId('');
-                                }}
-                                disabled={!selectedMainId}
-                                required={!editingProduct}
-                            >
-                                <option value="">Select Group</option>
-                                {mainCategory?.groups?.map(g => (
-                                    <option key={g.id} value={g.id}>{g.name}</option>
-                                ))}
-                            </select>
-
-                            {/* Sub Category */}
-                            <select
-                                className="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2"
-                                value={selectedSubId}
-                                onChange={e => {
-                                    setSelectedSubId(e.target.value);
-                                    // Also update the form state for legacy compatibility if needed
-                                    const sub = categoryGroup?.subcategories?.find(s => s.id === e.target.value);
-                                    if (sub) setProductForm({ ...productForm, categoryName: sub.name });
-                                }}
-                                disabled={!selectedGroupId}
-                                required={!editingProduct}
-                            >
-                                <option value="">Select Specific Type</option>
-                                {categoryGroup?.subcategories?.map(s => (
-                                    <option key={s.id} value={s.id}>{s.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors relative">
-                        <input
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => {
-                                const files = Array.from(e.target.files);
-                                setSelectedFiles(prev => [...prev, ...files]);
-                                e.target.value = ''; // Reset input so same file can be selected again if needed
-                            }}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        />
-                        <div className="flex flex-col items-center">
-                            <UploadCloud className="h-10 w-10 text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
-                                {selectedFiles.length > 0
-                                    ? `${selectedFiles.length} file(s) selected`
-                                    : "Click to upload product images"}
-                            </p>
-                            <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 2MB (Min 1, Max 8)</p>
-                        </div>
-                    </div>
-
-                    {/* Image Previews */}
-                    {selectedFiles.length > 0 && (
-                        <div className="flex gap-4 mt-4 overflow-x-auto pb-2">
-                            {selectedFiles.map((file, index) => (
-                                <div key={index} className="relative group min-w-[100px] w-[100px] h-[100px] rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm flex-shrink-0">
-                                    <img
-                                        src={URL.createObjectURL(file)}
-                                        alt={`Preview ${index}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setSelectedFiles(selectedFiles.filter((_, i) => i !== index))}
-                                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-700 shadow-md"
-                                        title="Remove image"
-                                    >
-                                        <X size={14} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Fallback URL input (optional, can hide if only upload is desired) */}
-                    {/* <Input label="Or Image URL" value={productForm.imageUrl} ... /> */}
-                    <Button type="submit" className="w-full">
-                        {editingProduct ? 'Update Product' : 'Add Product'}
-                    </Button>
-                </form>
-            </Modal>
         </div >
     );
 };

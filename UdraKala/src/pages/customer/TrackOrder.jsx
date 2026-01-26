@@ -233,7 +233,7 @@ const TrackOrder = () => {
                                     <div className="flex gap-4">
                                         <div className="w-20 h-20 shrink-0 relative">
                                             <img
-                                                src={item.product.images?.[0]?.imageUrl || '/placeholder.png'}
+                                                src={item.product.images?.[0]?.imagePath || '/placeholder.png'}
                                                 alt={item.product.name}
                                                 className="w-full h-full object-contain"
                                             />

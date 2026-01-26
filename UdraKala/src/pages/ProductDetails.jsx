@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion as Motion } from 'motion/react';
-import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film, AlertTriangle, XCircle, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, Star, ShoppingBag, Truck, ShieldCheck, Heart, Info, Package, MapPin, Ruler, ChevronRight, Tag, Zap, Award, Minus, Plus, Film, AlertTriangle, XCircle, RefreshCcw, X } from 'lucide-react';
 import { useData } from '../context/DataContext';
 import { useWishlist } from '../context/WishlistContext';
 import Badge from '../components/ui/Badge';
@@ -37,6 +37,7 @@ const ProductDetails = () => {
     const containerRef = useRef(null);
     const [reviews, setReviews] = useState([]);
     const [reviewModalOpen, setReviewModalOpen] = useState(false);
+
     const [eligibleOrderItemId, setEligibleOrderItemId] = useState(null);
 
     useEffect(() => {
@@ -62,7 +63,7 @@ const ProductDetails = () => {
             const response = await API.get(`/customer/products/${productId}`);
             setProduct(response.data);
             if (response.data.images && response.data.images.length > 0) {
-                setActiveImage(response.data.images[0].imageUrl);
+                setActiveImage(response.data.images[0].imagePath);
             }
 
             // Fetch Reviews
@@ -214,14 +215,14 @@ const ProductDetails = () => {
                                     {sortedImages.map((img, idx) => (
                                         <button
                                             key={img.id || idx}
-                                            onClick={() => setActiveImage(img.imageUrl)}
-                                            onMouseEnter={() => setActiveImage(img.imageUrl)}
-                                            className={`w-16 h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${activeImage === img.imageUrl
+                                            onClick={() => setActiveImage(img.imagePath)}
+                                            onMouseEnter={() => setActiveImage(img.imagePath)}
+                                            className={`w-16 h-16 lg:w-20 lg:h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${activeImage === img.imagePath
                                                 ? 'border-primary-500 shadow-md ring-2 ring-primary-500/20'
                                                 : 'border-secondary-200 dark:border-secondary-700 hover:border-secondary-300 dark:hover:border-secondary-500'
                                                 }`}
                                         >
-                                            <img src={img.imageUrl} className="w-full h-full object-cover" alt="thumbnail" />
+                                            <img src={img.imagePath} className="w-full h-full object-cover" alt="thumbnail" />
                                         </button>
                                     ))}
                                 </div>
@@ -268,7 +269,7 @@ const ProductDetails = () => {
                                         initial={{ opacity: 0, scale: 0.98 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ duration: 0.4 }}
-                                        src={activeImage || (product.images?.[0]?.imageUrl)}
+                                        src={activeImage || (product.images?.[0]?.imagePath)}
                                         alt={product.name}
                                         className="w-full h-full object-contain p-4"
                                     />
@@ -284,7 +285,7 @@ const ProductDetails = () => {
                                         <div
                                             className="w-full h-full"
                                             style={{
-                                                backgroundImage: `url(${activeImage || product.images?.[0]?.imageUrl})`,
+                                                backgroundImage: `url(${activeImage || product.images?.[0]?.imagePath})`,
                                                 backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
                                                 backgroundRepeat: 'no-repeat',
                                                 backgroundSize: '250%' // Zoom magnitude
@@ -351,13 +352,17 @@ const ProductDetails = () => {
                                 </button>
                             )}
 
-                            <button
-                                onClick={() => navigate(`/reels?productId=${product.id}`)}
-                                className="col-span-2 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-pink-600 border-2 border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all active:scale-95"
-                            >
-                                <Film size={20} /> {t('watch_reel')}
-                            </button>
+                            {product.reelUrl && (
+                                <button
+                                    onClick={() => navigate(`/reels?productId=${product.id}`)}
+                                    className="col-span-2 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-bold text-pink-600 border-2 border-pink-600 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-all active:scale-95"
+                                >
+                                    <Film size={20} /> {t('watch_reel')}
+                                </button>
+                            )}
                         </div>
+
+                        {/* PRODUCT REEL SECTION REMOVED (Moved to Right Column) */}
                     </div>
 
                     {/* RIGHT: PRODUCT INFO */}
@@ -420,15 +425,50 @@ const ProductDetails = () => {
                                 <h3 className="text-secondary-400 dark:text-secondary-500 font-bold text-xs uppercase tracking-widest mb-4">{t('highlights_services')}</h3>
                                 <ul className="space-y-4 text-sm text-secondary-700 dark:text-secondary-200">
                                     <li className="flex gap-3 items-center"><Award size={18} className="text-primary-600 shrink-0" /> {t('authentic_handloom')}</li>
-                                    <li className="flex gap-3 items-center"><Truck size={18} className="text-primary-600 shrink-0" /> {t('free_delivery')}</li>
+
+                                    {/* Dynamic Dispatch Time */}
+                                    <li className="flex gap-3 items-center">
+                                        <Truck size={18} className="text-primary-600 shrink-0" />
+                                        <span>Dispatch in <span className="font-semibold text-secondary-900 dark:text-white">{product.policy?.dispatchDays || '2-3'} days</span></span>
+                                    </li>
+
+                                    {/* Dynamic Return Policy */}
                                     <li className="flex gap-3 items-center">
                                         <RefreshCcw size={18} className="text-primary-600 shrink-0" />
-                                        <span>7 Days <span className="font-semibold text-secondary-900 dark:text-white">{t('return_exchange_policy')}</span></span>
+                                        <span>
+                                            {product.policy?.returnAvailable ? (
+                                                <>
+                                                    <span className="font-semibold text-secondary-900 dark:text-white">{product.policy?.returnWindow || '7'} Days</span> Return Policy
+                                                </>
+                                            ) : (
+                                                <span className="font-semibold text-red-500">Non-Returnable</span>
+                                            )}
+                                        </span>
                                     </li>
-                                    <li className="flex gap-3 items-center">
-                                        <ShieldCheck size={18} className="text-primary-600 shrink-0" />
-                                        <span>{t('secure_packing')}</span>
-                                    </li>
+
+                                    {/* Dynamic Cancellation */}
+                                    {product.policy && (
+                                        <li className="flex gap-3 items-center">
+                                            {product.policy.cancellable ? (
+                                                <div className="flex items-center gap-3">
+                                                    <ShieldCheck size={18} className="text-primary-600 shrink-0" />
+                                                    <span>Order Cancellable</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-3">
+                                                    <XCircle size={18} className="text-red-500 shrink-0" />
+                                                    <span>Not Cancellable</span>
+                                                </div>
+                                            )}
+                                        </li>
+                                    )}
+
+                                    {!product.policy && (
+                                        <li className="flex gap-3 items-center">
+                                            <ShieldCheck size={18} className="text-primary-600 shrink-0" />
+                                            <span>{t('secure_packing')}</span>
+                                        </li>
+                                    )}
                                 </ul>
                             </div>
                             <div>
@@ -454,32 +494,51 @@ const ProductDetails = () => {
                             </p>
                         </div>
 
+                        {/* PRODUCT REEL SECTION REMOVED (Moved to Modal) */}
+
                         {/* Tabular Specifications */}
                         <div>
                             <h3 className="text-xl font-serif font-bold mb-6 text-secondary-900 dark:text-white">{t('specifications')}</h3>
                             <div className="border border-secondary-200 dark:border-secondary-700 rounded-2xl overflow-hidden">
                                 <table className="w-full text-sm text-left">
                                     <tbody className="divide-y divide-secondary-100 dark:divide-secondary-800">
-                                        <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('material')}</td>
-                                            <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.material || 'N/A'}</td>
-                                        </tr>
-                                        <tr className="flex flex-col md:table-row">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('color')}</td>
-                                            <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.color || 'N/A'}</td>
-                                        </tr>
-                                        <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('dimensions')}</td>
-                                            <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.size || 'N/A'}</td>
-                                        </tr>
-                                        <tr className="flex flex-col md:table-row">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('origin')}</td>
-                                            <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.origin || 'Odisha'}</td>
-                                        </tr>
-                                        <tr className="flex flex-col md:table-row bg-secondary-50/50 dark:bg-secondary-800/20">
-                                            <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3">{t('pack_of')}</td>
-                                            <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{product.packOf || '1'}</td>
-                                        </tr>
+                                        {/* Core Fields */}
+                                        {[
+                                            { label: t('material'), value: product.material },
+                                            { label: t('color'), value: product.color },
+                                            { label: t('dimensions'), value: product.size },
+                                            { label: t('origin'), value: product.origin || 'Odisha' },
+                                            { label: t('pack_of'), value: product.packOf || '1' },
+                                        ].map((item, idx) => item.value && (
+                                            <tr key={`core-${idx}`} className={`flex flex-col md:table-row ${idx % 2 === 0 ? 'bg-secondary-50/50 dark:bg-secondary-800/20' : ''}`}>
+                                                <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3 text-transform capitalize">{item.label}</td>
+                                                <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{item.value}</td>
+                                            </tr>
+                                        ))}
+
+                                        {/* Dynamic Specifications */}
+                                        {(() => {
+                                            let specs = [];
+                                            if (product.specsList && Array.isArray(product.specsList)) {
+                                                specs = product.specsList.map(s => ({ key: s.name, value: s.value }));
+                                            } else if (typeof product.specifications === 'string') {
+                                                try {
+                                                    const parsed = JSON.parse(product.specifications);
+                                                    specs = Object.entries(parsed).map(([key, value]) => ({ key, value }));
+                                                } catch (e) {
+                                                    // console.error("Failed to parse specifications JSON", e);
+                                                }
+                                            }
+
+                                            // Interleave styling
+                                            const startIdx = 5; // offset for core fields styling
+                                            return specs.map((spec, idx) => (
+                                                <tr key={`spec-${idx}`} className={`flex flex-col md:table-row ${(idx + startIdx) % 2 === 0 ? 'bg-secondary-50/50 dark:bg-secondary-800/20' : ''}`}>
+                                                    <td className="px-6 py-4 text-secondary-500 dark:text-secondary-400 font-medium md:w-1/3 text-transform capitalize">{spec.key}</td>
+                                                    <td className="px-6 py-4 text-secondary-900 dark:text-white font-semibold">{spec.value}</td>
+                                                </tr>
+                                            ));
+                                        })()}
                                     </tbody>
                                 </table>
                             </div>
@@ -620,13 +679,19 @@ const ProductDetails = () => {
                         )}
                     </>
                 )}
-                <button
-                    onClick={() => navigate(`/reels?productId=${product.id}`)}
-                    className="col-span-2 py-3 font-bold text-pink-600 bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 transition uppercase tracking-wide text-xs flex items-center justify-center gap-2"
-                >
-                    <Film size={16} /> {t('watch_reel')}
-                </button>
+                {/* Watch Reel Button - Navigates to Reel Page */}
+                {product.reelUrl && (
+                    <button
+                        onClick={() => navigate(`/reels?productId=${product.id}`)}
+                        className="col-span-2 py-3 font-bold text-pink-600 bg-pink-50 dark:bg-pink-900/20 hover:bg-pink-100 transition uppercase tracking-wide text-xs flex items-center justify-center gap-2"
+                    >
+                        <Film size={16} /> {t('watch_reel')}
+                    </button>
+                )}
             </div>
+
+            {/* Reel Modal */}
+
 
             {/* Review Modal */}
             <ReviewModal

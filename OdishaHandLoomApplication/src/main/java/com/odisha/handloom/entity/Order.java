@@ -50,6 +50,12 @@ public class Order {
     private String courierName;
     private String trackingId;
 
+    // Shiprocket Details
+    private String shiprocketOrderId;
+    private String shipmentId;
+    private String awbCode;
+    private String labelUrl;
+
     // Invoice Details
     @Column(name = "invoice_sent", nullable = false)
     private Boolean invoiceSent = false;
@@ -426,5 +432,37 @@ public class Order {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public String getShiprocketOrderId() {
+        return shiprocketOrderId;
+    }
+
+    public void setShiprocketOrderId(String shiprocketOrderId) {
+        this.shiprocketOrderId = shiprocketOrderId;
+    }
+
+    public String getShipmentId() {
+        return shipmentId;
+    }
+
+    public void setShipmentId(String shipmentId) {
+        this.shipmentId = shipmentId;
+    }
+
+    public String getAwbCode() {
+        return awbCode;
+    }
+
+    public void setAwbCode(String awbCode) {
+        this.awbCode = awbCode;
+    }
+
+    public String getLabelUrl() {
+        return labelUrl;
+    }
+
+    public void setLabelUrl(String labelUrl) {
+        this.labelUrl = labelUrl;
     }
 }

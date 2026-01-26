@@ -24,4 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                         @org.springframework.data.repository.query.Param("status") com.odisha.handloom.entity.OrderStatus status,
                         @org.springframework.data.repository.query.Param("startDate") java.time.LocalDateTime startDate,
                         @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
+
+        Order findByTrackingId(String trackingId);
 }

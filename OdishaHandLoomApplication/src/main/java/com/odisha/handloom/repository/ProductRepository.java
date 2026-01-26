@@ -7,8 +7,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
+import com.odisha.handloom.enums.ProductStatus;
+
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
+    List<Product> findByStatus(ProductStatus status);
+
+    List<Product> findBySellerIdAndStatus(UUID sellerId, ProductStatus status);
+
     List<Product> findBySellerId(UUID sellerId);
 
     List<Product> findByCategory_Id(UUID categoryId);

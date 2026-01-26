@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SellerPayoutManager from './SellerPayoutManager';
-import AgentPayoutManager from './AgentPayoutManager';
+
 import RefundManager from './RefundManager';
 import { BadgeIndianRupee, Truck, RotateCcw } from 'lucide-react';
 
@@ -24,16 +24,6 @@ const AdminAccountingLayout = () => {
                     Seller Payouts
                 </button>
                 <button
-                    onClick={() => setActiveTab('agents')}
-                    className={`flex items-center gap-2 pb-3 px-2 border-b-2 transition-colors font-medium text-sm
-                        ${activeTab === 'agents'
-                            ? 'border-orange-600 text-orange-600 dark:text-orange-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
-                >
-                    <Truck size={18} />
-                    Agent Payouts
-                </button>
-                <button
                     onClick={() => setActiveTab('refunds')}
                     className={`flex items-center gap-2 pb-3 px-2 border-b-2 transition-colors font-medium text-sm
                         ${activeTab === 'refunds'
@@ -48,7 +38,6 @@ const AdminAccountingLayout = () => {
             {/* Content Area */}
             <div className="mt-4">
                 {activeTab === 'sellers' && <SellerPayoutManager />}
-                {activeTab === 'agents' && <AgentPayoutManager />}
                 {activeTab === 'refunds' && <RefundManager />}
             </div>
         </div>

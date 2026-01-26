@@ -65,7 +65,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration
                 .setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 
@@ -97,8 +97,10 @@ public class SecurityConfig {
                         .permitAll()
 
                         .requestMatchers("/ws/**").permitAll() // Allow WebSocket Handshake (Auth handled in STOMP
-                                                               // headers if needed, or via Cookie if session based. For
-                                                               // now permit handshake for sockjs)
+                                                               // headers)
+
+                        // Allow Public Product Listing (GET only)
+                        .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").permitAll()
                         .requestMatchers("/api/shipments/{id}/track").permitAll() // Public tracking
 
                         .requestMatchers("/api/admin/**", "/api/shipments/admin/**").hasRole("ADMIN") // Protect admin
@@ -107,7 +109,6 @@ public class SecurityConfig {
                                                                                                       // /api/admin/shipments
                                                                                                       // so covered by
                                                                                                       // /api/admin/**)
-                        .requestMatchers("/api/agent/**").hasAnyRole("DELIVERY_AGENT", "ADMIN")
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")

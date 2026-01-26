@@ -86,6 +86,13 @@ const sendEmailWrapper = async (templateId, params, recipientEmail = null) => {
         // Better to record start to enforce rate limit immediately.
         localStorage.setItem('emailLastSent', Date.now().toString());
 
+        // Check for placeholder/missing key to avoid 400 Error in Dev
+        if (!PUBLIC_KEY || PUBLIC_KEY === 'public_key_placeholder') {
+            console.warn('EmailJS Public Key is missing or default. Email sending skipped. (Dev Mode)');
+            // Return success to allow the calling function (e.g. Admin Approve) to proceed
+            return { success: true, message: 'Email skipped (Dev Mode)' };
+        }
+
         const response = await emailjs.send(SERVICE_ID, templateId, params, PUBLIC_KEY);
         console.log("Email Sent Successfully:", response.status, response.text);
         return { success: true, response };

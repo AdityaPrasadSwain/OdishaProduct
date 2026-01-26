@@ -196,7 +196,7 @@ const CustomerDashboard = () => {
                                             <div className="relative h-48 overflow-hidden">
                                                 <Link to={`/product/${product.id}`}>
                                                     <img
-                                                        src={product.images?.[0]?.imageUrl || '/placeholder.png'}
+                                                        src={product.images?.[0]?.imagePath || '/placeholder.png'}
                                                         alt={product.name}
                                                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                                     />
@@ -261,7 +261,7 @@ const CustomerDashboard = () => {
                                 <Link to={`/product/${p.id}`} key={p.id} className="block group">
                                     <div className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/60 dark:hover:bg-dark/60 transition-colors">
                                         <div className="h-12 w-12 rounded-md bg-white overflow-hidden shadow-sm flex-shrink-0">
-                                            <img src={p.images?.[0]?.imageUrl || '/placeholder.png'} className="h-full w-full object-cover" />
+                                            <img src={p.images?.[0]?.imagePath || '/placeholder.png'} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="min-w-0">
                                             <p className="font-medium text-sm text-dark dark:text-white truncate group-hover:text-primary transition-colors">{p.name}</p>

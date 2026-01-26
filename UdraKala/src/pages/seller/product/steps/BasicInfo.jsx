@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { createProductStep1 } from '../../../../api/productWizardApi';
+import { createProductStep1, updateBasicInfoStep1 } from '../../../../api/productWizardApi';
+import { getActiveCategories } from '../../../../api/categoryApi';
+import { generateProductDescription } from '../../../../api/aiApi';
+import AiAssistButton from '../../../../components/AiAssistButton';
 
 const InputGroup = ({ label, name, type = "text", required = false, placeholder = "", value, onChange }) => (
     <div>
@@ -17,11 +20,11 @@ const InputGroup = ({ label, name, type = "text", required = false, placeholder 
     </div>
 );
 
-const BasicInfo = ({ onNext }) => {
+const BasicInfo = ({ onNext, initialData }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
-        categoryId: 'ef9b5636-2244-486a-b286-64cc1c641886', // Example/Default UUID
+        categoryId: '',
         material: '',
         color: '',
         size: '',
@@ -29,6 +32,66 @@ const BasicInfo = ({ onNext }) => {
         packOf: '1'
     });
     const [loading, setLoading] = useState(false);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCats = async () => {
+            try {
+                const data = await getActiveCategories();
+                setCategories(data);
+                // Pre-select first category if available and no category selected and no initialData
+                if (data && data.length > 0 && !formData.categoryId && !initialData) {
+                    setFormData(prev => ({ ...prev, categoryId: data[0].id }));
+                }
+            } catch (error) {
+                console.error("Failed to fetch categories", error);
+            }
+        };
+        fetchCats();
+    }, []);
+
+    // Load initial data for edit mode
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                name: initialData.name || '',
+                description: initialData.description || '',
+                categoryId: initialData.category?.id || initialData.categoryId || '',
+                material: initialData.material || '',
+                color: initialData.color || '',
+                size: initialData.size || '',
+                origin: initialData.origin || '',
+                packOf: initialData.packOf || '1'
+            });
+            // If we have an ID, we might call onNext immediately to set parent ID? 
+            // Better to just let user click Next, but we need to tell parent generic ID is set?
+            // Actually parent passed initialData, so parent KNOWS ID.
+            if (initialData.id) {
+                // We don't need to notify parent of ID again, it gave it to us.
+            }
+        }
+    }, [initialData]);
+
+    const handleGenerateDescription = async () => {
+        if (!formData.name || !formData.categoryId) {
+            Swal.fire("Info", "Please enter Product Name and Category first.", "info");
+            return;
+        }
+
+        try {
+            // Find category name for better context
+            const categoryName = categories.find(c => c.id === formData.categoryId)?.name || '';
+
+            const description = await generateProductDescription({
+                title: formData.name,
+                features: `${formData.material || ''}, ${formData.color || ''}`,
+                category: categoryName
+            });
+            setFormData(prev => ({ ...prev, description: description }));
+        } catch (error) {
+            Swal.fire("Error", "Could not generate description", "error");
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,15 +102,33 @@ const BasicInfo = ({ onNext }) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await createProductStep1(formData);
-            if (res && res.id) {
+            let res;
+            if (initialData && initialData.id) {
+                // Update mode
+                await updateBasicInfoStep1(initialData.id, formData);
+                res = { id: initialData.id };
                 Swal.fire({
                     icon: 'success',
-                    title: 'Saved!',
-                    text: 'Basic info saved successfully',
+                    title: 'Updated!',
+                    text: 'Basic info updated successfully',
                     timer: 1500,
                     showConfirmButton: false
                 });
+            } else {
+                // Create mode
+                res = await createProductStep1(formData);
+                if (res && res.id) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Saved!',
+                        text: 'Basic info saved successfully',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            }
+
+            if (res && res.id) {
                 onNext(res.id);
             } else {
                 throw new Error("Invalid response from server");
@@ -79,7 +160,10 @@ const BasicInfo = ({ onNext }) => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Description</label>
+                    <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Description</label>
+                        <AiAssistButton onClick={handleGenerateDescription} label="AI Write" className="text-xs py-1 px-2" />
+                    </div>
                     <textarea
                         name="description"
                         rows="4"
@@ -90,7 +174,22 @@ const BasicInfo = ({ onNext }) => {
                     />
                 </div>
 
-                <InputGroup label="Category UUID" name="categoryId" required placeholder="Paste a valid Category UUID" value={formData.categoryId || ''} onChange={handleChange} />
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category <span className="text-red-500">*</span></label>
+                    <select
+                        name="categoryId"
+                        required
+                        value={formData.categoryId || ''}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 dark:bg-gray-800 dark:text-gray-100"
+                    >
+                        <option value="" disabled>Select Category</option>
+                        {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                    </select>
+                </div>
+
                 <InputGroup label="Material" name="material" placeholder="e.g. Cotton, Silk" value={formData.material || ''} onChange={handleChange} />
                 <InputGroup label="Color" name="color" placeholder="e.g. Red, Blue" value={formData.color || ''} onChange={handleChange} />
                 <InputGroup label="Size" name="size" placeholder="e.g. Free Size, L, XL" value={formData.size || ''} onChange={handleChange} />

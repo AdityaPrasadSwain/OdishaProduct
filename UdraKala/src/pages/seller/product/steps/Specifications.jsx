@@ -1,9 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { updateSpecsStep4 } from '../../../../api/productWizardApi';
 
-const Specifications = ({ productId, onNext, onBack }) => {
+const Specifications = ({ productId, onNext, onBack, initialData }) => {
     const [specs, setSpecs] = useState([{ key: '', value: '' }]);
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (initialData && initialData.specifications) {
+            let specsObj = initialData.specifications;
+            if (typeof specsObj === 'string') {
+                try {
+                    specsObj = JSON.parse(specsObj);
+                } catch (e) {
+                    console.error("Failed to parse specifications", e);
+                    specsObj = {};
+                }
+            }
+
+            const specsArray = Object.entries(specsObj).map(([key, value]) => ({ key, value }));
+            if (specsArray.length > 0) {
+                setSpecs(specsArray);
+            }
+        }
+    }, [initialData]);
 
     const handleAdd = () => setSpecs([...specs, { key: '', value: '' }]);
     const handleRemove = (i) => setSpecs(specs.filter((_, idx) => idx !== i));
@@ -26,7 +46,11 @@ const Specifications = ({ productId, onNext, onBack }) => {
             await updateSpecsStep4(productId, validSpecs);
             onNext();
         } catch (err) {
-            alert("Failed to update specs: " + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: err.message || 'Failed to update specifications',
+            });
         } finally {
             setLoading(false);
         }

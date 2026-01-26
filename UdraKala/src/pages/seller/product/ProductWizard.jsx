@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import BasicInfo from './steps/BasicInfo';
 import PricingStock from './steps/PricingStock';
@@ -6,14 +7,36 @@ import ProductImages from './steps/ProductImages';
 import Specifications from './steps/Specifications';
 import ShippingPolicy from './steps/ShippingPolicy';
 import ReviewVerify from './steps/ReviewVerify';
-import { publishProduct } from '../../../api/productWizardApi';
+import { publishProduct, getProductById } from '../../../api/productWizardApi';
 
 const steps = ['Basic Info', 'Pricing & Stock', 'Images', 'Specifications', 'Policies', 'Review'];
 
 const ProductWizard = () => {
+    const { id } = useParams(); // Get ID from URL for edit mode
+    const navigate = useNavigate();
     const [activeStep, setActiveStep] = useState(0);
-    const [productId, setProductId] = useState(null); // Store after Step 1
-    const [completedSteps, setCompletedSteps] = useState([]); // Track completed step indices
+    const [productId, setProductId] = useState(null);
+    const [completedSteps, setCompletedSteps] = useState([]);
+    const [initialData, setInitialData] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (id) {
+            setLoading(true);
+            setProductId(id);
+            // In edit mode, allow navigation to all steps
+            setCompletedSteps([0, 1, 2, 3, 4, 5]);
+
+            getProductById(id).then(data => {
+                setInitialData(data);
+            }).catch(err => {
+                console.error(err);
+                Swal.fire('Error', 'Failed to load product details', 'error');
+            }).finally(() => {
+                setLoading(false);
+            });
+        }
+    }, [id]);
 
     const handleNext = () => {
         if (!completedSteps.includes(activeStep)) {
@@ -38,18 +61,23 @@ const ProductWizard = () => {
                 return;
             }
             await publishProduct(productId);
-            Swal.fire({
+            await Swal.fire({
                 icon: 'success',
                 title: 'Published!',
-                text: 'Product Verified & Published Successfully!',
+                text: 'Product Updated & Published Successfully!',
+                timer: 1500,
+                showConfirmButton: false
             });
-            // Optional: Redirect
-            // window.location.href = '/seller/products';
+            navigate('/seller/dashboard', { state: { activeTab: 'products' } });
         } catch (err) {
             console.error(err);
             Swal.fire('Error', "Error publishing product: " + err.message, 'error');
         }
     };
+
+    if (loading) {
+        return <div className="min-h-screen flex items-center justify-center">Loading product details...</div>;
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 font-sans transition-colors duration-300">
@@ -108,12 +136,14 @@ const ProductWizard = () => {
                     </div>
 
                     <div className="animate-fade-in-up">
-                        {activeStep === 0 && <BasicInfo onNext={(id) => { setProductId(id); handleNext(); }} />}
-                        {activeStep === 1 && <PricingStock productId={productId} onNext={handleNext} onBack={handleBack} />}
-                        {activeStep === 2 && <ProductImages productId={productId} onNext={handleNext} onBack={handleBack} />}
-                        {activeStep === 3 && <Specifications productId={productId} onNext={handleNext} onBack={handleBack} />}
-                        {activeStep === 4 && <ShippingPolicy productId={productId} onSubmit={handleNext} onBack={handleBack} />}
-                        {activeStep === 5 && <ReviewVerify productId={productId} onEditStep={setActiveStep} onSubmit={handleFinish} />}
+                        <div className="animate-fade-in-up">
+                            {activeStep === 0 && <BasicInfo onNext={(id) => { setProductId(id); handleNext(); }} initialData={initialData} />}
+                            {activeStep === 1 && <PricingStock productId={productId} onNext={handleNext} onBack={handleBack} initialData={initialData} />}
+                            {activeStep === 2 && <ProductImages productId={productId} onNext={handleNext} onBack={handleBack} initialData={initialData} />}
+                            {activeStep === 3 && <Specifications productId={productId} onNext={handleNext} onBack={handleBack} initialData={initialData} />}
+                            {activeStep === 4 && <ShippingPolicy productId={productId} onSubmit={handleNext} onBack={handleBack} initialData={initialData} />}
+                            {activeStep === 5 && <ReviewVerify productId={productId} onEditStep={setActiveStep} onSubmit={handleFinish} />}
+                        </div>
                     </div>
                 </div>
             </div>

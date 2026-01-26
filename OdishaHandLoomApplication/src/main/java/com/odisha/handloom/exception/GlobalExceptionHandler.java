@@ -54,4 +54,13 @@ public class GlobalExceptionHandler {
         error.put("message", "File too large!");
         return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
     }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<?> handleNoResourceFoundException(
+            org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Not Found");
+        error.put("message", "The requested resource was not found: " + ex.getResourcePath());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 }

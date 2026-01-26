@@ -92,7 +92,7 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
                     {/* Product Info */}
                     <div className="flex gap-4 items-center mb-4">
                         <img
-                            src={product.images?.[0]?.imageUrl || product.imageUrl || '/placeholder.png'}
+                            src={product.images?.[0]?.imagePath || product.imagePath || '/placeholder.png'}
                             alt={product.title || product.name}
                             className="w-16 h-16 object-cover rounded-lg border"
                         />

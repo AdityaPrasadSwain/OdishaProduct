@@ -30,7 +30,7 @@ export const DataProvider = ({ children }) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const res = await API.get('/customer/products');
+                const res = await API.get('/products');
                 console.log("[DataContext] Fetched public products:", res.data);
                 setProducts(res.data || []);
             } catch (error) {
@@ -166,7 +166,7 @@ export const DataProvider = ({ children }) => {
     // --- Seller Logic ---
     const addProduct = async (formData) => {
         try {
-            const res = await API.post('/seller/products', formData, {
+            const res = await API.post('/products/legacy', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

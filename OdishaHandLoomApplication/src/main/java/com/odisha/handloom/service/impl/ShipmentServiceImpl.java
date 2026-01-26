@@ -1,13 +1,12 @@
 package com.odisha.handloom.service.impl;
 
-import com.odisha.handloom.dto.shipment.LocationUpdateDto;
 import com.odisha.handloom.dto.shipment.ShipmentDto;
-import com.odisha.handloom.entity.*;
-import com.odisha.handloom.repository.ShipmentBarcodeRepository; // New Import
-import com.odisha.handloom.entity.Role;
+import com.odisha.handloom.entity.Order;
+import com.odisha.handloom.entity.Shipment;
+import com.odisha.handloom.entity.ShipmentBarcode;
 import com.odisha.handloom.enums.ShipmentStatus;
-import com.odisha.handloom.repository.LocationHistoryRepository;
 import com.odisha.handloom.repository.OrderRepository;
+import com.odisha.handloom.repository.ShipmentBarcodeRepository;
 import com.odisha.handloom.repository.ShipmentRepository;
 import com.odisha.handloom.repository.UserRepository;
 import com.odisha.handloom.service.ShipmentService;
@@ -23,18 +22,15 @@ import java.util.stream.Collectors;
 public class ShipmentServiceImpl implements ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
-    private final LocationHistoryRepository locationHistoryRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ShipmentBarcodeRepository shipmentBarcodeRepository;
 
     public ShipmentServiceImpl(ShipmentRepository shipmentRepository,
-            LocationHistoryRepository locationHistoryRepository,
             OrderRepository orderRepository,
             UserRepository userRepository,
             ShipmentBarcodeRepository shipmentBarcodeRepository) {
         this.shipmentRepository = shipmentRepository;
-        this.locationHistoryRepository = locationHistoryRepository;
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.shipmentBarcodeRepository = shipmentBarcodeRepository;
@@ -80,26 +76,6 @@ public class ShipmentServiceImpl implements ShipmentService {
 
     @Override
     @Transactional
-    public ShipmentDto assignAgent(UUID shipmentId, UUID agentId) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
-
-        User agent = userRepository.findById(agentId)
-                .orElseThrow(() -> new RuntimeException("Agent not found"));
-
-        if (!agent.getRole().equals(Role.DELIVERY_AGENT)) {
-            throw new RuntimeException("User is not a delivery agent");
-        }
-
-        shipment.setAgent(agent);
-        shipment.setStatus(ShipmentStatus.ASSIGNED);
-        shipment = shipmentRepository.save(shipment);
-
-        return mapToDto(shipment);
-    }
-
-    @Override
-    @Transactional
     public ShipmentDto updateStatus(UUID shipmentId, ShipmentStatus status) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
@@ -118,38 +94,10 @@ public class ShipmentServiceImpl implements ShipmentService {
     }
 
     @Override
-    @Transactional
-    public void updateLocation(UUID shipmentId, LocationUpdateDto locationDto) {
-        Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
-
-        shipment.setCurrentLatitude(locationDto.getLatitude());
-        shipment.setCurrentLongitude(locationDto.getLongitude());
-
-        // Save history
-        LocationHistory history = LocationHistory.builder()
-                .shipment(shipment)
-                .latitude(locationDto.getLatitude())
-                .longitude(locationDto.getLongitude())
-                .timestamp(LocalDateTime.now())
-                .build();
-
-        locationHistoryRepository.save(history);
-        shipmentRepository.save(shipment);
-    }
-
-    @Override
     public ShipmentDto getShipmentById(UUID id) {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
         return mapToDto(shipment);
-    }
-
-    @Override
-    public List<ShipmentDto> getShipmentsByAgent(UUID agentId) {
-        return shipmentRepository.findByAgentId(agentId).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
     }
 
     @Override

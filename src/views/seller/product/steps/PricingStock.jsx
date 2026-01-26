@@ -1,27 +1,29 @@
 import React, { useState } from 'react';
 import { updatePricingStep2 } from '../../../../api/productWizardApi';
+import { useProductContext } from '../../../../context/ProductContext';
 
-const PricingStock = ({ productId, onNext, onBack }) => {
-    const [formData, setFormData] = useState({
-        price: '',
-        discountPrice: '',
-        stockQuantity: '',
-        minOrderQuantity: 1,
-        maxOrderQuantity: 10,
-        isCodAvailable: true
-    });
+const PricingStock = ({ onNext, onBack }) => {
+    const { productData, updateProductData, productId } = useProductContext();
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setFormData({ ...formData, [e.target.name]: val });
+        updateProductData(e.target.name, val);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await updatePricingStep2(productId, formData);
+            const dataPayload = {
+                price: productData.price,
+                discountPrice: productData.discountPrice,
+                stockQuantity: productData.stockQuantity,
+                minOrderQuantity: productData.minOrderQuantity,
+                maxOrderQuantity: productData.maxOrderQuantity,
+                isCodAvailable: productData.isCodAvailable
+            };
+            await updatePricingStep2(productId, dataPayload);
             onNext();
         } catch (err) {
             alert("Failed to update pricing: " + err.message);
@@ -34,7 +36,6 @@ const PricingStock = ({ productId, onNext, onBack }) => {
         <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
             <div className="relative">
-                {/* Symbol prefix for price */}
                 {(name === 'price' || name === 'discountPrice') &&
                     <span className="absolute left-4 top-3.5 text-gray-400 font-bold">₹</span>
                 }
@@ -42,7 +43,7 @@ const PricingStock = ({ productId, onNext, onBack }) => {
                     type={type}
                     name={name}
                     required={required}
-                    value={formData[name]}
+                    value={productData[name] ?? ''}
                     onChange={handleChange}
                     className={`w-full ${name === 'price' || name === 'discountPrice' ? 'pl-10' : 'pl-4'} pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 focus:bg-white`}
                     placeholder={placeholder}
@@ -76,7 +77,7 @@ const PricingStock = ({ productId, onNext, onBack }) => {
                     <p className="text-sm text-gray-500">Enable COD for this product</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" name="isCodAvailable" checked={formData.isCodAvailable} onChange={handleChange} className="sr-only peer" />
+                    <input type="checkbox" name="isCodAvailable" checked={productData.isCodAvailable ?? true} onChange={handleChange} className="sr-only peer" />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-4 ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
             </div>

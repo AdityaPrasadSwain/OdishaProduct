@@ -14,10 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -205,8 +201,8 @@ public class SellerRegistrationController {
             @RequestParam("aadhaarNumber") String aadhaarNumber,
             @RequestParam("gstNumber") String gstNumber,
 
-            @RequestParam("panFile") MultipartFile panFile,
-            @RequestParam("aadhaarFile") MultipartFile aadhaarFile,
+            @RequestParam(value = "panFile", required = false) MultipartFile panFile,
+            @RequestParam(value = "aadhaarFile", required = false) MultipartFile aadhaarFile,
             @RequestParam(value = "gstFile", required = false) MultipartFile gstFile,
 
             @RequestParam("accountHolderName") String accountHolderName,
@@ -219,6 +215,14 @@ public class SellerRegistrationController {
         }
         if (userRepository.existsByPhoneNumber(phone)) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already in use!"));
+        }
+
+        // Validate Files manually since they are optional in params
+        if (panFile == null || panFile.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: PAN Card document is required!"));
+        }
+        if (aadhaarFile == null || aadhaarFile.isEmpty()) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Aadhaar Card document is required!"));
         }
 
         try {

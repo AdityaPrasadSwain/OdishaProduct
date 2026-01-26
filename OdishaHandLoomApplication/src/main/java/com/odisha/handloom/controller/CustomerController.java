@@ -127,7 +127,7 @@ public class CustomerController {
                     SellerProfileResponse.ReelDTO dto = new SellerProfileResponse.ReelDTO();
                     dto.setProductId(r.getId());
                     dto.setVideoUrl(r.getReelUrl());
-                    dto.setThumbnailUrl(r.getImages().isEmpty() ? null : r.getImages().get(0).getImageUrl());
+                    dto.setThumbnailUrl(r.getImages().isEmpty() ? null : r.getImages().get(0).getImagePath());
                     dto.setTitle(r.getName());
                     return dto;
                 })

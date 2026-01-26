@@ -116,20 +116,7 @@ export const getPackingVideo = async (orderId) => {
 };
 
 
-export const requestDeliveryProof = async (orderId, reason) => {
-    const response = await axios.post('/seller/proof-requests', { orderId, reason });
-    return response.data;
-};
 
-export const getDeliveryProof = async (shipmentId) => {
-    const response = await axios.get(`/seller/delivery-proof/${shipmentId}`);
-    return response.data;
-};
-
-export const getSellerProofRequests = async () => {
-    const response = await axios.get('/seller/proof-requests');
-    return response.data;
-};
 
 const orderApi = {
     createOrder,
@@ -151,9 +138,7 @@ const orderApi = {
     downloadBulkShippingLabels,
     uploadPackingVideo,
     getPackingVideo,
-    requestDeliveryProof,
-    getDeliveryProof,
-    getSellerProofRequests
+
 };
 
 export default orderApi;

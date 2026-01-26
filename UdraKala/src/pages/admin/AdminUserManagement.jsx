@@ -10,6 +10,48 @@ import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { useTheme } from '../../context/ThemeContext';
 
+const normalizeUser = (user) => {
+    if (!user) return null;
+
+    // 1. ID Normalization
+    // Check common ID fields. Fallback to a random string if absolutely missing to prevent list key crashes (though data is invalid).
+    const id = user.id || user.userId || `unknown-${Math.random().toString(36).substr(2, 9)}`;
+
+    // 2. Name Normalization
+    let fullName = user.fullName;
+    if (!fullName) {
+        if (user.firstName) {
+            fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+        } else if (user.name) {
+            fullName = user.name;
+        } else {
+            fullName = 'Unknown User';
+        }
+    }
+
+    // 3. Avatar Normalization
+    // If no profile picture, we rely on Initials in the UI, so null is fine.
+    const profilePicture = user.profilePicture || user.avatar || user.avatarUrl || null;
+
+    // 4. Contact Normalization
+    const email = user.email || 'N/A';
+    const phoneNumber = user.phoneNumber || user.phone || user.mobile || 'N/A';
+
+    // 5. Status Normalization
+    // Ensure boolean for blocked
+    const blocked = !!user.blocked;
+
+    return {
+        ...user, // Keep original fields just in case
+        id,
+        fullName, // Standardized Name
+        profilePicture,
+        email,
+        phoneNumber,
+        blocked
+    };
+};
+
 const AdminUserManagement = () => {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('customers');
@@ -27,12 +69,17 @@ const AdminUserManagement = () => {
             let data = [];
             if (activeTab === 'sellers') {
                 data = await adminApi.getSellers();
-            } else if (activeTab === 'agents') {
-                data = await adminApi.getAgents();
             } else {
                 data = await adminApi.getCustomers();
             }
-            setUsers(data);
+            // Debug: Inspect raw response
+            console.log(`[AdminUserManagement] Raw ${activeTab} data:`, data);
+
+            // Normalize Data
+            const normalizedUsers = Array.isArray(data) ? data.map(normalizeUser).filter(Boolean) : [];
+            console.log(`[AdminUserManagement] Normalized ${activeTab} data:`, normalizedUsers);
+
+            setUsers(normalizedUsers);
         } catch (error) {
             console.error("Failed to fetch users", error);
             Swal.fire('Error', 'Failed to load user data', 'error');
@@ -41,41 +88,6 @@ const AdminUserManagement = () => {
         }
     };
 
-    const handleCreateAgent = async () => {
-        const { value: formValues } = await Swal.fire({
-            title: 'Add Delivery Agent',
-            html:
-                '<input id="swal-input1" class="swal2-input" placeholder="Full Name">' +
-                '<input id="swal-input2" class="swal2-input" placeholder="Email">' +
-                '<input id="swal-input3" class="swal2-input" placeholder="Phone">' +
-                '<input id="swal-input4" class="swal2-input" type="password" placeholder="Password">',
-            focusConfirm: false,
-            showCancelButton: true,
-            preConfirm: () => {
-                return {
-                    fullName: document.getElementById('swal-input1').value,
-                    email: document.getElementById('swal-input2').value,
-                    phoneNumber: document.getElementById('swal-input3').value,
-                    password: document.getElementById('swal-input4').value,
-                    role: 'customer' // Dummy role to pass validation, backend overrides to DELIVERY_AGENT
-                }
-            }
-        });
-
-        if (formValues) {
-            if (!formValues.fullName || !formValues.email || !formValues.password || !formValues.phoneNumber) {
-                Swal.fire('Error', 'All fields are required', 'error');
-                return;
-            }
-            try {
-                await adminApi.createAgent(formValues);
-                Swal.fire('Success', 'Agent created successfully', 'success');
-                fetchUsers();
-            } catch (error) {
-                Swal.fire('Error', error.response?.data?.message || 'Failed to create agent', 'error');
-            }
-        }
-    };
 
     const handleApprove = async (id) => {
         try {
@@ -198,22 +210,35 @@ const AdminUserManagement = () => {
 
     const columns = [
         {
-            field: 'user',
-            headerName: 'User',
-            flex: 1,
-            minWidth: 250,
+            field: 'id',
+            headerName: 'User ID',
+            width: 120,
             renderCell: (params) => (
-                <div className="flex items-center gap-3 h-full">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold overflow-hidden text-xs">
+                <div className="flex items-center justify-start h-full">
+                    <span className="font-mono text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                        {params.row.id.substring(0, 8)}
+                    </span>
+                </div>
+            )
+        },
+        {
+            field: 'user',
+            headerName: 'User Details',
+            flex: 1,
+            minWidth: 200,
+            renderCell: (params) => (
+                <div className="flex items-center gap-3 w-full h-full py-2">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold overflow-hidden text-sm border border-orange-200">
                         {params.row.profilePicture ? (
                             <img src={params.row.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             params.row.fullName?.charAt(0).toUpperCase()
                         )}
                     </div>
-                    <div>
-                        <p className="font-semibold text-gray-900 dark:text-gray-100 leading-tight">{params.row.fullName}</p>
-                        <p className="text-[10px] text-gray-500">ID: {params.row.id.substring(0, 8)}...</p>
+                    <div className="flex flex-col justify-center gap-0.5 overflow-hidden min-w-0">
+                        <span className="font-semibold text-gray-900 dark:text-gray-100 truncate w-full" title={params.row.fullName}>
+                            {params.row.fullName}
+                        </span>
                     </div>
                 </div>
             )
@@ -283,7 +308,7 @@ const AdminUserManagement = () => {
                         {params.row.blocked ? <Shield size={18} /> : <Ban size={18} />}
                     </button>
 
-                    {activeTab !== 'agents' && (
+                    {activeTab !== 'customers' && (
                         <button
                             onClick={() => navigate(`/admin/sellers/${params.row.id}`)}
                             className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
@@ -340,22 +365,10 @@ const AdminUserManagement = () => {
                     >
                         Sellers
                     </button>
-                    <button
-                        onClick={() => setActiveTab('agents')}
-                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'agents' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-                    >
-                        Delivery Agents
-                    </button>
+
                 </div>
 
-                {activeTab === 'agents' && (
-                    <button
-                        onClick={handleCreateAgent}
-                        className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded flex items-center gap-2"
-                    >
-                        + Add Agent
-                    </button>
-                )}
+
             </div>
 
             {/* Table */}
@@ -373,6 +386,7 @@ const AdminUserManagement = () => {
                                 checkboxSelection
                                 disableRowSelectionOnClick
                                 getRowId={(row) => row.id}
+                                rowHeight={80}
                             />
                         </Paper>
                     </MuiThemeProvider>

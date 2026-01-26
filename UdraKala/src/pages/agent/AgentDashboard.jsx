@@ -42,7 +42,7 @@ const AgentDashboard = () => {
     useEffect(() => {
         if (isOnline) {
             const client = new Client({
-                brokerURL: 'ws://localhost:8085/ws/websocket',
+                brokerURL: 'ws://localhost:8086/ws/websocket',
                 reconnectDelay: 5000,
                 onConnect: () => {
                     console.log('Connected to WS');

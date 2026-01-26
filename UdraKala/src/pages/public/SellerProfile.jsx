@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Grid, Bookmark, PlaySquare, Settings, CheckCircle } from 'lucide-react';
+import { Grid, Bookmark, PlaySquare, Settings, CheckCircle, User, Image } from 'lucide-react';
+import defaultUser from '../../assets/default-user.jpg';
 import API from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 import PostViewerModal from '../../components/PostViewerModal';
@@ -100,11 +101,19 @@ const SellerProfile = () => {
                 <div className="flex flex-col md:flex-row items-center md:items-start md:gap-12 mb-10">
                     {/* Avatar */}
                     <div className="w-24 h-24 md:w-36 md:h-36 rounded-full p-1 bg-gradient-to-tr from-yellow-400 to-fuchsia-600 mb-4 md:mb-0 shrink-0">
-                        <img
-                            src={profile.profileImage || 'https://via.placeholder.com/150'}
-                            alt={profile.name}
-                            className="w-full h-full rounded-full border-4 border-white dark:border-gray-900 object-cover"
-                        />
+                        {profile.profileImage ? (
+                            <img
+                                src={profile.profileImage}
+                                alt={profile.name}
+                                className="w-full h-full rounded-full border-4 border-white dark:border-gray-900 object-cover"
+                            />
+                        ) : (
+                            <img
+                                src={defaultUser}
+                                alt="Default Profile"
+                                className="w-full h-full rounded-full border-4 border-white dark:border-gray-900 object-cover"
+                            />
+                        )}
                     </div>
 
                     {/* Info */}
@@ -188,11 +197,17 @@ const SellerProfile = () => {
                                     onClick={() => setSelectedPost(post)}
                                     className="aspect-square relative group cursor-pointer overflow-hidden bg-gray-100 dark:bg-gray-800"
                                 >
-                                    <img
-                                        src={post.thumbnail || 'https://via.placeholder.com/300'}
-                                        alt={post.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                    />
+                                    {post.thumbnail ? (
+                                        <img
+                                            src={post.thumbnail}
+                                            alt={post.name}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+                                            <Image size={32} className="text-gray-400 dark:text-gray-500" />
+                                        </div>
+                                    )}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold gap-4 backdrop-blur-sm">
                                         <div className="flex items-center gap-1"><Heart className="fill-white" size={18} /> {post.likes || 0}</div>
                                         <div className="flex items-center gap-1"><MessageCircle className="fill-white" size={18} /> {post.comments || 0}</div>

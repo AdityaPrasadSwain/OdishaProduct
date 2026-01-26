@@ -1,30 +1,50 @@
 import React, { useState } from 'react';
-import { createProductStep1 } from '../../../../api/productWizardApi';
+import { createProductStep1, updateProductBasic } from '../../../../api/productWizardApi';
+import { useProductContext } from '../../../../context/ProductContext';
 
 const BasicInfo = ({ onNext }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        description: '',
-        categoryId: 'ef9b5636-2244-486a-b286-64cc1c641886', // Example/Default UUID
-        material: '',
-        color: '',
-        size: '',
-        origin: '',
-        packOf: '1'
-    });
+    const { productData, updateProductData, productId } = useProductContext();
     const [loading, setLoading] = useState(false);
 
-    const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+    const handleChange = (e) => {
+        updateProductData(e.target.name, e.target.value);
+    };
+
+    const InputGroup = ({ label, name, required = false, placeholder = "" }) => (
+        <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
+            <input
+                name={name}
+                required={required}
+                value={productData[name] ?? ''}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 focus:bg-white"
+                placeholder={placeholder}
+            />
+        </div>
+    );
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         try {
-            const res = await createProductStep1(formData);
-            if (res && res.id) {
-                onNext(res.id);
+            const dataPayload = {
+                name: productData.name,
+                description: productData.description,
+                categoryId: productData.categoryId,
+                material: productData.material,
+                color: productData.color,
+                size: productData.size,
+                origin: productData.origin,
+                packOf: productData.packOf
+            };
+
+            if (productId) {
+                await updateProductBasic(productId, dataPayload);
+                onNext(productId);
             } else {
-                throw new Error("Invalid response from server");
+                const res = await createProductStep1(dataPayload);
+                onNext(res.id);
             }
         } catch (err) {
             console.error(err);
@@ -34,23 +54,8 @@ const BasicInfo = ({ onNext }) => {
         }
     };
 
-    const InputGroup = ({ label, name, type = "text", required = false, placeholder = "" }) => (
-        <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
-            <input
-                type={type}
-                name={name}
-                required={required}
-                value={formData[name]}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-gray-400 bg-gray-50 focus:bg-white"
-                placeholder={placeholder}
-            />
-        </div>
-    );
-
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                     <InputGroup label="Product Name" name="name" required placeholder="e.g. Handwoven Sambalpuri Saree" />
@@ -62,7 +67,7 @@ const BasicInfo = ({ onNext }) => {
                         name="description"
                         rows="4"
                         onChange={handleChange}
-                        value={formData.description}
+                        value={productData.description ?? ''}
                         className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-gray-400 bg-gray-50 focus:bg-white resize-none"
                         placeholder="Detailed description about the product..."
                     />

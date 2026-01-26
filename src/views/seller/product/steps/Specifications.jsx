@@ -1,25 +1,36 @@
 import React, { useState } from 'react';
 import { updateSpecsStep4 } from '../../../../api/productWizardApi';
+import { useProductContext } from '../../../../context/ProductContext';
 
-const Specifications = ({ productId, onNext, onBack }) => {
-    const [specs, setSpecs] = useState([{ key: '', value: '' }]);
+const Specifications = ({ onNext, onBack }) => {
+    const { productData, updateProductData, productId } = useProductContext();
     const [loading, setLoading] = useState(false);
 
-    const handleAdd = () => setSpecs([...specs, { key: '', value: '' }]);
-    const handleRemove = (i) => setSpecs(specs.filter((_, idx) => idx !== i));
+    // Unlike simple fields, specs is an array. We need local manipulation then sync to context or direct context manipulation?
+    // Direct manipulation of context array is cleaner.
+
+    // Helper to get specs safe
+    const specs = productData.specifications || [];
+
+    const handleAdd = () => {
+        const newSpecs = [...specs, { key: '', value: '' }];
+        updateProductData('specifications', newSpecs);
+    };
+
+    const handleRemove = (i) => {
+        const newSpecs = specs.filter((_, idx) => idx !== i);
+        updateProductData('specifications', newSpecs);
+    };
 
     const handleChange = (i, field, val) => {
         const newSpecs = [...specs];
-        newSpecs[i][field] = val;
-        setSpecs(newSpecs);
+        newSpecs[i] = { ...newSpecs[i], [field]: val };
+        updateProductData('specifications', newSpecs);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const validSpecs = specs.filter(s => s.key.trim() && s.value.trim());
-
-        // Allow finishing even if empty? Usually optional. 
-        // But let's send what we have.
+        const validSpecs = specs.filter(s => s.key && s.key.trim() && s.value && s.value.trim());
 
         setLoading(true);
         try {
@@ -44,7 +55,7 @@ const Specifications = ({ productId, onNext, onBack }) => {
                     <div key={idx} className="flex gap-4 items-start">
                         <div className="flex-1">
                             <input
-                                value={spec.key}
+                                value={spec.key ?? ''}
                                 onChange={(e) => handleChange(idx, 'key', e.target.value)}
                                 placeholder="Attribute (e.g. Care Instructions)"
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white"
@@ -52,7 +63,7 @@ const Specifications = ({ productId, onNext, onBack }) => {
                         </div>
                         <div className="flex-1">
                             <input
-                                value={spec.value}
+                                value={spec.value ?? ''}
                                 onChange={(e) => handleChange(idx, 'value', e.target.value)}
                                 placeholder="Value (e.g. Dry Clean Only)"
                                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 focus:bg-white"

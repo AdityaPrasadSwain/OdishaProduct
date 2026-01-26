@@ -23,31 +23,6 @@ public class SettlementService {
     @Autowired
     private PlatformWalletService platformWalletService;
 
-    @Autowired
-    private com.odisha.handloom.logistics.repository.AgentEarningRepository agentEarningRepository;
-
-    public com.odisha.handloom.logistics.entity.AgentEarning payAgent(UUID earningId, String transactionRef) {
-        com.odisha.handloom.logistics.entity.AgentEarning earning = agentEarningRepository.findById(earningId)
-                .orElseThrow(() -> new RuntimeException("Earning record not found"));
-
-        if (earning.getStatus() == com.odisha.handloom.logistics.entity.AgentEarning.EarningStatus.PAID) {
-            throw new RuntimeException("Agent earning already paid");
-        }
-
-        // Debit Platform Wallet
-        platformWalletService.debit(
-                earning.getAmount(),
-                com.odisha.handloom.finance.entity.WalletTransaction.TransactionSource.AGENT_PAYOUT,
-                earning.getId().toString(),
-                "Payout for Agent Earning #" + earning.getId() + " (Ref: " + transactionRef + ")");
-
-        earning.setStatus(com.odisha.handloom.logistics.entity.AgentEarning.EarningStatus.PAID);
-        earning.setTransactionRef(transactionRef);
-        earning.setPaidAt(LocalDateTime.now());
-
-        return agentEarningRepository.save(earning);
-    }
-
     private static final BigDecimal PLATFORM_FEE_PERCENTAGE = new BigDecimal("0.05"); // 5%
     private static final BigDecimal TAX_PERCENTAGE = new BigDecimal("0.18"); // 18% on Fee
 

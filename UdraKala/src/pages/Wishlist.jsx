@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion as Motion } from 'motion/react';
 import { useWishlist } from '../context/WishlistContext';
 import { useData } from '../context/DataContext';
-import { ShoppingCart, Trash2, Heart } from 'lucide-react';
+import { ShoppingCart, Trash2, Heart, Image } from 'lucide-react';
 import ProductCardSkeleton from '../components/skeletons/ProductCardSkeleton';
 
 const Wishlist = () => {
@@ -64,11 +64,17 @@ const Wishlist = () => {
                         >
                             <div className="relative h-64 overflow-hidden">
                                 <Link to={`/product/${product.id}`}>
-                                    <img
-                                        src={product.images?.[0]?.imageUrl || 'https://via.placeholder.com/400'}
-                                        alt={product.name}
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                    />
+                                    {product.images?.[0]?.imagePath ? (
+                                        <img
+                                            src={product.images[0].imagePath}
+                                            alt={product.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                                            <Image size={40} className="text-gray-300 dark:text-gray-500" />
+                                        </div>
+                                    )}
                                 </Link>
                                 <button
                                     onClick={() => removeFromWishlist(product.id)}

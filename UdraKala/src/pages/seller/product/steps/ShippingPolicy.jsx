@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { updatePolicyStep5 } from '../../../../api/productWizardApi';
 
 const Checkbox = ({ label, name, checked, onChange }) => (
@@ -11,7 +12,7 @@ const Checkbox = ({ label, name, checked, onChange }) => (
     </div>
 );
 
-const ShippingPolicy = ({ productId, onSubmit, onBack }) => {
+const ShippingPolicy = ({ productId, onSubmit, onBack, initialData }) => {
     const [formData, setFormData] = useState({
         dispatchDays: '',
         returnAvailable: false,
@@ -20,6 +21,18 @@ const ShippingPolicy = ({ productId, onSubmit, onBack }) => {
         cancellationAvailable: true
     });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                dispatchDays: initialData.dispatchDays || '',
+                returnAvailable: initialData.returnAvailable || false,
+                returnWindowDays: initialData.returnWindowDays || '',
+                returnPolicyDescription: initialData.returnPolicyDescription || '',
+                cancellationAvailable: initialData.cancellationAvailable !== undefined ? initialData.cancellationAvailable : true
+            });
+        }
+    }, [initialData]);
 
     const handleChange = (e) => {
         const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -33,7 +46,11 @@ const ShippingPolicy = ({ productId, onSubmit, onBack }) => {
             await updatePolicyStep5(productId, formData);
             onSubmit(); // Trigger publish in parent
         } catch (err) {
-            alert("Failed to update policy: " + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: err.message || 'Failed to update shipping policy',
+            });
             setLoading(false); // Only stop loading if failed, else parent handles
         }
     };

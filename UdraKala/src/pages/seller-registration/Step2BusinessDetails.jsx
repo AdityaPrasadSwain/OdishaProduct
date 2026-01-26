@@ -37,17 +37,17 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
     return (
         <form onSubmit={handleNext} className="space-y-4">
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">Business Details</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">Business Details</h2>
 
             {/* Business Name */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700">Business Name</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Business Name</label>
                 <input
                     type="text"
                     name="businessName"
                     value={sellerData.businessName}
                     onChange={handleChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="e.g. My Handloom Store"
                 />
                 {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
@@ -55,12 +55,12 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
             {/* Business Type */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700">Business Type</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Business Type</label>
                 <select
                     name="businessType"
                     value={sellerData.businessType}
                     onChange={handleChange}
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 >
                     <option value="">Select Type</option>
                     <option value="Individual">Individual / Proprietor</option>
@@ -74,13 +74,13 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
             {/* Address */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700">Address</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Address</label>
                 <textarea
                     name="address"
                     value={sellerData.address}
                     onChange={handleChange}
                     rows="2"
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="Street, Sector, Building..."
                 ></textarea>
                 {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
@@ -89,12 +89,12 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
             <div className="grid grid-cols-2 gap-4">
                 {/* State */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700">State</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">State</label>
                     <select
                         name="state"
                         value={sellerData.state}
                         onChange={handleChange}
-                        className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white"
+                        className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                     >
                         <option value="">Select State</option>
                         <option value="Odisha">Odisha</option>
@@ -105,13 +105,13 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
                 {/* City */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700">City / District</label>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">City / District</label>
                     <input
                         type="text"
                         name="city"
                         value={sellerData.city}
                         onChange={handleChange}
-                        className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                        className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                         placeholder="e.g. Bhubaneswar"
                     />
                     {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
@@ -120,14 +120,14 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
             {/* Pincode */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700">Pincode</label>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Pincode</label>
                 <input
                     type="text"
                     name="pincode"
                     value={sellerData.pincode}
                     onChange={handleChange}
                     maxLength="6"
-                    className="w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="751000"
                 />
                 {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
@@ -137,7 +137,7 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
                 <button
                     type="button"
                     onClick={onPrev}
-                    className="w-1/2 py-3 bg-gray-200 text-gray-800 rounded-lg font-bold hover:bg-gray-300 transition"
+                    className="w-1/2 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
                 >
                     Back
                 </button>

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
-import { getSellerOrders, updateOrderStatus, sendSellerInvoice, acceptOrder, rejectOrder, downloadShippingLabel, downloadBulkShippingLabels, requestDeliveryProof, getDeliveryProof, getSellerProofRequests } from '../../api/orderApi';
+import { getSellerOrders, updateOrderStatus, sendSellerInvoice, acceptOrder, rejectOrder, downloadShippingLabel, downloadBulkShippingLabels } from '../../api/orderApi';
+import { shiprocketApi } from '../../api/shiprocketApi';
+import TrackingStatus from '../../components/orders/TrackingStatus';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import Swal from 'sweetalert2';
 import { Edit2, Package, Truck, AlertTriangle, FileText, CheckCircle, XCircle, Clock, Printer, Eye } from 'lucide-react';
@@ -15,7 +17,7 @@ const SellerOrders = () => {
     const [updateForm, setUpdateForm] = useState({ status: '', courierName: '', trackingId: '' });
     const [packingOrderId, setPackingOrderId] = useState(null);
     const [selectedOrders, setSelectedOrders] = useState([]);
-    const [proofRequests, setProofRequests] = useState({}); // Map: shipmentId -> request
+
 
     // Derive packing order from latest orders list to prevent stale state
     const packingOrder = orders.find(o => o.id === packingOrderId) || null;
@@ -28,22 +30,7 @@ const SellerOrders = () => {
             const sorted = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             setOrders(sorted);
 
-            // Fetch Proof Requests
-            try {
-                const reqs = await getSellerProofRequests();
-                const reqMap = {};
-                reqs.forEach(r => {
-                    if (r.orderId) {
-                        reqMap[r.orderId] = r;
-                    } else {
-                        // Fallback for old records or checks
-                        reqMap[r.shipmentId] = r;
-                    }
-                });
-                setProofRequests(reqMap);
-            } catch (e) {
-                console.error("Failed to fetch proof requests", e);
-            }
+
         } catch (error) {
             console.error("Failed to fetch orders", error);
         } finally {
@@ -164,52 +151,34 @@ const SellerOrders = () => {
         }
     };
 
-    const handleRequestProof = async (shipmentId) => {
-        const { value: reason } = await Swal.fire({
-            title: 'Request Delivery Proof',
-            input: 'text',
-            inputLabel: 'Reason for request',
-            inputPlaceholder: 'e.g. Customer claims not received',
-            showCancelButton: true,
-            inputValidator: (value) => {
-                if (!value) {
-                    return 'You need to write a reason!'
-                }
-            }
-        });
 
-        if (reason) {
-            try {
-                Swal.showLoading();
-                await requestDeliveryProof(shipmentId, reason);
-                Swal.fire('Requested', 'Your request has been sent to admin.', 'success');
-                fetchOrders(); // Refresh to update map
-            } catch (error) {
-                console.error("Proof request failed:", error);
-                const msg = error.response?.data?.message || (typeof error.response?.data === 'string' ? error.response.data : 'Failed to request proof');
-                Swal.fire('Error', msg, 'error');
-            }
+
+    // Shiprocket Handlers
+    const handleShiprocketSync = async (orderId) => {
+        try {
+            Swal.showLoading();
+            await shiprocketApi.syncOrder(orderId);
+            Swal.fire('Success', 'Order synced to Shiprocket!', 'success');
+            fetchOrders();
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Failed to sync with Shiprocket', 'error');
         }
     };
 
-    const handleViewProof = async (shipmentId) => {
+    const handleShiprocketLabel = async (shipmentId) => {
         try {
             Swal.showLoading();
-            const proofs = await getDeliveryProof(shipmentId);
-            if (proofs && proofs.length > 0) {
-                Swal.fire({
-                    title: 'Delivery Proof',
-                    imageUrl: proofs[0].imageUrl,
-                    imageAlt: 'Delivery Proof',
-                    width: 600,
-                    showCloseButton: true,
-                    showConfirmButton: false
-                });
+            const url = await shiprocketApi.generateLabel(shipmentId);
+            if (url) {
+                window.open(url, '_blank');
+                Swal.close();
             } else {
-                Swal.fire('Info', 'No proof image available yet', 'info');
+                Swal.fire('Error', 'Label URL not found', 'error');
             }
         } catch (error) {
-            Swal.fire('Error', 'Failed to fetch proof', 'error');
+            console.error(error);
+            Swal.fire('Error', 'Failed to generate label', 'error');
         }
     };
 
@@ -432,6 +401,10 @@ const SellerOrders = () => {
                                                         }`}>
                                                         {order.status.replace(/_/g, ' ')}
                                                     </span>
+                                                    {/* Shiprocket Tracking */}
+                                                    {order.awbCode && (
+                                                        <TrackingStatus awb={order.awbCode} currentStatus={order.trackingStatus || order.status} />
+                                                    )}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <div className="flex justify-end gap-2">
@@ -501,59 +474,6 @@ const SellerOrders = () => {
                                                                     <Edit2 size={18} />
                                                                 </button>
                                                             </>
-                                                        )}
-
-                                                        {activeTab === 'completed' && order.status === 'DELIVERED' && (
-                                                            // Logic for Proof Button
-                                                            (() => {
-                                                                // Assume first shipment for order (simplification)
-                                                                // Ideally order has shipmentId linkage. 
-                                                                // If order items have shipmentId, use that.
-                                                                // But here we might not have shipmentId directly on order object in this view?
-                                                                // Let's assume order.id IS the shipmentId for now or there's a field.
-                                                                // Inspecting `Order` entity: it doesn't have shipmentId directly (OneToMany items).
-                                                                // BUT `DeliveryProof` has shipmentId.
-                                                                // My `getSellerOrders` returns List<Order>.
-                                                                // Does Order have shipmentId? No.
-                                                                // However, often `orderId` ~ `shipmentId` in simple flows, or `Order` has `shipments` list.
-                                                                // If I don't have shipmentId, I can't request proof.
-                                                                // Let's assume for this MVP that the primary shipment ID is available or we find it.
-                                                                // Let's try to pass `order.id` if we can't find shipmentId, but `SellerProofController` requires `shipmentId`.
-                                                                // Let's check `SellerProofController`. It expects `shipmentId`.
-                                                                // If I don't have it, I'm blocked.
-                                                                // BUT, `AgentShipmentModal` used `shipment.id`. 
-                                                                // Where does `shipment` come from? `getAgentOrders` returns shipments?
-                                                                // Yes. `getSellerOrders` returns Orders.
-                                                                // I might need to fetch shipments for the order.
-                                                                // Use `order.id` as `shipmentId` for now, assuming 1 order = 1 active shipment.
-                                                                // Or `order.shipmentId` if I added it (I see `shipmentId` in `DeliveryProof` entity). 
-                                                                // `DeliveryAgentService` uses `shipmentId`.
-                                                                // Let's try attempting to find a shipment ID.
-                                                                // For now, I will use `order.id` and if it fails, I'll know I need to expose shipment ID.
-
-                                                                const shipmentId = order.id; // Provisional
-                                                                const req = proofRequests[shipmentId];
-
-                                                                if (req && req.status === 'APPROVED') {
-                                                                    return (
-                                                                        <button onClick={() => handleViewProof(shipmentId)} className="text-green-600 p-1 hover:bg-green-50 rounded" title="View Proof">
-                                                                            <Eye size={18} />
-                                                                        </button>
-                                                                    );
-                                                                } else if (req) {
-                                                                    return (
-                                                                        <span className={`text-xs px-2 py-1 rounded ${req.status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                                                            {req.status === 'PENDING' ? 'Req Pending' : 'Req Rejected'}
-                                                                        </span>
-                                                                    );
-                                                                } else {
-                                                                    return (
-                                                                        <button onClick={() => handleRequestProof(shipmentId)} className="text-blue-600 text-xs px-2 py-1 hover:bg-blue-50 rounded border border-blue-200" title="Request Proof">
-                                                                            Request Proof
-                                                                        </button>
-                                                                    );
-                                                                }
-                                                            })()
                                                         )}
                                                     </div>
                                                 </td>

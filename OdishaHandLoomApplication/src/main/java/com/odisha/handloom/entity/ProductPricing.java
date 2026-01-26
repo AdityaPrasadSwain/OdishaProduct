@@ -1,22 +1,24 @@
 package com.odisha.handloom.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
 @Table(name = "product_pricing")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@lombok.Getter
+@lombok.Setter
+@lombok.Builder
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
+@lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@lombok.ToString(onlyExplicitlyIncluded = true)
 public class ProductPricing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @lombok.EqualsAndHashCode.Include
+    @lombok.ToString.Include
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)

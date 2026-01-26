@@ -266,36 +266,4 @@ public class AdminController {
             return ResponseEntity.badRequest().body(new MessageResponse("Failed to send email: " + e.getMessage()));
         }
     }
-
-    @GetMapping("/agents")
-    public List<User> getAllAgents() {
-        return userRepository.findAll().stream()
-                .filter(user -> user.getRole() == Role.DELIVERY_AGENT && !user.isDeleted())
-                .collect(Collectors.toList());
-    }
-
-    @Autowired
-    org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
-
-    @PostMapping("/agents")
-    public ResponseEntity<?> createAgent(@RequestBody com.odisha.handloom.payload.request.SignupRequest signUpRequest) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-        }
-
-        User user = new User(signUpRequest.getEmail(), // Use email as username
-                signUpRequest.getEmail(),
-                passwordEncoder.encode(signUpRequest.getPassword()));
-
-        user.setFullName(signUpRequest.getFullName());
-        user.setPhoneNumber(signUpRequest.getPhoneNumber());
-        user.setRole(Role.DELIVERY_AGENT);
-        user.setApproved(true);
-        user.setBlocked(false);
-        user.setRegistrationStatus(com.odisha.handloom.entity.RegistrationStatus.COMPLETED); // Auto-approve
-
-        userRepository.save(user);
-
-        return ResponseEntity.ok(new MessageResponse("Delivery Agent registered successfully!"));
-    }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 public class ProductService {
@@ -29,5 +30,9 @@ public class ProductService {
         product.setTotalReviews(count != null ? count.intValue() : 0);
 
         return product;
+    }
+
+    public List<Product> getAllActiveProducts() {
+        return productRepository.findByStatus(com.odisha.handloom.enums.ProductStatus.ACTIVE);
     }
 }

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import { updatePricingStep2 } from '../../../../api/productWizardApi';
 
 const InputGroup = ({ label, name, type = "number", required = false, placeholder = "", value, onChange }) => (
@@ -22,7 +23,7 @@ const InputGroup = ({ label, name, type = "number", required = false, placeholde
     </div>
 );
 
-const PricingStock = ({ productId, onNext, onBack }) => {
+const PricingStock = ({ productId, onNext, onBack, initialData }) => {
     const [formData, setFormData] = useState({
         price: '',
         discountPrice: '',
@@ -32,6 +33,19 @@ const PricingStock = ({ productId, onNext, onBack }) => {
         isCodAvailable: true
     });
     const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData({
+                price: initialData.price || '',
+                discountPrice: initialData.discountPrice || '',
+                stockQuantity: initialData.stockQuantity || '',
+                minOrderQuantity: initialData.minOrderQuantity || 1,
+                maxOrderQuantity: initialData.maxOrderQuantity || 10,
+                isCodAvailable: initialData.isCodAvailable !== undefined ? initialData.isCodAvailable : true
+            });
+        }
+    }, [initialData]);
 
     const handleChange = (e) => {
         const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -45,7 +59,11 @@ const PricingStock = ({ productId, onNext, onBack }) => {
             await updatePricingStep2(productId, formData);
             onNext();
         } catch (err) {
-            alert("Failed to update pricing: " + err.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: err.message || 'Failed to update pricing information',
+            });
         } finally {
             setLoading(false);
         }

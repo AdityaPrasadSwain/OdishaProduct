@@ -164,7 +164,7 @@ public class SellerAnalyticsController {
 
                     String thumbnailUrl = null;
                     if (reel.getImages() != null && !reel.getImages().isEmpty()) {
-                        thumbnailUrl = reel.getImages().get(0).getImageUrl();
+                        thumbnailUrl = reel.getImages().get(0).getImagePath();
                     }
 
                     // Fallback to Cloudinary thumbnail generation

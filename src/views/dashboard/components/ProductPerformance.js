@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Typography, Box,
     Table,
@@ -6,57 +6,41 @@ import {
     TableCell,
     TableHead,
     TableRow,
-    Chip
+    Chip,
+    Button
 } from '@mui/material';
 import DashboardCard from '../../../components/shared/DashboardCard';
-
-const products = [
-    {
-        id: "1",
-        name: "Sunil Joshi",
-        post: "Web Designer",
-        pname: "Elite Admin",
-        priority: "Low",
-        pbg: "primary.main",
-        budget: "3.9",
-    },
-    {
-        id: "2",
-        name: "Andrew McDownland",
-        post: "Project Manager",
-        pname: "Real Homes WP Theme",
-        priority: "Medium",
-        pbg: "secondary.main",
-        budget: "24.5",
-    },
-    {
-        id: "3",
-        name: "Christopher Jamil",
-        post: "Project Manager",
-        pname: "MedicalPro WP Theme",
-        priority: "High",
-        pbg: "error.main",
-        budget: "12.8",
-    },
-    {
-        id: "4",
-        name: "Nirav Joshi",
-        post: "Frontend Engineer",
-        pname: "Hosting Press HTML",
-        priority: "Critical",
-        pbg: "success.main",
-        budget: "2.4",
-    },
-];
-
+import { getMyProducts } from '../../../api/productWizardApi';
+import { useNavigate } from 'react-router';
 
 const ProductPerformance = () => {
-    return (
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-        <DashboardCard title="Product Performance">
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await getMyProducts();
+                setProducts(data);
+            } catch (error) {
+                console.error("Failed to load products", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const handleEdit = (id) => {
+        navigate(`/seller/products/edit/${id}`);
+    };
+
+    return (
+        <DashboardCard title="Product List">
             <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
                 <Table
-                    aria-label="simple table"
+                    aria-label="products table"
                     sx={{
                         whiteSpace: "nowrap",
                         mt: 2
@@ -66,87 +50,93 @@ const ProductPerformance = () => {
                         <TableRow>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Id
+                                    Product Name
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Assigned
+                                    Price
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Name
+                                    Category
                                 </Typography>
                             </TableCell>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Priority
+                                    Status
                                 </Typography>
                             </TableCell>
                             <TableCell align="right">
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Budget
+                                    Stock
+                                </Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    Action
                                 </Typography>
                             </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product) => (
-                            <TableRow key={product.name}>
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={6} align="center">Loading...</TableCell>
+                            </TableRow>
+                        ) : products.map((product) => (
+                            <TableRow key={product.id}>
                                 <TableCell>
-                                    <Typography
-                                        sx={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
-                                        }}
-                                    >
-                                        {product.id}
+                                    <Typography variant="subtitle2" fontWeight={600}>
+                                        {product.name}
+                                    </Typography>
+                                    <Typography color="textSecondary" variant="caption">
+                                        ID: {product.id}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={600}>
-                                                {product.name}
-                                            </Typography>
-                                            <Typography
-                                                color="textSecondary"
-                                                sx={{
-                                                    fontSize: "13px",
-                                                }}
-                                            >
-                                                {product.post}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
+                                    <Typography variant="subtitle2" fontWeight={400}>
+                                        ₹{product.price}
+                                    </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {product.pname}
+                                    <Typography variant="subtitle2" fontWeight={400}>
+                                        {product.category ? product.category.name : 'N/A'}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Chip
                                         sx={{
-                                            px: "4px",
-                                            backgroundColor: product.pbg,
-                                            color: "#fff",
+                                            bgcolor: product.status === 'ACTIVE' ? 'success.light' :
+                                                product.status === 'DRAFT' ? 'warning.light' : 'error.light',
+                                            color: product.status === 'ACTIVE' ? 'success.main' :
+                                                product.status === 'DRAFT' ? 'warning.main' : 'error.main',
                                         }}
                                         size="small"
-                                        label={product.priority}
-                                    ></Chip>
+                                        label={product.status}
+                                    />
                                 </TableCell>
                                 <TableCell align="right">
-                                    <Typography variant="h6">${product.budget}k</Typography>
+                                    <Typography variant="h6">{product.stockQuantity || 0}</Typography>
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        color="primary"
+                                        onClick={() => handleEdit(product.id)}
+                                    >
+                                        Edit
+                                    </Button>
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {!loading && products.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={6} align="center">No products found.</TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </Box>
