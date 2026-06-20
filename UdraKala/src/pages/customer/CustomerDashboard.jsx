@@ -87,20 +87,20 @@ const CustomerDashboard = () => {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-dark dark:text-white">Welcome back, {user?.fullName}</h2>
+                    <h2 className="text-2xl font-bold text-dark dark:text-text-onDark">Welcome back, {user?.fullName}</h2>
                     <p className="text-muted text-sm">Manage your orders and preferences</p>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto w-fit">
+                <div className="flex bg-bg-surface dark:bg-bg-dark p-1 rounded-lg border border-border dark:border-border shadow-sm overflow-x-auto w-fit">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap
                                 ${activeTab === tab.id
-                                    ? 'bg-primary text-white shadow-md'
-                                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
+                                    ? 'bg-primary text-text-onDark shadow-md'
+                                    : 'text-text-secondary hover:text-text-primary dark:text-text-secondary dark:hover:text-text-onDark hover:bg-bg-band dark:hover:bg-bg-dark'
                                 }`}
                         >
                             <tab.icon size={16} /> {tab.label}
@@ -113,7 +113,7 @@ const CustomerDashboard = () => {
                 {/* Main Content */}
                 <div className="lg:col-span-3 space-y-6">
                     {activeTab === 'reels' && (
-                        <div className="fixed inset-0 z-50 bg-black">
+                        <div className="fixed inset-0 z-50 bg-bg-dark">
                             {/* Force full screen overlay for reels when tab is active */}
                             <WatchReels isEmbedded={true} onClose={() => setActiveTab('orders')} />
                         </div>
@@ -124,11 +124,11 @@ const CustomerDashboard = () => {
                             {myOrders.length === 0 ? (
                                 <Card className="text-center py-12">
                                     <div className="flex flex-col items-center">
-                                        <div className="h-16 w-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
-                                            <Package className="h-8 w-8 text-gray-400 ml-4" />
+                                        <div className="h-16 w-16 bg-bg-band dark:bg-bg-dark rounded-full flex items-center justify-center mb-4">
+                                            <Package className="h-8 w-8 text-text-secondary ml-4" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">No orders yet</h3>
-                                        <p className="text-gray-500 dark:text-gray-400 mt-1 mb-6">Start shopping to see your orders here.</p>
+                                        <h3 className="text-lg font-semibold text-text-primary dark:text-text-onDark">No orders yet</h3>
+                                        <p className="text-text-secondary dark:text-text-secondary mt-1 mb-6">Start shopping to see your orders here.</p>
                                         <Link to="/products">
                                             <Button>Browse Products</Button>
                                         </Link>
@@ -138,16 +138,16 @@ const CustomerDashboard = () => {
                                 <div className="space-y-4">
                                     {myOrders.map(order => (
                                         <Card key={order.id} className="group hover:border-primary/50 transition-colors">
-                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 pb-4 border-b border-gray-100 dark:border-gray-700 gap-4">
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 pb-4 border-b border-border dark:border-border gap-4">
                                                 <div>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="font-bold text-gray-900 dark:text-white">Order #{order.id.toString().slice(0, 8)}</span>
+                                                        <span className="font-bold text-text-primary dark:text-text-onDark">Order #{order.id.toString().slice(0, 8)}</span>
                                                         {(() => {
                                                             const statusObj = getOrderStatus(order);
                                                             return <Badge variant={statusObj.variant}>{statusObj.label}</Badge>;
                                                         })()}
                                                     </div>
-                                                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                    <div className="flex items-center gap-3 mt-1 text-xs text-text-secondary dark:text-text-secondary">
                                                         <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(order.createdAt).toLocaleDateString()}</span>
                                                         <span className="flex items-center gap-1"><Clock size={12} /> {new Date(order.createdAt).toLocaleTimeString()}</span>
                                                     </div>
@@ -160,17 +160,17 @@ const CustomerDashboard = () => {
 
                                             <div className="space-y-3">
                                                 {order.orderItems?.map((item, idx) => (
-                                                    <div key={idx} className="flex items-center justify-between text-sm py-2 px-3 bg-gray-50 dark:bg-gray-700/30 rounded-lg">
+                                                    <div key={idx} className="flex items-center justify-between text-sm py-2 px-3 bg-bg-page dark:bg-bg-dark/30 rounded-lg">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-10 w-10 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
+                                                            <div className="h-10 w-10 rounded bg-bg-surface dark:bg-bg-dark border border-border dark:border-border flex items-center justify-center overflow-hidden">
                                                                 <img src={item.product?.images?.[0]?.imageUrl || item.product?.imageUrl || '/placeholder.png'} className="h-full w-full object-cover" />
                                                             </div>
                                                             <div>
-                                                                <p className="font-medium text-gray-900 dark:text-white line-clamp-1">{item.product?.name || getProductName(item.productId)}</p>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</p>
+                                                                <p className="font-medium text-text-primary dark:text-text-onDark line-clamp-1">{item.product?.name || getProductName(item.productId)}</p>
+                                                                <p className="text-xs text-text-secondary dark:text-text-secondary">Qty: {item.quantity}</p>
                                                             </div>
                                                         </div>
-                                                        <span className="font-semibold text-gray-900 dark:text-white">₹{item.price * item.quantity}</span>
+                                                        <span className="font-semibold text-text-primary dark:text-text-onDark">₹{item.price * item.quantity}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -203,7 +203,7 @@ const CustomerDashboard = () => {
                                                 </Link>
                                                 <button
                                                     onClick={() => removeFromWishlist(product.id)}
-                                                    className="absolute top-2 right-2 p-2 bg-white/90 dark:bg-gray-800/90 rounded-full text-red-500 hover:bg-red-50 transition-colors shadow-sm"
+                                                    className="absolute top-2 right-2 p-2 bg-bg-surface/90 dark:bg-bg-dark/90 rounded-full text-status-error hover:bg-red-50 transition-colors shadow-sm"
                                                     title="Remove from wishlist"
                                                 >
                                                     <Trash2 size={16} />
@@ -211,7 +211,7 @@ const CustomerDashboard = () => {
                                             </div>
                                             <div className="p-4">
                                                 <Link to={`/product/${product.id}`}>
-                                                    <h3 className="font-bold text-gray-900 dark:text-white hover:text-primary transition-colors mb-2 truncate">
+                                                    <h3 className="font-bold text-text-primary dark:text-text-onDark hover:text-primary transition-colors mb-2 truncate">
                                                         {product.name}
                                                     </h3>
                                                 </Link>
@@ -219,7 +219,7 @@ const CustomerDashboard = () => {
                                                     <span className="font-bold text-primary">₹{product.discountPrice || product.price}</span>
                                                     <button
                                                         onClick={() => addToCart(product)}
-                                                        className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-white transition-colors"
+                                                        className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary hover:text-text-onDark transition-colors"
                                                         title="Add to cart"
                                                     >
                                                         <ShoppingCart size={18} />
@@ -232,10 +232,10 @@ const CustomerDashboard = () => {
                             ) : (
                                 <Card className="text-center py-16">
                                     <div className="flex flex-col items-center">
-                                        <div className="h-20 w-20 bg-red-50 dark:bg-red-500/10 rounded-full flex items-center justify-center mb-6">
+                                        <div className="h-20 w-20 bg-red-50 dark:bg-status-error/10 rounded-full flex items-center justify-center mb-6">
                                             <Heart size={32} className="text-danger" />
                                         </div>
-                                        <h3 className="text-xl font-bold text-dark dark:text-white">Your wishlist is empty</h3>
+                                        <h3 className="text-xl font-bold text-dark dark:text-text-onDark">Your wishlist is empty</h3>
                                         <p className="text-muted mt-2 mb-8 max-w-md mx-auto">Heart items you love to save them for later!</p>
                                         <Link to="/products">
                                             <Button>Explore Products</Button>
@@ -255,20 +255,20 @@ const CustomerDashboard = () => {
 
                 {/* Right Sidebar: Recommendations */}
                 <div className="lg:col-span-1 space-y-6">
-                    <Card title="Recommended" className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-dark-light dark:to-dark border-orange-100 dark:border-dark-light">
+                    <Card title="Recommended" className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-dark-light dark:to-dark border-primary dark:border-dark-light">
                         <div className="space-y-4">
                             {recommendedProducts.map((p, i) => (
                                 <Link to={`/product/${p.id}`} key={p.id} className="block group">
-                                    <div className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/60 dark:hover:bg-dark/60 transition-colors">
-                                        <div className="h-12 w-12 rounded-md bg-white overflow-hidden shadow-sm flex-shrink-0">
+                                    <div className="flex gap-3 items-center p-2 rounded-lg hover:bg-bg-surface/60 dark:hover:bg-dark/60 transition-colors">
+                                        <div className="h-12 w-12 rounded-md bg-bg-surface overflow-hidden shadow-sm flex-shrink-0">
                                             <img src={p.images?.[0]?.imagePath || '/placeholder.png'} className="h-full w-full object-cover" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium text-sm text-dark dark:text-white truncate group-hover:text-primary transition-colors">{p.name}</p>
+                                            <p className="font-medium text-sm text-dark dark:text-text-onDark truncate group-hover:text-primary transition-colors">{p.name}</p>
                                             <p className="text-xs text-primary font-bold">₹{p.price}</p>
                                         </div>
                                     </div>
-                                    {i < recommendedProducts.length - 1 && <div className="h-px bg-black/5 dark:bg-white/5 my-2" />}
+                                    {i < recommendedProducts.length - 1 && <div className="h-px bg-bg-dark/5 dark:bg-bg-surface/5 my-2" />}
                                 </Link>
                             ))}
                             {recommendedProducts.length === 0 && <p className="text-sm text-muted">No recommendations available.</p>}
@@ -278,10 +278,10 @@ const CustomerDashboard = () => {
                     <Card className="bg-primary/5 border-primary/10">
                         <div className="text-center p-4">
                             <Sparkles className="h-8 w-8 text-primary mx-auto mb-2" />
-                            <h4 className="font-bold text-dark dark:text-white">Become a Seller!</h4>
+                            <h4 className="font-bold text-dark dark:text-text-onDark">Become a Seller!</h4>
                             <p className="text-xs text-muted mt-1 mb-3">Sell your own products on UdraKala and reach millions.</p>
                             <Link to="/register?role=seller">
-                                <Button size="sm" variant="outline" className="w-full bg-white dark:bg-dark hover:bg-gray-50">Register as Seller</Button>
+                                <Button size="sm" variant="outline" className="w-full bg-bg-surface dark:bg-dark hover:bg-bg-page">Register as Seller</Button>
                             </Link>
                         </div>
                     </Card>

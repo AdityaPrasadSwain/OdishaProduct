@@ -87,14 +87,14 @@ const SellerProfile = () => {
         }
     };
 
-    if (!profile && loading) return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div></div>;
+    if (!profile && loading) return <div className="min-h-screen flex items-center justify-center dark:bg-bg-dark"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>;
 
-    if (!profile) return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 text-white">Seller not found</div>;
+    if (!profile) return <div className="min-h-screen flex items-center justify-center dark:bg-bg-dark text-text-onDark">Seller not found</div>;
 
     const isOwnProfile = user?.id === profile.id; // Correct check using IDs if available
 
     return (
-        <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white pb-20">
+        <div className="min-h-screen bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark pb-20">
 
             <div className="max-w-4xl mx-auto px-4 pt-6 md:pt-10">
                 {/* Header Section */}
@@ -105,13 +105,13 @@ const SellerProfile = () => {
                             <img
                                 src={profile.profileImage}
                                 alt={profile.name}
-                                className="w-full h-full rounded-full border-4 border-white dark:border-gray-900 object-cover"
+                                className="w-full h-full rounded-full border-4 border-white dark:border-border object-cover"
                             />
                         ) : (
                             <img
                                 src={defaultUser}
                                 alt="Default Profile"
-                                className="w-full h-full rounded-full border-4 border-white dark:border-gray-900 object-cover"
+                                className="w-full h-full rounded-full border-4 border-white dark:border-border object-cover"
                             />
                         )}
                     </div>
@@ -122,23 +122,23 @@ const SellerProfile = () => {
                         <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
                             <div className="flex items-center gap-2">
                                 <h1 className="text-xl md:text-2xl font-light">{profile.shopName || profile.name}</h1>
-                                {profile.isVerified && <CheckCircle size={18} className="text-blue-500 fill-blue-500 text-white" />}
+                                {profile.isVerified && <CheckCircle size={18} className="text-primary fill-blue-500 text-text-onDark" />}
                             </div>
 
                             <div className="flex gap-2">
                                 {isOwnProfile ? (
-                                    <button onClick={() => navigate('/profile/edit')} className="px-4 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                                    <button onClick={() => navigate('/profile/edit')} className="px-4 py-1.5 bg-bg-band dark:bg-bg-dark rounded-lg text-sm font-medium hover:bg-bg-band dark:hover:bg-bg-dark transition">
                                         Edit Profile
                                     </button>
                                 ) : (
                                     <>
                                         <button
                                             onClick={handleFollow}
-                                            className={`px-6 py-1.5 rounded-lg text-sm font-medium transition ${profile.isFollowing ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                                            className={`px-6 py-1.5 rounded-lg text-sm font-medium transition ${profile.isFollowing ? 'bg-bg-band dark:bg-bg-dark text-text-primary dark:text-text-onDark' : 'bg-primary text-text-onDark hover:bg-primary'}`}
                                         >
                                             {profile.isFollowing ? 'Following' : 'Follow'}
                                         </button>
-                                        <button className="px-4 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                                        <button className="px-4 py-1.5 bg-bg-band dark:bg-bg-dark rounded-lg text-sm font-medium hover:bg-bg-band dark:hover:bg-bg-dark transition">
                                             Message
                                         </button>
                                     </>
@@ -166,22 +166,22 @@ const SellerProfile = () => {
                 {/* <div className="flex gap-4 mb-10 overflow-x-auto pb-2 scrollbar-hide"> ... </div> */}
 
                 {/* Tab Navigation */}
-                <div className="border-t dark:border-gray-800 flex justify-center gap-12 text-xs font-medium tracking-widest uppercase">
+                <div className="border-t dark:border-border flex justify-center gap-12 text-xs font-medium tracking-widest uppercase">
                     <button
                         onClick={() => setActiveTab('posts')}
-                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'posts' ? 'border-gray-900 dark:border-white text-gray-900 dark:text-white' : 'border-transparent text-gray-500'}`}
+                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'posts' ? 'border-border dark:border-white text-text-primary dark:text-text-onDark' : 'border-transparent text-text-secondary'}`}
                     >
                         <Grid size={12} /> Posts
                     </button>
                     <button
                         onClick={() => setActiveTab('reels')}
-                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'reels' ? 'border-gray-900 dark:border-white text-gray-900 dark:text-white' : 'border-transparent text-gray-500'}`}
+                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'reels' ? 'border-border dark:border-white text-text-primary dark:text-text-onDark' : 'border-transparent text-text-secondary'}`}
                     >
                         <PlaySquare size={12} /> Reels
                     </button>
                     <button
                         onClick={() => setActiveTab('tagged')}
-                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'tagged' ? 'border-gray-900 dark:border-white text-gray-900 dark:text-white' : 'border-transparent text-gray-500'}`}
+                        className={`flex items-center gap-2 py-4 border-t-2 transition ${activeTab === 'tagged' ? 'border-border dark:border-white text-text-primary dark:text-text-onDark' : 'border-transparent text-text-secondary'}`}
                     >
                         <Bookmark size={12} /> Tagged
                     </button>
@@ -195,7 +195,7 @@ const SellerProfile = () => {
                                 <div
                                     key={post.id}
                                     onClick={() => setSelectedPost(post)}
-                                    className="aspect-square relative group cursor-pointer overflow-hidden bg-gray-100 dark:bg-gray-800"
+                                    className="aspect-square relative group cursor-pointer overflow-hidden bg-bg-band dark:bg-bg-dark"
                                 >
                                     {post.thumbnail ? (
                                         <img
@@ -204,19 +204,19 @@ const SellerProfile = () => {
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                                            <Image size={32} className="text-gray-400 dark:text-gray-500" />
+                                        <div className="w-full h-full flex items-center justify-center bg-bg-band dark:bg-bg-dark">
+                                            <Image size={32} className="text-text-secondary dark:text-text-secondary" />
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold gap-4 backdrop-blur-sm">
+                                    <div className="absolute inset-0 bg-bg-dark/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-text-onDark font-bold gap-4 backdrop-blur-sm">
                                         <div className="flex items-center gap-1"><Heart className="fill-white" size={18} /> {post.likes || 0}</div>
                                         <div className="flex items-center gap-1"><MessageCircle className="fill-white" size={18} /> {post.comments || 0}</div>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-3 py-20 text-center text-gray-500 flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center mb-4"><Grid /></div>
+                            <div className="col-span-3 py-20 text-center text-text-secondary flex flex-col items-center">
+                                <div className="w-16 h-16 rounded-full border-2 border-border flex items-center justify-center mb-4"><Grid /></div>
                                 <h3 className="text-xl font-bold mb-2">No Posts Yet</h3>
                             </div>
                         )
@@ -228,32 +228,32 @@ const SellerProfile = () => {
                                 <div
                                     key={reel.id}
                                     onClick={() => setSelectedPost({ ...reel, isReel: true })} // Pass isReel flag
-                                    className="aspect-[9/16] relative group cursor-pointer overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-sm"
+                                    className="aspect-[9/16] relative group cursor-pointer overflow-hidden bg-bg-band dark:bg-bg-dark rounded-sm"
                                 >
                                     {reel.videoUrl ? (
                                         <video src={reel.videoUrl} className="w-full h-full object-cover" />
                                     ) : (
                                         <img src={reel.thumbnail} alt={reel.name} className="w-full h-full object-cover" />
                                     )}
-                                    <div className="absolute top-2 right-2 text-white drop-shadow-md"><PlaySquare size={20} className="fill-white/20" /></div>
-                                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-end p-4">
-                                        <div className="text-white text-xs font-semibold flex items-center gap-1">
+                                    <div className="absolute top-2 right-2 text-text-onDark drop-shadow-md"><PlaySquare size={20} className="fill-white/20" /></div>
+                                    <div className="absolute inset-0 bg-bg-dark/20 group-hover:bg-bg-dark/40 transition-colors flex items-end p-4">
+                                        <div className="text-text-onDark text-xs font-semibold flex items-center gap-1">
                                             <PlaySquare size={12} /> {reel.views || 0}
                                         </div>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-3 py-20 text-center text-gray-500 flex flex-col items-center">
-                                <div className="w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center mb-4"><PlaySquare /></div>
+                            <div className="col-span-3 py-20 text-center text-text-secondary flex flex-col items-center">
+                                <div className="w-16 h-16 rounded-full border-2 border-border flex items-center justify-center mb-4"><PlaySquare /></div>
                                 <h3 className="text-xl font-bold mb-2">No Reels Yet</h3>
                             </div>
                         )
                     )}
 
                     {activeTab === 'tagged' && (
-                        <div className="col-span-3 py-20 text-center text-gray-500 flex flex-col items-center">
-                            <div className="w-16 h-16 rounded-full border-2 border-gray-800 flex items-center justify-center mb-4"><Bookmark /></div>
+                        <div className="col-span-3 py-20 text-center text-text-secondary flex flex-col items-center">
+                            <div className="w-16 h-16 rounded-full border-2 border-border flex items-center justify-center mb-4"><Bookmark /></div>
                             <h3 className="text-xl font-bold mb-2">Photos of You</h3>
                             <p>When people tag you in photos, they'll appear here.</p>
                         </div>

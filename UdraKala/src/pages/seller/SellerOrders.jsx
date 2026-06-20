@@ -200,7 +200,7 @@ const SellerOrders = () => {
                 icon: 'warning',
                 title: 'Invoice Not Sent',
                 text: 'You must send the invoice to the customer before marking as Out for Delivery.',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#5747C7'
             });
             return;
         }
@@ -250,7 +250,7 @@ const SellerOrders = () => {
             text: "Invoice with thank you message will be sent to customer's registered email.",
             icon: 'info',
             showCancelButton: true,
-            confirmButtonColor: '#ea580c',
+            confirmButtonColor: '#5747C7',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, send it!'
         });
@@ -278,11 +278,11 @@ const SellerOrders = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center flex-wrap gap-4">
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Order Management</h2>
+                <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark">Order Management</h2>
                 {selectedOrders.length > 0 && (
                     <button
                         onClick={handleBulkPrint}
-                        className="bg-gray-900 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-gray-800 transition shadow-lg"
+                        className="bg-bg-dark text-text-onDark px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-bg-dark transition shadow-lg"
                     >
                         <Printer size={18} />
                         Print {selectedOrders.length} Labels
@@ -290,7 +290,7 @@ const SellerOrders = () => {
                 )}
             </div>
 
-            <div className="flex space-x-2 border-b border-gray-200 dark:border-gray-700 pb-1 overflow-x-auto">
+            <div className="flex space-x-2 border-b border-border dark:border-border pb-1 overflow-x-auto">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
@@ -298,13 +298,13 @@ const SellerOrders = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex items-center px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${activeTab === tab.id
-                                ? 'bg-orange-50 text-orange-600 border-b-2 border-orange-500 dark:bg-gray-800 dark:text-orange-400'
-                                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                                ? 'bg-bg-band text-primary border-b-2 border-primary dark:bg-bg-dark dark:text-primary'
+                                : 'text-text-secondary hover:text-text-secondary dark:text-text-secondary dark:hover:text-text-secondary'
                                 }`}
                         >
                             <Icon size={16} className="mr-2" />
                             {tab.label}
-                            <span className="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-2 py-0.5 rounded-full">
+                            <span className="ml-2 bg-bg-band dark:bg-bg-dark text-text-secondary dark:text-text-secondary text-xs px-2 py-0.5 rounded-full">
                                 {orders.filter(o => {
                                     if (tab.id === 'new') return o.status === 'PENDING';
                                     if (tab.id === 'active') return ['SELLER_CONFIRMED', 'CONFIRMED', 'PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY', 'READY_TO_SHIP', 'DISPATCHED', 'IN_TRANSIT'].includes(o.status);
@@ -321,15 +321,15 @@ const SellerOrders = () => {
             {loading ? (
                 <OrderSkeleton />
             ) : filteredOrders.length === 0 ? (
-                <div className="text-center py-10 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-                    <Package size={48} className="mx-auto text-gray-300 mb-2" />
+                <div className="text-center py-10 dark:text-text-secondary bg-bg-surface dark:bg-bg-dark rounded-lg border border-dashed border-border dark:border-border">
+                    <Package size={48} className="mx-auto text-text-secondary mb-2" />
                     <p>No orders found in this category.</p>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-gray-800 shadow-sm rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                <div className="bg-bg-surface dark:bg-bg-dark shadow-sm rounded-xl overflow-hidden border border-border dark:border-border">
                     <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-700/50">
+                            <thead className="bg-bg-page dark:bg-bg-dark/50">
                                 <tr>
                                     <th className="px-6 py-3 w-4">
                                         <input
@@ -340,17 +340,17 @@ const SellerOrders = () => {
                                                 filteredOrders.some(o => ['PACKED', 'READY_TO_SHIP', 'SHIPPED', 'DISPATCHED'].includes(o.status)) &&
                                                 selectedOrders.length === filteredOrders.filter(o => ['PACKED', 'READY_TO_SHIP', 'SHIPPED', 'DISPATCHED'].includes(o.status)).length
                                             }
-                                            className="rounded border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                                            className="rounded border-border text-primary focus:ring-primary cursor-pointer"
                                         />
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Order ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Items/Total</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Order ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Customer</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Items/Total</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-bg-surface dark:bg-bg-dark divide-y divide-gray-200 dark:divide-gray-700">
                                 <AnimatePresence>
                                     {filteredOrders.map((order) => {
                                         const isPrintable = ['PACKED', 'READY_TO_SHIP', 'SHIPPED', 'DISPATCHED'].includes(order.status);
@@ -360,7 +360,7 @@ const SellerOrders = () => {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                                 exit={{ opacity: 0 }}
-                                                className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 transition ${selectedOrders.includes(order.id) ? 'bg-orange-50 dark:bg-gray-700/80' : ''}`}
+                                                className={`hover:bg-bg-page dark:hover:bg-bg-dark/50 transition ${selectedOrders.includes(order.id) ? 'bg-bg-band dark:bg-bg-dark/80' : ''}`}
                                             >
                                                 <td className="px-6 py-4">
                                                     {isPrintable && (
@@ -368,36 +368,36 @@ const SellerOrders = () => {
                                                             type="checkbox"
                                                             checked={selectedOrders.includes(order.id)}
                                                             onChange={() => handleSelectOrder(order.id)}
-                                                            className="rounded border-gray-300 text-orange-600 focus:ring-orange-500 cursor-pointer"
+                                                            className="rounded border-border text-primary focus:ring-primary cursor-pointer"
                                                         />
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-mono">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary dark:text-text-onDark font-mono">
                                                     <div className="font-bold">{order.id.substring(0, 8)}...</div>
-                                                    <div className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                                    <div className="text-xs text-text-secondary">{new Date(order.createdAt).toLocaleDateString()}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{order.user?.fullName}</div>
-                                                    <div className="text-xs text-gray-500 truncate max-w-[150px]" title={order.shippingAddress}>
+                                                    <div className="text-sm font-medium text-text-primary dark:text-text-onDark">{order.user?.fullName}</div>
+                                                    <div className="text-xs text-text-secondary truncate max-w-[150px]" title={order.shippingAddress}>
                                                         {order.shippingAddress?.substring(0, 20)}...
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="text-sm text-gray-900 dark:text-white font-semibold">
+                                                    <div className="text-sm text-text-primary dark:text-text-onDark font-semibold">
                                                         ₹{order.totalAmount}
                                                     </div>
-                                                    <div className="text-xs text-gray-500">
+                                                    <div className="text-xs text-text-secondary">
                                                         {order.orderItems.length} Items
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                                                        ['SELLER_CONFIRMED', 'CONFIRMED'].includes(order.status) ? 'bg-blue-100 text-blue-800' :
+                                                        ['SELLER_CONFIRMED', 'CONFIRMED'].includes(order.status) ? 'bg-primary-light text-primary' :
                                                             order.status === 'PACKED' || order.status === 'READY_TO_SHIP' ? 'bg-cyan-100 text-cyan-800' :
-                                                                order.status === 'SHIPPED' || order.status === 'DISPATCHED' ? 'bg-indigo-100 text-indigo-800' :
+                                                                order.status === 'SHIPPED' || order.status === 'DISPATCHED' ? 'bg-primary-light text-primary' :
                                                                     order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                                                        order.status.includes('CANCELLED') ? 'bg-red-100 text-red-800' :
-                                                                            'bg-gray-100 text-gray-800'
+                                                                        order.status.includes('CANCELLED') ? 'text-status-error text-status-error' :
+                                                                            'bg-bg-band text-text-primary'
                                                         }`}>
                                                         {order.status.replace(/_/g, ' ')}
                                                     </span>
@@ -412,14 +412,14 @@ const SellerOrders = () => {
                                                             <>
                                                                 <button
                                                                     onClick={() => handleAccept(order.id)}
-                                                                    className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                                                    className="p-1 text-status-success hover:bg-green-50 rounded"
                                                                     title="Accept Order"
                                                                 >
                                                                     <CheckCircle size={20} />
                                                                 </button>
                                                                 <button
                                                                     onClick={() => handleReject(order.id)}
-                                                                    className="p-1 text-red-600 hover:bg-red-50 rounded"
+                                                                    className="p-1 text-status-error hover:bg-red-50 rounded"
                                                                     title="Reject Order"
                                                                 >
                                                                     <XCircle size={20} />
@@ -442,13 +442,13 @@ const SellerOrders = () => {
 
                                                                 {/* Invoice Button */}
                                                                 {order.invoiceSent ? (
-                                                                    <span className="flex items-center text-green-600 text-xs font-bold px-2 border border-green-200 bg-green-50 rounded">
+                                                                    <span className="flex items-center text-status-success text-xs font-bold px-2 border border-green-200 bg-green-50 rounded">
                                                                         INV SENT
                                                                     </span>
                                                                 ) : (
                                                                     <button
                                                                         onClick={() => handleSendInvoice(order)}
-                                                                        className="text-orange-600 p-1 hover:bg-orange-50 rounded"
+                                                                        className="text-primary p-1 hover:bg-bg-band rounded"
                                                                         title="Send Invoice"
                                                                     >
                                                                         <FileText size={18} />
@@ -459,7 +459,7 @@ const SellerOrders = () => {
                                                                 {['PACKED', 'READY_TO_SHIP', 'SHIPPED', 'DISPATCHED'].includes(order.status) && (
                                                                     <button
                                                                         onClick={() => handlePrintLabel(order.id)}
-                                                                        className="text-blue-600 p-1 hover:bg-blue-50 rounded"
+                                                                        className="text-primary p-1 hover:bg-blue-50 rounded"
                                                                         title="Print Label"
                                                                     >
                                                                         <Truck size={18} />
@@ -468,7 +468,7 @@ const SellerOrders = () => {
 
                                                                 <button
                                                                     onClick={() => openUpdateModal(order)}
-                                                                    className="text-indigo-600 p-1 hover:bg-indigo-50 rounded"
+                                                                    className="text-primary p-1 hover:bg-indigo-50 rounded"
                                                                     title="Update Status"
                                                                 >
                                                                     <Edit2 size={18} />
@@ -489,20 +489,20 @@ const SellerOrders = () => {
 
             {/* Update Status Modal */}
             {selectedOrder && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-dark/50 backdrop-blur-sm">
                     <Motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md p-6 shadow-xl border border-gray-200 dark:border-gray-700"
+                        className="bg-bg-surface dark:bg-bg-dark rounded-2xl w-full max-w-md p-6 shadow-xl border border-border dark:border-border"
                     >
-                        <h3 className="text-xl font-bold mb-4 dark:text-white">Update Status</h3>
+                        <h3 className="text-xl font-bold mb-4 dark:text-text-onDark">Update Status</h3>
                         <form onSubmit={handleUpdate} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                                <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-1">Status</label>
                                 <select
                                     value={updateForm.status}
                                     onChange={(e) => setUpdateForm({ ...updateForm, status: e.target.value })}
-                                    className="w-full rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 p-2 dark:text-white"
+                                    className="w-full rounded-lg bg-bg-page dark:bg-bg-dark border-border dark:border-border p-2 dark:text-text-onDark"
                                 >
                                     <option value="SELLER_CONFIRMED">Confirmed</option>
                                     <option value="PACKED">Packed</option>
@@ -514,28 +514,28 @@ const SellerOrders = () => {
                             </div>
 
                             {(updateForm.status === 'SHIPPED' || updateForm.status === 'OUT_FOR_DELIVERY') && (
-                                <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                                    <p className="text-sm font-medium dark:text-white">Shipping Details</p>
+                                <div className="space-y-3 p-3 bg-bg-page dark:bg-bg-dark rounded-lg">
+                                    <p className="text-sm font-medium dark:text-text-onDark">Shipping Details</p>
                                     <input
                                         type="text"
                                         placeholder="Courier Name"
                                         value={updateForm.courierName}
                                         onChange={(e) => setUpdateForm({ ...updateForm, courierName: e.target.value })}
-                                        className="w-full rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 p-2 dark:text-white text-sm"
+                                        className="w-full rounded bg-bg-surface dark:bg-bg-dark border-border dark:border-border p-2 dark:text-text-onDark text-sm"
                                     />
                                     <input
                                         type="text"
                                         placeholder="Tracking ID"
                                         value={updateForm.trackingId}
                                         onChange={(e) => setUpdateForm({ ...updateForm, trackingId: e.target.value })}
-                                        className="w-full rounded bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 p-2 dark:text-white text-sm"
+                                        className="w-full rounded bg-bg-surface dark:bg-bg-dark border-border dark:border-border p-2 dark:text-text-onDark text-sm"
                                     />
                                 </div>
                             )}
 
                             <div className="flex justify-end gap-3 pt-4">
-                                <button type="button" onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">Cancel</button>
-                                <button type="submit" className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">Update</button>
+                                <button type="button" onClick={() => setSelectedOrder(null)} className="px-4 py-2 text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark rounded-lg">Cancel</button>
+                                <button type="submit" className="px-4 py-2 bg-primary text-text-onDark rounded-lg hover:bg-primary-hover">Update</button>
                             </div>
                         </form>
                     </Motion.div>

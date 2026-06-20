@@ -39,52 +39,52 @@ const RefundManager = () => {
         }
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-500">Loading refund requests...</div>;
+    if (loading) return <div className="p-10 text-center text-text-secondary">Loading refund requests...</div>;
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Refund Management</h2>
+            <h2 className="text-xl font-semibold mb-4 text-text-primary dark:text-text-onDark">Refund Management</h2>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow overflow-hidden">
                 <table className="min-w-full leading-normal">
                     <thead>
                         <tr>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Order/Item</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Customer Reason</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Seller Decision</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Current Status</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Admin Action</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Order/Item</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Customer Reason</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Seller Decision</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Current Status</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Admin Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {returns.map((ret) => (
                             <tr key={ret.id}>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-                                    <div className="font-medium text-gray-900 dark:text-white">Order #{ret.orderId?.substring(0, 8)}</div>
-                                    <div className="text-xs text-gray-500">Method: {ret.refundMethod}</div>
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
+                                    <div className="font-medium text-text-primary dark:text-text-onDark">Order #{ret.orderId?.substring(0, 8)}</div>
+                                    <div className="text-xs text-text-secondary">Method: {ret.refundMethod}</div>
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-                                    <div className="text-red-600 font-medium text-xs uppercase">{ret.reason}</div>
-                                    <div className="text-gray-600 dark:text-gray-400 text-xs italic">"{ret.description}"</div>
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
+                                    <div className="text-status-error font-medium text-xs uppercase">{ret.reason}</div>
+                                    <div className="text-text-secondary dark:text-text-secondary text-xs italic">"{ret.description}"</div>
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     {ret.sellerDecision === 'APPROVED' ? (
-                                        <span className="text-green-600 font-bold text-xs flex items-center gap-1"><Check size={12} /> Approved</span>
+                                        <span className="text-status-success font-bold text-xs flex items-center gap-1"><Check size={12} /> Approved</span>
                                     ) : ret.sellerDecision === 'REJECTED' ? (
-                                        <span className="text-red-600 font-bold text-xs flex items-center gap-1"><X size={12} /> Rejected</span>
+                                        <span className="text-status-error font-bold text-xs flex items-center gap-1"><X size={12} /> Rejected</span>
                                     ) : (
-                                        <span className="text-gray-400 text-xs text-center border px-2 rounded-full">Pending</span>
+                                        <span className="text-text-secondary text-xs text-center border px-2 rounded-full">Pending</span>
                                     )}
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     <span className={`px-2 py-1 rounded-full text-xs font-semibold 
                                         ${ret.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                                            ret.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                                'bg-blue-100 text-blue-800'}`}>
+                                            ret.status === 'REJECTED' ? 'text-status-error text-status-error' :
+                                                'bg-primary-light text-primary'}`}>
                                         {ret.status}
                                     </span>
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm space-x-2">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm space-x-2">
                                     {/* Only show actions if not already completed/rejected */}
                                     {['REQUESTED', 'APPROVED_BY_SELLER', 'IN_TRANSIT'].includes(ret.status) && (
                                         <>
@@ -94,7 +94,7 @@ const RefundManager = () => {
                                                     const note = prompt("Approval Note (Transaction ID):", "");
                                                     if (note) handleDecision(ret.id, true, note);
                                                 }}
-                                                className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700 disabled:opacity-50"
+                                                className="bg-status-success text-text-onDark px-2 py-1 rounded text-xs hover:bg-green-700 disabled:opacity-50"
                                             >
                                                 Process Refund
                                             </button>
@@ -104,7 +104,7 @@ const RefundManager = () => {
                                                     const note = prompt("Rejection Reason:", "");
                                                     if (note) handleDecision(ret.id, false, note);
                                                 }}
-                                                className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 disabled:opacity-50"
+                                                className="bg-status-error text-text-onDark px-2 py-1 rounded text-xs hover:text-status-error disabled:opacity-50"
                                             >
                                                 Reject
                                             </button>
@@ -115,7 +115,7 @@ const RefundManager = () => {
                         ))}
                         {returns.length === 0 && (
                             <tr>
-                                <td colSpan="5" className="px-5 py-5 bg-white dark:bg-gray-800 text-center text-gray-500">
+                                <td colSpan="5" className="px-5 py-5 bg-bg-surface dark:bg-bg-dark text-center text-text-secondary">
                                     No refund requests found.
                                 </td>
                             </tr>

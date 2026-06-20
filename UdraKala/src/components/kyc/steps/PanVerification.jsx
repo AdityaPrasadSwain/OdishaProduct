@@ -38,40 +38,40 @@ const PanVerification = ({ onNext, token }) => {
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Step 1: PAN Verification</h3>
+        <div className="max-w-md mx-auto bg-bg-surface p-6 rounded-lg shadow-sm">
+            <h3 className="text-xl font-bold mb-4 text-text-primary">Step 1: PAN Verification</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Full Name (As per PAN)</label>
+                    <label className="block text-sm font-medium text-text-secondary">Full Name (As per PAN)</label>
                     <input
                         type="text"
                         name="fullName"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                        className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                        className="mt-1 w-full border border-border rounded-md p-2"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">PAN Number</label>
+                    <label className="block text-sm font-medium text-text-secondary">PAN Number</label>
                     <input
                         type="text"
                         name="panNumber"
                         value={formData.panNumber}
                         onChange={handleChange}
                         maxLength={10}
-                        className="mt-1 w-full border border-gray-300 rounded-md p-2 uppercase"
+                        className="mt-1 w-full border border-border rounded-md p-2 uppercase"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Date of Birth</label>
+                    <label className="block text-sm font-medium text-text-secondary">Date of Birth</label>
                     <input
                         type="date"
                         name="dob"
                         value={formData.dob}
                         onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                        className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                        className="mt-1 w-full border border-border rounded-md p-2"
                         required
                     />
                 </div>
@@ -79,7 +79,7 @@ const PanVerification = ({ onNext, token }) => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:bg-gray-400"
+                    className="w-full bg-primary text-text-onDark py-2 rounded-md hover:bg-primary-hover transition disabled:bg-bg-band"
                 >
                     {loading ? 'Verifying...' : 'Verify PAN'}
                 </button>

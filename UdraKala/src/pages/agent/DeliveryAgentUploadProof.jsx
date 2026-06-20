@@ -77,18 +77,18 @@ const DeliveryAgentUploadProof = () => {
     };
 
     return (
-        <div className="p-6 max-w-lg mx-auto bg-white dark:bg-dark-card rounded-lg shadow-md mt-10">
+        <div className="p-6 max-w-lg mx-auto bg-bg-surface dark:bg-dark-card rounded-lg shadow-md mt-10">
             <h2 className="text-2xl font-bold mb-6 text-center text-dark dark:text-light">Upload Delivery Proof</h2>
 
             {/* Order ID Input */}
             <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Order ID (UUID)</label>
+                <label className="block mb-2 text-sm font-medium text-text-secondary dark:text-text-secondary">Order ID (UUID)</label>
                 <input
                     type="text"
                     value={orderId}
                     onChange={(e) => setOrderId(e.target.value)}
                     placeholder="Enter Order ID"
-                    className="w-full p-2 border border-gray-300 rounded focus:ring-primary focus:border-primary dark:bg-dark-input dark:border-gray-600"
+                    className="w-full p-2 border border-border rounded focus:ring-primary focus:border-primary dark:bg-dark-input dark:border-border"
                 />
             </div>
 
@@ -97,14 +97,14 @@ const DeliveryAgentUploadProof = () => {
                 <div className="flex gap-4 justify-center mb-6">
                     <button
                         onClick={() => setMode('camera')}
-                        className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${mode === 'camera' ? 'border-primary bg-primary/10' : 'border-gray-200 hover:border-primary'}`}
+                        className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${mode === 'camera' ? 'border-primary bg-primary/10' : 'border-border hover:border-primary'}`}
                     >
                         <Camera size={32} className="mb-2 text-primary" />
                         <span className="font-semibold">Use Camera</span>
                     </button>
                     <button
                         onClick={() => setMode('upload')}
-                        className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${mode === 'upload' ? 'border-primary bg-primary/10' : 'border-gray-200 hover:border-primary'}`}
+                        className={`flex flex-col items-center p-4 border-2 rounded-lg transition-colors ${mode === 'upload' ? 'border-primary bg-primary/10' : 'border-border hover:border-primary'}`}
                     >
                         <Upload size={32} className="mb-2 text-primary" />
                         <span className="font-semibold">Upload Photo</span>
@@ -122,7 +122,7 @@ const DeliveryAgentUploadProof = () => {
                         className="w-full rounded-lg mb-4"
                         videoConstraints={{ facingMode: "environment" }}
                     />
-                    <button onClick={capture} className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primary-dark transition">
+                    <button onClick={capture} className="bg-primary text-text-onDark px-6 py-2 rounded-full hover:bg-primary-dark transition">
                         Capture Photo
                     </button>
                 </div>
@@ -135,11 +135,11 @@ const DeliveryAgentUploadProof = () => {
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
-                        className="block w-full text-sm text-gray-500
+                        className="block w-full text-sm text-text-secondary
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-full file:border-0
                                 file:text-sm file:font-semibold
-                                file:bg-primary file:text-white
+                                file:bg-primary file:text-text-onDark
                                 hover:file:bg-primary-dark"
                     />
                 </div>
@@ -151,7 +151,7 @@ const DeliveryAgentUploadProof = () => {
                     <img src={image} alt="Preview" className="w-full rounded-lg shadow-sm" />
                     <button
                         onClick={() => { setImage(null); setFile(null); }}
-                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-md"
+                        className="absolute top-2 right-2 bg-status-error text-text-onDark p-2 rounded-full hover:bg-status-error shadow-md"
                     >
                         <Trash2 size={16} />
                     </button>
@@ -163,8 +163,8 @@ const DeliveryAgentUploadProof = () => {
                 <button
                     onClick={handleUpload}
                     disabled={loading}
-                    className={`w-full py-3 rounded-lg font-bold text-white transition-all
-                        ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 shadow-lg hover:shadow-xl'}
+                    className={`w-full py-3 rounded-lg font-bold text-text-onDark transition-all
+                        ${loading ? 'bg-bg-band cursor-not-allowed' : 'bg-status-success hover:bg-green-700 shadow-lg hover:shadow-xl'}
                     `}
                 >
                     {loading ? 'Uploading...' : 'Confirm & Upload Proof'}

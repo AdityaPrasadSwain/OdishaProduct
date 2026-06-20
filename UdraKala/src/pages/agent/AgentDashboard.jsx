@@ -102,11 +102,11 @@ const AgentDashboard = () => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Delivery Agent Dashboard</h1>
-                    <p className="text-gray-500">Manage your deliveries and earnings</p>
+                    <p className="text-text-secondary">Manage your deliveries and earnings</p>
                 </div>
                 <button
                     onClick={() => setIsOnline(!isOnline)}
-                    className={`px-4 py-2 rounded font-bold transition-all ${isOnline ? 'bg-green-500 text-white shadow-lg ring-2 ring-green-300' : 'bg-gray-300'}`}
+                    className={`px-4 py-2 rounded font-bold transition-all ${isOnline ? 'bg-status-success text-text-onDark shadow-lg ring-2 ring-green-300' : 'bg-bg-band'}`}
                 >
                     {isOnline ? 'ONLINE (Sending Updates)' : 'GO ONLINE'}
                 </button>
@@ -116,13 +116,13 @@ const AgentDashboard = () => {
             <div className="flex gap-4 mb-6 border-b">
                 <button
                     onClick={() => setViewMode('deliveries')}
-                    className={`pb-2 px-4 font-medium transition-colors ${viewMode === 'deliveries' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+                    className={`pb-2 px-4 font-medium transition-colors ${viewMode === 'deliveries' ? 'border-b-2 border-primary text-primary' : 'text-text-secondary'}`}
                 >
                     My Deliveries
                 </button>
                 <button
                     onClick={() => setViewMode('earnings')}
-                    className={`pb-2 px-4 font-medium transition-colors ${viewMode === 'earnings' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}
+                    className={`pb-2 px-4 font-medium transition-colors ${viewMode === 'earnings' ? 'border-b-2 border-green-600 text-status-success' : 'text-text-secondary'}`}
                 >
                     Earnings
                 </button>
@@ -133,7 +133,7 @@ const AgentDashboard = () => {
             ) : (
                 <div className="grid gap-4">
                     {shipments.map(shipment => (
-                        <div key={shipment.id} className="bg-white p-5 rounded-xl shadow-sm border hover:shadow-md transition-shadow flex justify-between items-center">
+                        <div key={shipment.id} className="bg-bg-surface p-5 rounded-xl shadow-sm border hover:shadow-md transition-shadow flex justify-between items-center">
                             <div>
                                 <div className="flex items-center gap-2 mb-1">
                                     <h3 className="font-bold text-lg">Order #{shipment.orderId.substring(0, 8)}</h3>
@@ -141,11 +141,11 @@ const AgentDashboard = () => {
                                         {shipment.status}
                                     </span>
                                 </div>
-                                <p className="text-sm text-gray-500 mb-2">{shipment.shippingAddress}</p>
+                                <p className="text-sm text-text-secondary mb-2">{shipment.shippingAddress}</p>
 
                                 <button
                                     onClick={() => setSelectedShipment(shipment)}
-                                    className="text-blue-600 text-sm font-medium hover:underline flex items-center gap-1"
+                                    className="text-primary text-sm font-medium hover:underline flex items-center gap-1"
                                 >
                                     More Options <ChevronRight size={14} />
                                 </button>
@@ -155,7 +155,7 @@ const AgentDashboard = () => {
                                 {shipment.status === 'ASSIGNED' && (
                                     <button
                                         onClick={() => updateStatus(shipment.id, 'DISPATCHED')}
-                                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2 font-medium"
+                                        className="bg-primary text-text-onDark px-4 py-2 rounded-lg hover:bg-primary-hover flex items-center gap-2 font-medium"
                                     >
                                         <Package size={18} /> Pick Up
                                     </button>
@@ -163,7 +163,7 @@ const AgentDashboard = () => {
                                 {shipment.status === 'DISPATCHED' && (
                                     <button
                                         onClick={() => updateStatus(shipment.id, 'OUT_FOR_DELIVERY')}
-                                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 flex items-center gap-2 font-medium"
+                                        className="bg-status-warning text-text-onDark px-4 py-2 rounded-lg hover:bg-status-warning flex items-center gap-2 font-medium"
                                     >
                                         <Truck size={18} /> Start Delivery
                                     </button>
@@ -171,7 +171,7 @@ const AgentDashboard = () => {
                                 {shipment.status === 'OUT_FOR_DELIVERY' && (
                                     <button
                                         onClick={() => updateStatus(shipment.id, 'DELIVERED')}
-                                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2 font-medium"
+                                        className="bg-status-success text-text-onDark px-4 py-2 rounded-lg hover:bg-green-700 flex items-center gap-2 font-medium"
                                     >
                                         <CheckCircle size={18} /> Mark Delivered
                                     </button>
@@ -179,7 +179,7 @@ const AgentDashboard = () => {
                             </div>
                         </div>
                     ))}
-                    {shipments.length === 0 && <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-lg">No active shipments found.</div>}
+                    {shipments.length === 0 && <div className="p-8 text-center text-text-secondary bg-bg-page rounded-lg">No active shipments found.</div>}
                 </div>
             )}
 
@@ -196,12 +196,12 @@ const AgentDashboard = () => {
 
 const getStatusColor = (status) => {
     switch (status) {
-        case 'CREATED': return 'bg-gray-200';
-        case 'ASSIGNED': return 'bg-blue-100 text-blue-800';
-        case 'DISPATCHED': return 'bg-indigo-100 text-indigo-800';
+        case 'CREATED': return 'bg-bg-band';
+        case 'ASSIGNED': return 'bg-primary-light text-primary';
+        case 'DISPATCHED': return 'bg-primary-light text-primary';
         case 'OUT_FOR_DELIVERY': return 'bg-yellow-100 text-yellow-800';
         case 'DELIVERED': return 'bg-green-100 text-green-800';
-        default: return 'bg-red-100';
+        default: return 'text-status-error';
     }
 };
 

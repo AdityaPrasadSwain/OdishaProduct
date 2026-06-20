@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.odisha.handloom.service.InvoiceService;
-import com.odisha.handloom.service.EmailService;
 import java.time.LocalDateTime;
 
 import java.math.BigDecimal;
@@ -58,18 +56,45 @@ public class OrderService {
     @Autowired
     private com.odisha.handloom.service.ShipmentService shipmentService;
 
+    @Autowired
+    @org.springframework.context.annotation.Lazy
+    private com.odisha.handloom.service.PaymentService paymentService;
+
+    @Autowired
+    private com.odisha.handloom.repository.CouponRepository couponRepository;
+
+    @Autowired
+    private com.odisha.handloom.repository.RefundRequestRepository refundRequestRepository;
+
     @Transactional
-    public List<Order> createOrder(User customer, List<OrderItemRequest> items, String address, String paymentMethod,
-            String paymentId, UUID addressId) {
+    public java.util.Map<String, Object> createOrder(User customer,
+            com.odisha.handloom.payload.request.OrderRequest request) {
+        String idempotencyKey = request.getIdempotencyKey();
+        if (idempotencyKey != null && !idempotencyKey.isEmpty()) {
+            List<Order> existingOrders = orderRepository.findByIdempotencyKey(idempotencyKey);
+            if (!existingOrders.isEmpty()) {
+                System.out.println("[OrderService] Idempotency key matched! Returning existing orders.");
+                java.util.Map<String, Object> res = new java.util.HashMap<>();
+                res.put("orders", existingOrders);
+                return res;
+            }
+        }
+
+        List<com.odisha.handloom.payload.request.OrderItemRequest> items = request.getItems();
+        String address = request.getShippingAddress();
+        String paymentMethod = request.getPaymentMethod();
+        String paymentId = request.getPaymentId();
+        UUID addressId = request.getAddressId();
+
         // Group items by Seller (Product -> Seller)
         List<TempItem> tempItems = new ArrayList<>();
 
         for (OrderItemRequest itemReq : items) {
             Product product = productRepository.findById(itemReq.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
+                    .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.ResourceNotFoundException("product: " + itemReq.getProductId()));
 
             if (product.getStockQuantity() < itemReq.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+                throw new com.odisha.handloom.exception.AppExceptions.InsufficientStockException(product.getName(), product.getStockQuantity());
             }
 
             tempItems.add(new TempItem(product, itemReq.getQuantity()));
@@ -114,6 +139,12 @@ public class OrderService {
 
             order.setPaymentMethod(paymentMethod);
             order.setPaymentId(paymentId);
+            order.setIdempotencyKey(idempotencyKey);
+
+            // Compute Shipping and Tax per order
+            BigDecimal shippingCost = BigDecimal.valueOf(50); // Dummy flat fee for now
+            BigDecimal taxAmount = BigDecimal.ZERO;
+            order.setShippingCost(shippingCost);
 
             BigDecimal totalAmount = BigDecimal.ZERO;
             List<OrderItem> orderItems = new ArrayList<>();
@@ -137,11 +168,73 @@ public class OrderService {
             }
 
             order.setOrderItems(orderItems);
-            order.setTotalAmount(totalAmount);
+
+            // Compute Tax (Dummy 5% GST)
+            taxAmount = totalAmount.multiply(BigDecimal.valueOf(0.05));
+            order.setTaxAmount(taxAmount);
+
+            // Calculate Grand Total
+            BigDecimal grandTotal = totalAmount.add(shippingCost).add(taxAmount);
+
+            // Apply Coupon if exists
+            if (request.getCouponCode() != null && !request.getCouponCode().isEmpty()) {
+                com.odisha.handloom.entity.Coupon coupon = couponRepository.findByCode(request.getCouponCode())
+                        .orElse(null);
+                if (coupon != null && coupon.getIsActive() && coupon.getExpiryDate().isAfter(LocalDateTime.now())) {
+                    if (grandTotal.compareTo(coupon.getMinOrderAmount()) >= 0) {
+                        BigDecimal discount = BigDecimal.ZERO;
+                        if (coupon.getDiscountType() == com.odisha.handloom.enums.DiscountType.PERCENTAGE) {
+                            discount = grandTotal.multiply(coupon.getDiscountValue().divide(BigDecimal.valueOf(100)));
+                        } else {
+                            discount = coupon.getDiscountValue();
+                        }
+
+                        if (coupon.getMaxDiscountAmount() != null
+                                && discount.compareTo(coupon.getMaxDiscountAmount()) > 0) {
+                            discount = coupon.getMaxDiscountAmount();
+                        }
+                        order.setDiscountAmount(discount);
+                        grandTotal = grandTotal.subtract(discount);
+                    }
+                }
+            }
+
+            order.setTotalAmount(grandTotal);
 
             Order savedOrder = orderRepository.save(order);
             createdOrders.add(savedOrder);
             System.out.println("[OrderService] Order saved with ID: " + savedOrder.getId());
+
+            // Initiate payment for this seller's order
+            paymentService.initiatePayment(customer.getId(), savedOrder.getId(),
+                    com.odisha.handloom.enums.PaymentMethod.valueOf(paymentMethod));
+
+            if ("COD".equalsIgnoreCase(paymentMethod)) {
+                processSuccessfulOrder(savedOrder);
+            }
+        }
+
+        // Update customer address if not present
+        if (address != null && !address.trim().isEmpty()) {
+            if (customer.getAddress() == null || customer.getAddress().trim().isEmpty()) {
+                customer.setAddress(address);
+                userRepository.save(customer);
+                System.out.println("[OrderService] Updated customer address from order.");
+            }
+        }
+
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        res.put("orders", createdOrders);
+        return res;
+    }
+
+    @Transactional
+    public void processSuccessfulOrder(Order savedOrder) {
+        if (savedOrder == null)
+            return;
+        try {
+            User seller = savedOrder.getSeller();
+            User customer = savedOrder.getUser();
 
             // Auto-create Shipment
             // Auto-create Shipment
@@ -208,8 +301,8 @@ public class OrderService {
 
             // Send Order Confirmation Email to Customer (with Invoice)
             emailService.sendOrderConfirmationEmail(
-                    customer.getEmail(),
-                    customer.getFullName(),
+                    savedOrder.getUser().getEmail(),
+                    savedOrder.getUser().getFullName(),
                     savedOrder.getId().toString().substring(0, 8),
                     savedOrder.getTotalAmount(),
                     savedOrder.getOrderItems(),
@@ -225,26 +318,17 @@ public class OrderService {
             } catch (Exception e) {
                 System.err.println("[OrderService] Failed to send email to seller: " + e.getMessage());
             }
+        } catch (Exception ex) {
+            System.err.println("[OrderService] processSuccessfulOrder error: " + ex.getMessage());
         }
-
-        // Update customer address if not present
-        if (address != null && !address.trim().isEmpty()) {
-            if (customer.getAddress() == null || customer.getAddress().trim().isEmpty()) {
-                customer.setAddress(address);
-                userRepository.save(customer);
-                System.out.println("[OrderService] Updated customer address from order.");
-            }
-        }
-
-        return createdOrders;
     }
 
     public Order updateStatus(UUID orderId, OrderStatus status, String courier, String tracking) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         if (status == OrderStatus.OUT_FOR_DELIVERY && !order.isInvoiceSent()) {
-            throw new RuntimeException("Invoice must be sent before delivery");
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException("Invoiced status required");
         }
 
         order.setStatus(status);
@@ -271,14 +355,14 @@ public class OrderService {
 
     public void requestReturn(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You are not authorized to return this order");
+            throw new com.odisha.handloom.exception.AppExceptions.AccessDeniedException();
         }
 
         if (order.getStatus() != OrderStatus.DELIVERED) {
-            throw new RuntimeException("Only delivered orders can be returned");
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException("Not delivered yet");
         }
 
         order.setStatus(OrderStatus.RETURN_REQUESTED);
@@ -298,14 +382,14 @@ public class OrderService {
 
     public void requestReplacement(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You are not authorized to replace this order");
+            throw new com.odisha.handloom.exception.AppExceptions.AccessDeniedException();
         }
 
         if (order.getStatus() != OrderStatus.DELIVERED) {
-            throw new RuntimeException("Only delivered orders can be replaced");
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException("Not delivered yet");
         }
 
         order.setStatus(OrderStatus.REPLACEMENT_REQUESTED);
@@ -324,22 +408,71 @@ public class OrderService {
     }
 
     @Transactional
+    public void cancelOrderItems(UUID orderId, UUID customerId, List<UUID> itemIds) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
+
+        if (!order.getUser().getId().equals(customerId)) {
+            throw new com.odisha.handloom.exception.AppExceptions.AccessDeniedException();
+        }
+
+        if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException(order.getStatus().toString());
+        }
+
+        BigDecimal refundAmount = BigDecimal.ZERO;
+
+        for (UUID itemId : itemIds) {
+            OrderItem itemToCancel = order.getOrderItems().stream()
+                    .filter(item -> item.getId().equals(itemId))
+                    .findFirst()
+                    .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.ResourceNotFoundException("order item"));
+
+            // Restore Stock
+            Product product = itemToCancel.getProduct();
+            product.setStockQuantity(product.getStockQuantity() + itemToCancel.getQuantity());
+            productRepository.save(product);
+
+            // Create refund request for item
+            BigDecimal itemTotal = itemToCancel.getPrice().multiply(BigDecimal.valueOf(itemToCancel.getQuantity()));
+            refundAmount = refundAmount.add(itemTotal);
+
+            com.odisha.handloom.entity.RefundRequest refundRequest = new com.odisha.handloom.entity.RefundRequest(
+                    order, itemToCancel, order.getUser(), itemTotal, "User requested partial cancellation",
+                    com.odisha.handloom.entity.RefundRequest.RefundStatus.REQUESTED);
+            refundRequestRepository.save(refundRequest);
+
+            // Remove item from order
+            order.getOrderItems().remove(itemToCancel);
+        }
+
+        // Recalculate order total
+        order.setTotalAmount(order.getTotalAmount().subtract(refundAmount));
+
+        if (order.getOrderItems().isEmpty()) {
+            order.setStatus(OrderStatus.CANCELLED);
+        }
+
+        orderRepository.save(order);
+    }
+
+    @Transactional
     public void cancelOrder(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         // Validate Owner
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("You are not authorized to cancel this order");
+            throw new com.odisha.handloom.exception.AppExceptions.AccessDeniedException();
         }
 
         // Validate Status
         if (order.getStatus() == OrderStatus.DELIVERED || order.getStatus() == OrderStatus.OUT_FOR_DELIVERY) {
-            throw new RuntimeException("Order cannot be cancelled after shipping/delivery. Please request a return.");
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException("Shipped/Delivered");
         }
 
         if (order.getStatus() == OrderStatus.CANCELLED) {
-            throw new RuntimeException("Order is already cancelled.");
+            throw new com.odisha.handloom.exception.AppExceptions.OrderNotModifiableException("Already Cancelled");
         }
 
         // Restore Stock
@@ -406,7 +539,7 @@ public class OrderService {
 
     public Order getOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         // --- Populate Transient Fields for Frontend UI ---
         // Mock Logic to match user requirement "Price Details Card" demo

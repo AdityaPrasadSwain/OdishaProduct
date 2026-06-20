@@ -12,13 +12,13 @@ const BasicInfo = ({ onNext }) => {
 
     const InputGroup = ({ label, name, required = false, placeholder = "" }) => (
         <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-2">{label} {required && <span className="text-rose-500">*</span>}</label>
+            <label className="block text-sm font-semibold text-text-secondary mb-2">{label} {required && <span className="text-status-error">*</span>}</label>
             <input
                 name={name}
                 required={required}
                 value={productData[name] ?? ''}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-slate-900/50 text-slate-100 placeholder-slate-500 focus:bg-slate-900"
+                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-bg-dark/50 text-text-secondary placeholder-slate-500 focus:bg-bg-dark"
                 placeholder={placeholder}
             />
         </div>
@@ -62,13 +62,13 @@ const BasicInfo = ({ onNext }) => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-slate-300 mb-2">Description</label>
+                    <label className="block text-sm font-semibold text-text-secondary mb-2">Description</label>
                     <textarea
                         name="description"
                         rows="4"
                         onChange={handleChange}
                         value={productData.description ?? ''}
-                        className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder-slate-500 bg-slate-900/50 text-slate-100 focus:bg-slate-900 resize-none"
+                        className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder-slate-500 bg-bg-dark/50 text-text-secondary focus:bg-bg-dark resize-none"
                         placeholder="Detailed description about the product..."
                     />
                 </div>
@@ -85,11 +85,11 @@ const BasicInfo = ({ onNext }) => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-xl transition-all transform hover:-translate-y-1 ${loading ? 'bg-slate-700 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 shadow-indigo-900/20'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-xl transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-dark cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 shadow-indigo-900/20'}`}
                 >
                     {loading ? (
                         <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-5 w-5 text-text-onDark" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>

@@ -173,31 +173,31 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 bg-bg-dark bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="bg-gray-900 text-white p-4 flex justify-between items-center shadow-lg">
+                <div className="bg-bg-dark text-text-onDark p-4 flex justify-between items-center shadow-lg">
                     <div>
                         <h2 className="text-lg font-bold">Manage Delivery</h2>
-                        <p className="text-xs text-gray-400">Order #{shipment.order.orderId || shipment.order.id}</p>
+                        <p className="text-xs text-text-secondary">Order #{shipment.order.orderId || shipment.order.id}</p>
                     </div>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-800 transition">
+                    <button onClick={onClose} className="text-text-secondary hover:text-text-onDark p-1 rounded-full hover:bg-bg-dark transition">
                         <X size={24} />
                     </button>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b dark:border-gray-700 overflow-x-auto bg-gray-50 dark:bg-gray-800/50">
+                <div className="flex border-b dark:border-border overflow-x-auto bg-bg-page dark:bg-bg-dark/50">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             disabled={tab.disabled}
                             onClick={() => !tab.disabled && setActiveTab(tab.id)}
                             className={`flex-1 py-3 px-2 text-sm font-medium flex flex-col items-center gap-1 border-b-2 transition-colors ${activeTab === tab.id
-                                ? 'border-orange-500 text-orange-600 dark:text-orange-400'
+                                ? 'border-primary text-primary dark:text-primary'
                                 : tab.disabled
-                                    ? 'border-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed'
-                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                                    ? 'border-transparent text-text-secondary dark:text-text-secondary cursor-not-allowed'
+                                    : 'border-transparent text-text-secondary dark:text-text-secondary hover:text-text-secondary'
                                 }`}
                         >
                             <tab.icon size={18} />
@@ -207,7 +207,7 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                     {isBarcodeVerified && (
                         <button
                             onClick={() => setActiveTab('return')}
-                            className={`flex-1 py-3 px-2 text-sm font-medium flex flex-col items-center gap-1 border-b-2 border-transparent text-red-500 hover:text-red-700`}
+                            className={`flex-1 py-3 px-2 text-sm font-medium flex flex-col items-center gap-1 border-b-2 border-transparent text-status-error hover:text-status-error`}
                         >
                             <AlertCircle size={18} />
                             <span className="text-xs">Return</span>
@@ -216,17 +216,17 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                 </div>
 
                 {/* Content */}
-                <div className="p-6 overflow-y-auto flex-1 bg-white dark:bg-gray-900">
+                <div className="p-6 overflow-y-auto flex-1 bg-bg-surface dark:bg-bg-dark">
 
                     {/* SCAN TAB */}
                     {activeTab === 'scan' && (
                         <div className="flex flex-col items-center justify-center h-full text-center space-y-6 py-8">
-                            <div className="bg-orange-100 dark:bg-orange-900/30 p-6 rounded-full text-orange-600 dark:text-orange-400">
+                            <div className="bg-primary-light dark:bg-primary-hover/30 p-6 rounded-full text-primary dark:text-primary">
                                 <ScanLine size={48} />
                             </div>
                             <div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Scan to Unlock</h3>
-                                <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
+                                <h3 className="text-xl font-bold text-text-primary dark:text-text-onDark">Scan to Unlock</h3>
+                                <p className="text-text-secondary dark:text-text-secondary mt-2 text-sm">
                                     Customer details are hidden for security.<br />Scan the package barcode to verify.
                                 </p>
                             </div>
@@ -236,7 +236,7 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                                 onClick={() => setIsScannerOpen(true)}
                                 startIcon={<ScanLine />}
                                 sx={{
-                                    bgcolor: '#ea580c',
+                                    bgcolor: '#5747C7',
                                     '&:hover': { bgcolor: '#c2410c' },
                                     borderRadius: '12px',
                                     py: 1.5,
@@ -252,22 +252,22 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                     {/* DETAILS TAB */}
                     {activeTab === 'details' && (
                         <div className="space-y-6">
-                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <div className="bg-bg-page dark:bg-bg-dark p-4 rounded-xl border border-border dark:border-border">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Status</label>
+                                        <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Status</label>
                                         <div className="mt-1">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${shipment.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                                shipment.status === 'OUT_FOR_DELIVERY' ? 'bg-orange-100 text-orange-800' :
-                                                    'bg-blue-100 text-blue-800'
+                                                shipment.status === 'OUT_FOR_DELIVERY' ? 'bg-primary-light text-primary' :
+                                                    'bg-primary-light text-primary'
                                                 }`}>
                                                 {shipment.status.replace(/_/g, ' ')}
                                             </span>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Payment</label>
-                                        <div className="mt-1 font-medium text-gray-900 dark:text-white">
+                                        <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Payment</label>
+                                        <div className="mt-1 font-medium text-text-primary dark:text-text-onDark">
                                             {shipment.order.paymentMode || 'COD'}
                                         </div>
                                     </div>
@@ -275,16 +275,16 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Customer Details</label>
-                                <div className="p-4 bg-white dark:bg-black border border-gray-100 dark:border-gray-800 rounded-lg shadow-sm">
-                                    <h4 className="font-bold text-gray-900 dark:text-white">{shipment.order.user.fullName}</h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{shipment.order.shippingAddress}</p>
+                                <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Customer Details</label>
+                                <div className="p-4 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-lg shadow-sm">
+                                    <h4 className="font-bold text-text-primary dark:text-text-onDark">{shipment.order.user.fullName}</h4>
+                                    <p className="text-sm text-text-secondary dark:text-text-secondary mt-1">{shipment.order.shippingAddress}</p>
                                 </div>
                             </div>
 
                             {/* Delivery Actions */}
                             {['OUT_FOR_DELIVERY', 'DISPATCHED', 'ASSIGNED'].includes(shipment.status) && (
-                                <div className="pt-4 border-t dark:border-gray-800 space-y-4">
+                                <div className="pt-4 border-t dark:border-border space-y-4">
                                     {!otpSent ? (
                                         <Button
                                             fullWidth
@@ -304,7 +304,7 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                                         </Button>
                                     ) : !isOtpVerified ? (
                                         <div className="space-y-3 animation-fade-in">
-                                            <Typography variant="subtitle2" className="text-center text-green-600 font-bold">
+                                            <Typography variant="subtitle2" className="text-center text-status-success font-bold">
                                                 OTP Sent to Customer
                                             </Typography>
                                             <TextField
@@ -327,18 +327,18 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                                             </Button>
                                         </div>
                                     ) : (
-                                        <div className="space-y-4 animation-fade-in border-t pt-4 dark:border-gray-700">
-                                            <Typography variant="subtitle2" className="text-center text-blue-600 font-bold">
+                                        <div className="space-y-4 animation-fade-in border-t pt-4 dark:border-border">
+                                            <Typography variant="subtitle2" className="text-center text-primary font-bold">
                                                 OTP Verified! Upload Proof
                                             </Typography>
 
                                             <div className="flex flex-col items-center gap-4">
                                                 {proofPreview ? (
-                                                    <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border-2 border-green-500">
+                                                    <div className="relative w-full h-48 bg-bg-band rounded-lg overflow-hidden border-2 border-green-500">
                                                         <img src={proofPreview} alt="Proof" className="w-full h-full object-cover" />
                                                         <button
                                                             onClick={clearProof}
-                                                            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full shadow hover:bg-red-600"
+                                                            className="absolute top-2 right-2 bg-status-error text-text-onDark p-1 rounded-full shadow hover:bg-status-error"
                                                         >
                                                             <X size={16} />
                                                         </button>
@@ -350,10 +350,10 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                                                         fullWidth
                                                         sx={{ height: 100, borderStyle: 'dashed', borderRadius: 2 }}
                                                     >
-                                                        <div className="flex flex-col items-center gap-2 text-gray-500">
+                                                        <div className="flex flex-col items-center gap-2 text-text-secondary">
                                                             <UploadCloud size={24} />
                                                             <span>Click to Upload Delivery Photo</span>
-                                                            <span className="text-xs text-gray-400">Max 5MB (JPG, PNG)</span>
+                                                            <span className="text-xs text-text-secondary">Max 5MB (JPG, PNG)</span>
                                                         </div>
                                                         <input
                                                             type="file"
@@ -386,13 +386,13 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
 
                     {activeTab === 'contact' && isBarcodeVerified && (
                         <div className="space-y-4">
-                            <a href={`tel:${shipment.order.user.phoneNumber || '9999999999'}`} className="flex items-center gap-4 p-4 border dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                                <div className="bg-green-100 p-3 rounded-full text-green-600 shadow-sm">
+                            <a href={`tel:${shipment.order.user.phoneNumber || '9999999999'}`} className="flex items-center gap-4 p-4 border dark:border-border rounded-lg hover:bg-bg-page dark:hover:bg-bg-dark transition-colors">
+                                <div className="bg-green-100 p-3 rounded-full text-status-success shadow-sm">
                                     <Phone size={24} />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900 dark:text-white">Call Customer</h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">{shipment.order.user.phoneNumber}</p>
+                                    <h3 className="font-bold text-text-primary dark:text-text-onDark">Call Customer</h3>
+                                    <p className="text-sm text-text-secondary dark:text-text-secondary">{shipment.order.user.phoneNumber}</p>
                                 </div>
                             </a>
                         </div>
@@ -415,29 +415,29 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
 
                     {activeTab === 'payment' && isBarcodeVerified && (
                         <div className="text-center space-y-6 py-6">
-                            <div className="bg-white p-6 rounded-xl shadow-lg inline-block">
+                            <div className="bg-bg-surface p-6 rounded-xl shadow-lg inline-block">
                                 {qrValue ? (
                                     <QRCode value={qrValue} size={180} />
                                 ) : (
-                                    <div className="h-44 w-44 flex items-center justify-center bg-gray-100 text-gray-400">
+                                    <div className="h-44 w-44 flex items-center justify-center bg-bg-band text-text-secondary">
                                         Loading...
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <p className="text-lg font-bold text-gray-900 dark:text-white font-mono tracking-wider">
+                                <p className="text-lg font-bold text-text-primary dark:text-text-onDark font-mono tracking-wider">
                                     ₹{shipment.order.totalAmount}
                                 </p>
-                                <p className="text-sm text-gray-500">Amount to Collect</p>
+                                <p className="text-sm text-text-secondary">Amount to Collect</p>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'return' && (
                         <div className="space-y-4 text-center py-6">
-                            <AlertCircle size={48} className="text-red-500 mx-auto" />
-                            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Mark as Undelivered</h3>
-                            <p className="text-sm text-gray-500">Initiating a return will cancel this delivery attempt.</p>
+                            <AlertCircle size={48} className="text-status-error mx-auto" />
+                            <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark">Mark as Undelivered</h3>
+                            <p className="text-sm text-text-secondary">Initiating a return will cancel this delivery attempt.</p>
                             <Button
                                 onClick={handleMarkFailed}
                                 color="error"

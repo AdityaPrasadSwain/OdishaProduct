@@ -8,7 +8,13 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", indexes = {
+    @Index(name = "idx_users_email", columnList = "email", unique = true),
+    @Index(name = "idx_users_phone", columnList = "phoneNumber", unique = true),
+    @Index(name = "idx_users_shop_name", columnList = "shopName"),
+    @Index(name = "idx_users_pan", columnList = "panNumber"),
+    @Index(name = "idx_users_gst", columnList = "gstNumber")
+})
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
     @Id

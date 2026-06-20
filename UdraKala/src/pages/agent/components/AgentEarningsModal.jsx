@@ -35,27 +35,27 @@ const AgentEarningsModal = ({ isOpen, onClose }) => {
             fullWidth
             PaperProps={{ sx: { borderRadius: 3, bgcolor: 'transparent', boxShadow: 'none' } }}
         >
-            <div className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
-                <div className="bg-gray-800 p-4 text-white flex justify-between items-center">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-xl overflow-hidden shadow-2xl">
+                <div className="bg-bg-dark p-4 text-text-onDark flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <IndianRupee className="text-green-400" />
                         <Typography variant="h6" fontWeight="bold">My Earnings History</Typography>
                     </div>
-                    <IconButton onClick={onClose} className="text-gray-400 hover:text-white">
+                    <IconButton onClick={onClose} className="text-text-secondary hover:text-text-onDark">
                         <X size={20} />
                     </IconButton>
                 </div>
 
-                <div className="p-6 max-h-[60vh] overflow-y-auto bg-gray-50 dark:bg-gray-900">
+                <div className="p-6 max-h-[60vh] overflow-y-auto bg-bg-page dark:bg-bg-dark">
                     <TableContainer component={Paper} elevation={0} sx={{ bgcolor: 'transparent' }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell className="dark:text-gray-400 font-bold">Date</TableCell>
-                                    <TableCell className="dark:text-gray-400 font-bold">Order ID</TableCell>
-                                    <TableCell className="dark:text-gray-400 font-bold">Distance</TableCell>
-                                    <TableCell className="dark:text-gray-400 font-bold">Amount</TableCell>
-                                    <TableCell className="dark:text-gray-400 font-bold">Status</TableCell>
+                                    <TableCell className="dark:text-text-secondary font-bold">Date</TableCell>
+                                    <TableCell className="dark:text-text-secondary font-bold">Order ID</TableCell>
+                                    <TableCell className="dark:text-text-secondary font-bold">Distance</TableCell>
+                                    <TableCell className="dark:text-text-secondary font-bold">Amount</TableCell>
+                                    <TableCell className="dark:text-text-secondary font-bold">Status</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -69,17 +69,17 @@ const AgentEarningsModal = ({ isOpen, onClose }) => {
                                     </TableRow>
                                 ) : (
                                     earnings.map((earning) => (
-                                        <TableRow key={earning.id} hover className="dark:hover:bg-gray-800">
-                                            <TableCell className="dark:text-gray-300">
+                                        <TableRow key={earning.id} hover className="dark:hover:bg-bg-dark">
+                                            <TableCell className="dark:text-text-secondary">
                                                 {new Date(earning.createdAt || Date.now()).toLocaleDateString()}
                                             </TableCell>
-                                            <TableCell className="dark:text-gray-300 font-mono text-xs">
+                                            <TableCell className="dark:text-text-secondary font-mono text-xs">
                                                 #{earning.shipmentId ? earning.shipmentId.substring(0, 8) : 'N/A'}...
                                             </TableCell>
-                                            <TableCell className="dark:text-gray-300">
+                                            <TableCell className="dark:text-text-secondary">
                                                 {earning.distanceKm} km
                                             </TableCell>
-                                            <TableCell className="dark:text-white font-bold text-green-600">
+                                            <TableCell className="dark:text-text-onDark font-bold text-status-success">
                                                 ₹{earning.amount}
                                             </TableCell>
                                             <TableCell>

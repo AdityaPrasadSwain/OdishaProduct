@@ -37,30 +37,30 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
 
     return (
         <form onSubmit={handleNext} className="space-y-4">
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">Business Details</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-text-primary dark:text-text-onDark">Business Details</h2>
 
             {/* Business Name */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Business Name</label>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">Business Name</label>
                 <input
                     type="text"
                     name="businessName"
                     value={sellerData.businessName}
                     onChange={handleChange}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="e.g. My Handloom Store"
                 />
-                {errors.businessName && <p className="text-red-500 text-xs mt-1">{errors.businessName}</p>}
+                {errors.businessName && <p className="text-status-error text-xs mt-1">{errors.businessName}</p>}
             </div>
 
             {/* Business Type */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Business Type</label>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">Business Type</label>
                 <select
                     name="businessType"
                     value={sellerData.businessType}
                     onChange={handleChange}
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                    className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark transition-colors"
                 >
                     <option value="">Select Type</option>
                     <option value="Individual">Individual / Proprietor</option>
@@ -69,81 +69,81 @@ const Step2BusinessDetails = ({ onNext, onPrev }) => {
                     <option value="SHG">Self Help Group (SHG)</option>
                     <option value="Cooperative">Cooperative Society</option>
                 </select>
-                {errors.businessType && <p className="text-red-500 text-xs mt-1">{errors.businessType}</p>}
+                {errors.businessType && <p className="text-status-error text-xs mt-1">{errors.businessType}</p>}
             </div>
 
             {/* Address */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Address</label>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">Address</label>
                 <textarea
                     name="address"
                     value={sellerData.address}
                     onChange={handleChange}
                     rows="2"
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="Street, Sector, Building..."
                 ></textarea>
-                {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+                {errors.address && <p className="text-status-error text-xs mt-1">{errors.address}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 {/* State */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">State</label>
+                    <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">State</label>
                     <select
                         name="state"
                         value={sellerData.state}
                         onChange={handleChange}
-                        className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
+                        className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark transition-colors"
                     >
                         <option value="">Select State</option>
                         <option value="Odisha">Odisha</option>
                         <option value="Other">Other</option>
                     </select>
-                    {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
+                    {errors.state && <p className="text-status-error text-xs mt-1">{errors.state}</p>}
                 </div>
 
                 {/* City */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">City / District</label>
+                    <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">City / District</label>
                     <input
                         type="text"
                         name="city"
                         value={sellerData.city}
                         onChange={handleChange}
-                        className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                        className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                         placeholder="e.g. Bhubaneswar"
                     />
-                    {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+                    {errors.city && <p className="text-status-error text-xs mt-1">{errors.city}</p>}
                 </div>
             </div>
 
             {/* Pincode */}
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Pincode</label>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">Pincode</label>
                 <input
                     type="text"
                     name="pincode"
                     value={sellerData.pincode}
                     onChange={handleChange}
                     maxLength="6"
-                    className="w-full p-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-full p-2.5 border border-border dark:border-border rounded-lg focus:ring-2 focus:ring-primary outline-none bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
                     placeholder="751000"
                 />
-                {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
+                {errors.pincode && <p className="text-status-error text-xs mt-1">{errors.pincode}</p>}
             </div>
 
             <div className="flex gap-4 pt-4">
                 <button
                     type="button"
                     onClick={onPrev}
-                    className="w-1/2 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                    className="w-1/2 py-3 bg-bg-band dark:bg-bg-dark text-text-primary dark:text-text-onDark rounded-lg font-bold hover:bg-bg-band dark:hover:bg-bg-dark transition"
                 >
                     Back
                 </button>
                 <button
                     type="submit"
-                    className="w-1/2 py-3 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition"
+                    className="w-1/2 py-3 bg-primary text-text-onDark rounded-lg font-bold hover:bg-primary-hover transition"
                 >
                     Next: KYC
                 </button>

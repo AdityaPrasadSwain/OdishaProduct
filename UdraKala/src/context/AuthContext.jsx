@@ -119,6 +119,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('user', JSON.stringify(userData));
         setUser(userData);
 
+        window.dispatchEvent(new Event('auth:login'));
+
         return userData;
     }, []);
 

@@ -36,7 +36,7 @@ const SellerReelsDashboard = () => {
     const muiTheme = useMemo(() => createTheme({
         palette: {
             mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#ea580c' }, // Orange
+            primary: { main: '#5747C7' }, // Orange
             background: {
                 paper: theme === 'dark' ? '#1f2937' : '#ffffff',
                 default: theme === 'dark' ? '#111827' : '#ffffff',
@@ -160,11 +160,11 @@ const SellerReelsDashboard = () => {
             renderCell: (params) => (
                 <div
                     onClick={() => handleViewComments(params.row)}
-                    className="relative w-12 h-20 bg-gray-900 rounded overflow-hidden group cursor-pointer mt-1"
+                    className="relative w-12 h-20 bg-bg-dark rounded overflow-hidden group cursor-pointer mt-1"
                 >
                     <img src={params.row.thumbnailUrl} alt="reel" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition">
-                        <Play size={20} className="text-white fill-white" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-bg-dark/40 opacity-0 group-hover:opacity-100 transition">
+                        <Play size={20} className="text-text-onDark fill-white" />
                     </div>
                 </div>
             )
@@ -174,8 +174,8 @@ const SellerReelsDashboard = () => {
             field: 'engagement', headerName: 'Engagement', width: 200,
             renderCell: (params) => (
                 <div className="flex gap-4 text-sm items-center h-full">
-                    <span className="flex items-center gap-1"><Heart size={16} className="text-red-500" /> {params.row.likes}</span>
-                    <span className="flex items-center gap-1"><MessageCircle size={16} className="text-blue-500" /> {params.row.comments}</span>
+                    <span className="flex items-center gap-1"><Heart size={16} className="text-status-error" /> {params.row.likes}</span>
+                    <span className="flex items-center gap-1"><MessageCircle size={16} className="text-primary" /> {params.row.comments}</span>
                 </div>
             )
         },
@@ -196,26 +196,26 @@ const SellerReelsDashboard = () => {
     return (
         <div className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="flex items-center gap-4 bg-gradient-to-br from-purple-500 to-indigo-600 text-white border-none">
-                    <div className="p-3 bg-white/20 rounded-full"><Eye size={24} /></div>
+                <Card className="flex items-center gap-4 bg-gradient-to-br from-purple-500 to-indigo-600 text-text-onDark border-none">
+                    <div className="p-3 bg-bg-surface/20 rounded-full"><Eye size={24} /></div>
                     <div><p className="text-xs opacity-80">Total Reels</p><h3 className="text-2xl font-bold">{stats.totalReels}</h3></div>
                 </Card>
-                <Card className="flex items-center gap-4 bg-gradient-to-br from-pink-500 to-rose-600 text-white border-none">
-                    <div className="p-3 bg-white/20 rounded-full"><Heart size={24} /></div>
+                <Card className="flex items-center gap-4 bg-gradient-to-br from-pink-500 to-rose-600 text-text-onDark border-none">
+                    <div className="p-3 bg-bg-surface/20 rounded-full"><Heart size={24} /></div>
                     <div><p className="text-xs opacity-80">Total Likes</p><h3 className="text-2xl font-bold">{stats.totalLikes}</h3></div>
                 </Card>
-                <Card className="flex items-center gap-4 bg-gradient-to-br from-blue-500 to-cyan-600 text-white border-none">
-                    <div className="p-3 bg-white/20 rounded-full"><MessageCircle size={24} /></div>
+                <Card className="flex items-center gap-4 bg-gradient-to-br from-blue-500 to-cyan-600 text-text-onDark border-none">
+                    <div className="p-3 bg-bg-surface/20 rounded-full"><MessageCircle size={24} /></div>
                     <div><p className="text-xs opacity-80">Total Comments</p><h3 className="text-2xl font-bold">{stats.totalComments}</h3></div>
                 </Card>
-                <Card className="flex items-center gap-4 bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-none">
-                    <div className="p-3 bg-white/20 rounded-full"><Eye size={24} /></div> {/* Icon reuse but represents followers */}
+                <Card className="flex items-center gap-4 bg-gradient-to-br from-emerald-500 to-teal-600 text-text-onDark border-none">
+                    <div className="p-3 bg-bg-surface/20 rounded-full"><Eye size={24} /></div> {/* Icon reuse but represents followers */}
                     <div><p className="text-xs opacity-80">Followers</p><h3 className="text-2xl font-bold">{stats.totalFollowers}</h3></div>
                 </Card>
             </div>
 
             <div className="flex justify-end">
-                <Button onClick={() => setShowScriptModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                <Button onClick={() => setShowScriptModal(true)} className="bg-gradient-to-r from-purple-600 to-pink-600 text-text-onDark">
                     ✨ Create AI Reel Script
                 </Button>
             </div>
@@ -223,7 +223,7 @@ const SellerReelsDashboard = () => {
 
             <Card title="Reel Performance">
                 {loading ? (
-                    <div className="flex justify-center p-12"><Loader2 className="animate-spin text-orange-500" /></div>
+                    <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>
                 ) : (
                     <ThemeProvider theme={muiTheme}>
                         <Paper sx={{ width: '100%', height: 500, boxShadow: 'none' }}>
@@ -243,11 +243,11 @@ const SellerReelsDashboard = () => {
 
             {/* Comments & Watch Modal */}
             {showCommentModal && (
-                <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 animate-fade-in">
-                    <div className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-xl shadow-2xl h-[85vh] flex flex-col md:flex-row overflow-hidden">
+                <div className="fixed inset-0 bg-bg-dark/80 z-[100] flex items-center justify-center p-4 animate-fade-in">
+                    <div className="bg-bg-surface dark:bg-bg-dark w-full max-w-4xl rounded-xl shadow-2xl h-[85vh] flex flex-col md:flex-row overflow-hidden">
 
                         {/* Left Side: Video Player */}
-                        <div className="w-full md:w-[400px] bg-black flex items-center justify-center relative">
+                        <div className="w-full md:w-[400px] bg-bg-dark flex items-center justify-center relative">
                             {selectedReel?.videoUrl ? (
                                 <video
                                     src={selectedReel.videoUrl}
@@ -259,48 +259,48 @@ const SellerReelsDashboard = () => {
                                     controlsList="nodownload"
                                 />
                             ) : (
-                                <div className="text-white text-sm">Video not available</div>
+                                <div className="text-text-onDark text-sm">Video not available</div>
                             )}
                             <button
                                 onClick={() => setShowCommentModal(false)}
-                                className="absolute top-4 left-4 text-white/80 hover:text-white md:hidden bg-black/50 rounded-full p-1"
+                                className="absolute top-4 left-4 text-text-onDark/80 hover:text-text-onDark md:hidden bg-bg-dark/50 rounded-full p-1"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
                         {/* Right Side: Comments */}
-                        <div className="flex-1 flex flex-col h-full border-l dark:border-gray-700">
-                            <div className="p-4 border-b dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900">
+                        <div className="flex-1 flex flex-col h-full border-l dark:border-border">
+                            <div className="p-4 border-b dark:border-border flex justify-between items-center bg-bg-page dark:bg-bg-dark">
                                 <h3 className="font-bold flex items-center gap-2">
-                                    <span className="text-orange-500 truncate max-w-[200px]">{selectedReel.caption || 'Reel'}</span>
+                                    <span className="text-primary truncate max-w-[200px]">{selectedReel.caption || 'Reel'}</span>
                                 </h3>
-                                <button onClick={() => setShowCommentModal(false)} className="hidden md:block"><X className="text-gray-500" /></button>
+                                <button onClick={() => setShowCommentModal(false)} className="hidden md:block"><X className="text-text-secondary" /></button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50/50 dark:bg-gray-900/50">
+                            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-bg-page/50 dark:bg-bg-dark/50">
                                 {loadingComments ? <div className="text-center p-4">Loading...</div> :
-                                    comments.length === 0 ? <p className="text-center text-gray-500">No comments yet</p> :
+                                    comments.length === 0 ? <p className="text-center text-text-secondary">No comments yet</p> :
                                         comments.map(comment => (
                                             <div key={comment.id} className="space-y-3">
                                                 {/* Main Comment */}
-                                                <div className="bg-white dark:bg-gray-700 p-3 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600">
+                                                <div className="bg-bg-surface dark:bg-bg-dark p-3 rounded-lg shadow-sm border border-border dark:border-border">
                                                     <div className="flex justify-between items-start">
                                                         <div className="flex gap-2">
-                                                            <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900 flex items-center justify-center text-xs font-bold text-orange-700 dark:text-orange-200">
+                                                            <div className="w-8 h-8 rounded-full bg-primary-light dark:bg-primary-hover flex items-center justify-center text-xs font-bold text-primary dark:text-primary">
                                                                 {comment.user.charAt(0)}
                                                             </div>
                                                             <div>
-                                                                <p className="text-sm font-bold text-gray-800 dark:text-gray-100">{comment.user}</p>
-                                                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{comment.content}</p>
+                                                                <p className="text-sm font-bold text-text-primary dark:text-text-secondary">{comment.user}</p>
+                                                                <p className="text-sm text-text-secondary dark:text-text-secondary mt-1">{comment.content}</p>
                                                             </div>
                                                         </div>
-                                                        <span className="text-xs text-gray-400">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                                        <span className="text-xs text-text-secondary">{new Date(comment.createdAt).toLocaleDateString()}</span>
                                                     </div>
                                                     <div className="mt-2 flex gap-2">
                                                         <button
                                                             onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                                                            className="text-xs text-blue-500 font-medium hover:underline"
+                                                            className="text-xs text-primary font-medium hover:underline"
                                                         >
                                                             {replyingTo === comment.id ? 'Cancel Reply' : 'Reply'}
                                                         </button>
@@ -312,7 +312,7 @@ const SellerReelsDashboard = () => {
                                                     <div className="pl-10 flex gap-2 animate-fade-in-down">
                                                         <input
                                                             autoFocus
-                                                            className="flex-1 text-sm border rounded px-3 py-2 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                                            className="flex-1 text-sm border rounded px-3 py-2 dark:bg-bg-dark dark:border-border dark:text-text-onDark"
                                                             placeholder={`Reply to ${comment.user}...`}
                                                             value={replyText}
                                                             onChange={(e) => setReplyText(e.target.value)}
@@ -331,17 +331,17 @@ const SellerReelsDashboard = () => {
                                                 {/* Nested Replies */}
                                                 {comment.replies && comment.replies.map(reply => (
                                                     <div key={reply.id} className="pl-10 flex gap-2">
-                                                        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-[10px] font-bold text-blue-700 dark:text-blue-200 shrink-0">
+                                                        <div className="w-6 h-6 rounded-full bg-primary-light dark:bg-primary-hover flex items-center justify-center text-[10px] font-bold text-primary dark:text-primary shrink-0">
                                                             {reply.user.charAt(0)}
                                                         </div>
-                                                        <div className={`bg-gray-100 dark:bg-gray-800 p-2 rounded-lg flex-1 ${reply.isSellerReply ? 'border-l-4 border-orange-500' : ''}`}>
+                                                        <div className={`bg-bg-band dark:bg-bg-dark p-2 rounded-lg flex-1 ${reply.isSellerReply ? 'border-l-4 border-primary' : ''}`}>
                                                             <div className="flex justify-between">
-                                                                <span className="text-xs font-bold text-gray-700 dark:text-gray-200">
-                                                                    {reply.user} {reply.isSellerReply && <span className="bg-orange-500 text-white px-1 rounded text-[9px] ml-1">SELLER</span>}
+                                                                <span className="text-xs font-bold text-text-secondary dark:text-text-secondary">
+                                                                    {reply.user} {reply.isSellerReply && <span className="bg-primary text-text-onDark px-1 rounded text-[9px] ml-1">SELLER</span>}
                                                                 </span>
-                                                                <span className="text-[10px] text-gray-400">{new Date(reply.createdAt).toLocaleDateString()}</span>
+                                                                <span className="text-[10px] text-text-secondary">{new Date(reply.createdAt).toLocaleDateString()}</span>
                                                             </div>
-                                                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{reply.content}</p>
+                                                            <p className="text-xs text-text-secondary dark:text-text-secondary mt-1">{reply.content}</p>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -390,7 +390,7 @@ const SellerReelsDashboard = () => {
                         <AiAssistButton onClick={handleGenerateScript} label="Generate Script" className="w-full justify-center" />
 
                         {generatedScript && (
-                            <div className="mt-4 p-3 bg-gray-100 dark:bg-gray-800 rounded whitespace-pre-wrap max-h-[300px] overflow-y-auto text-sm">
+                            <div className="mt-4 p-3 bg-bg-band dark:bg-bg-dark rounded whitespace-pre-wrap max-h-[300px] overflow-y-auto text-sm">
                                 {generatedScript}
                             </div>
                         )}

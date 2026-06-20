@@ -39,38 +39,38 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
         >
             {/* Avatar */}
             <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                <div className="w-8 h-8 rounded-full bg-bg-band flex items-center justify-center text-text-secondary">
                     <User size={16} />
                 </div>
             </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-                <div className={`bg-gray-50 dark:bg-gray-800 rounded-2xl px-4 py-3 ${comment.isSellerReply ? 'border border-orange-200 dark:border-orange-900/30' : ''}`}>
+                <div className={`bg-bg-page dark:bg-bg-dark rounded-2xl px-4 py-3 ${comment.isSellerReply ? 'border border-primary dark:border-primary/30' : ''}`}>
                     <div className="flex justify-between items-start mb-1">
                         <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                            <span className="font-semibold text-sm text-text-primary dark:text-text-secondary">
                                 {comment.user || 'Unknown User'}
                             </span>
                             {comment.isSellerReply && (
-                                <span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-medium">Seller</span>
+                                <span className="text-[10px] bg-primary-light text-primary px-1.5 py-0.5 rounded font-medium">Seller</span>
                             )}
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-text-secondary">
                                 {formatDate(comment.createdAt)}
                             </span>
                         </div>
                     </div>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm text-text-secondary dark:text-text-secondary whitespace-pre-wrap leading-relaxed">
                         {comment.content}
                     </p>
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-4 mt-1 ml-2 text-xs text-gray-500 font-medium">
-                    <button className="hover:text-gray-800 transition">Like</button>
+                <div className="flex items-center gap-4 mt-1 ml-2 text-xs text-text-secondary font-medium">
+                    <button className="hover:text-text-primary transition">Like</button>
                     <button
                         onClick={() => setIsReplying(!isReplying)}
-                        className="hover:text-gray-800 transition flex items-center gap-1"
+                        className="hover:text-text-primary transition flex items-center gap-1"
                     >
                         Reply
                     </button>
@@ -92,13 +92,13 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
                                 placeholder={`Reply to ${comment.user}...`}
-                                className="flex-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-orange-500 transition-colors"
+                                className="flex-1 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-primary transition-colors"
                                 autoFocus
                             />
                             <button
                                 type="submit"
                                 disabled={isSubmitting || !replyText.trim()}
-                                className="bg-orange-600 text-white p-2 rounded-full hover:bg-orange-700 disabled:opacity-50 transition-colors"
+                                className="bg-primary text-text-onDark p-2 rounded-full hover:bg-primary-hover disabled:opacity-50 transition-colors"
                             >
                                 <CornerDownRight size={16} />
                             </button>
@@ -108,7 +108,7 @@ const CommentItem = ({ comment, onReply, depth = 0 }) => {
 
                 {/* Nested Replies */}
                 {comment.replies && comment.replies.length > 0 && (
-                    <div className="mt-4 border-l-2 border-gray-100 dark:border-gray-800 pl-4">
+                    <div className="mt-4 border-l-2 border-border dark:border-border pl-4">
                         {showReplies && comment.replies.map(reply => (
                             <CommentItem
                                 key={reply.id}

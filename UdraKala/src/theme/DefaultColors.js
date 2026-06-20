@@ -51,7 +51,7 @@ const baselightTheme = createTheme({
       600: '#475569',
       700: '#334155',
       800: '#1E293B',
-      900: '#0F172A',
+      900: '#1B1A3A',
     },
     text: {
       primary: '#F8FAFC',

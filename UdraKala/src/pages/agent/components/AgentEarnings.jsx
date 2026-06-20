@@ -33,40 +33,40 @@ const AgentEarnings = () => {
                         <IndianRupee size={20} />
                         <span className="font-medium">Total Earnings</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">₹{totalEarnings.toFixed(2)}</p>
+                    <p className="text-2xl font-bold text-text-primary">₹{totalEarnings.toFixed(2)}</p>
                 </div>
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                    <div className="flex items-center gap-2 text-blue-700 mb-1">
+                <div className="bg-blue-50 p-4 rounded-lg border border-primary">
+                    <div className="flex items-center gap-2 text-primary mb-1">
                         <MapPin size={20} />
                         <span className="font-medium">Total Distance</span>
                     </div>
-                    <p className="text-2xl font-bold text-gray-900">{totalDistance.toFixed(1)} km</p>
+                    <p className="text-2xl font-bold text-text-primary">{totalDistance.toFixed(1)} km</p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-bg-surface rounded-lg shadow overflow-hidden">
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-bg-page">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Distance</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Order</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Distance</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Amount</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-bg-surface divide-y divide-gray-200">
                         {earnings.map(earning => (
                             <tr key={earning.id}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                                     {new Date(earning.createdAt).toLocaleDateString()}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary">
                                     #{earning.shipmentId?.substring(0, 8) || 'N/A'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
                                     {earning.distanceKm} km
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-status-success">
                                     ₹{earning.amount}
                                 </td>
                             </tr>
@@ -74,7 +74,7 @@ const AgentEarnings = () => {
                     </tbody>
                 </table>
                 {earnings.length === 0 && (
-                    <div className="p-8 text-center text-gray-500">No earnings recorded yet.</div>
+                    <div className="p-8 text-center text-text-secondary">No earnings recorded yet.</div>
                 )}
             </div>
         </div>

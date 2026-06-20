@@ -14,8 +14,8 @@ const RevenueChart = ({ data }) => {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Revenue Over Time</h3>
+        <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-xl shadow-sm border border-border dark:border-border">
+            <h3 className="text-lg font-semibold text-text-primary dark:text-text-onDark mb-6">Revenue Over Time</h3>
             <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>

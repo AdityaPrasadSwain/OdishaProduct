@@ -55,15 +55,15 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-bg-dark/50 backdrop-blur-sm">
             <Motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md p-6 shadow-xl border border-gray-200 dark:border-gray-700 relative"
+                className="bg-bg-surface dark:bg-bg-dark rounded-2xl w-full max-w-md p-6 shadow-xl border border-border dark:border-border relative"
             >
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                    className="absolute top-4 right-4 text-text-secondary hover:text-text-secondary dark:text-text-secondary"
                 >
                     <X size={24} />
                 </button>
@@ -73,30 +73,30 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                         <Package size={24} />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold dark:text-white">Pack Order</h3>
-                        <p className="text-sm text-gray-500">#{order.id.substring(0, 8)}</p>
+                        <h3 className="text-xl font-bold dark:text-text-onDark">Pack Order</h3>
+                        <p className="text-sm text-text-secondary">#{order.id.substring(0, 8)}</p>
                     </div>
                 </div>
 
                 <div className="space-y-4">
                     {/* Step 1: Invoice */}
-                    <div className={`p-4 rounded-lg border flex items-center justify-between ${order.invoiceSent ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                    <div className={`p-4 rounded-lg border flex items-center justify-between ${order.invoiceSent ? 'bg-green-50 border-green-200' : 'bg-bg-page border-border'}`}>
                         <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-full ${order.invoiceSent ? 'bg-green-200 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                            <div className={`p-2 rounded-full ${order.invoiceSent ? 'bg-green-200 text-green-700' : 'bg-bg-band text-text-secondary'}`}>
                                 <FileText size={20} />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-sm dark:text-gray-900">1. Send Invoice</h4>
-                                <p className="text-xs text-gray-500">{order.invoiceSent ? 'Invoice Sent' : 'Required before packing'}</p>
+                                <h4 className="font-semibold text-sm dark:text-text-primary">1. Send Invoice</h4>
+                                <p className="text-xs text-text-secondary">{order.invoiceSent ? 'Invoice Sent' : 'Required before packing'}</p>
                             </div>
                         </div>
                         {order.invoiceSent ? (
-                            <CheckCircle className="text-green-600" size={24} />
+                            <CheckCircle className="text-status-success" size={24} />
                         ) : (
                             <button
                                 onClick={handleSendInvoice}
                                 disabled={loading}
-                                className="px-3 py-1.5 bg-orange-600 text-white text-xs font-bold rounded hover:bg-orange-700 disabled:opacity-50"
+                                className="px-3 py-1.5 bg-primary text-text-onDark text-xs font-bold rounded hover:bg-primary-hover disabled:opacity-50"
                             >
                                 Send Now
                             </button>
@@ -104,7 +104,7 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                     </div>
 
                     {/* Step 2: Upload Packing Video */}
-                    <div className={`p-4 rounded-lg border transition-colors ${videoUploaded ? 'bg-green-50 border-green-200' : (!order.invoiceSent ? 'opacity-50 bg-gray-50' : 'bg-white border-gray-200')}`}>
+                    <div className={`p-4 rounded-lg border transition-colors ${videoUploaded ? 'bg-green-50 border-green-200' : (!order.invoiceSent ? 'opacity-50 bg-bg-page' : 'bg-bg-surface border-border')}`}>
                         <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -112,11 +112,11 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                         <Video size={20} />
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-sm dark:text-gray-900">2. Upload Packing Video</h4>
-                                        <p className="text-xs text-gray-500">{videoUploaded ? 'Video Uploaded' : 'Upload packing proof (MP4)'}</p>
+                                        <h4 className="font-semibold text-sm dark:text-text-primary">2. Upload Packing Video</h4>
+                                        <p className="text-xs text-text-secondary">{videoUploaded ? 'Video Uploaded' : 'Upload packing proof (MP4)'}</p>
                                     </div>
                                 </div>
-                                {videoUploaded && <CheckCircle className="text-green-600" size={24} />}
+                                {videoUploaded && <CheckCircle className="text-status-success" size={24} />}
                             </div>
 
                             {!videoUploaded && order.invoiceSent && (
@@ -125,12 +125,12 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                                         type="file"
                                         accept="video/mp4"
                                         onChange={(e) => setVideoFile(e.target.files[0])}
-                                        className="text-xs w-full text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                        className="text-xs w-full text-text-secondary file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                                     />
                                     <button
                                         onClick={handleVideoUpload}
                                         disabled={!videoFile || loading}
-                                        className="p-2 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
+                                        className="p-2 bg-purple-600 text-text-onDark rounded hover:bg-purple-700 disabled:opacity-50"
                                         title="Upload Video"
                                     >
                                         <UploadCloud size={16} />
@@ -141,14 +141,14 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                     </div>
 
                     {/* Step 3: Mark Packed */}
-                    <div className={`p-4 rounded-lg border flex items-center justify-between ${(videoUploaded && order.invoiceSent) ? 'bg-white border-gray-200' : 'opacity-50 bg-gray-50'}`}>
+                    <div className={`p-4 rounded-lg border flex items-center justify-between ${(videoUploaded && order.invoiceSent) ? 'bg-bg-surface border-border' : 'opacity-50 bg-bg-page'}`}>
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-cyan-100 text-cyan-600 rounded-full">
                                 <Package size={20} />
                             </div>
                             <div>
-                                <h4 className="font-semibold text-sm dark:text-white">3. Mark as Packed</h4>
-                                <p className="text-xs text-gray-500">Dimensions & Check</p>
+                                <h4 className="font-semibold text-sm dark:text-text-onDark">3. Mark as Packed</h4>
+                                <p className="text-xs text-text-secondary">Dimensions & Check</p>
                             </div>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ const PackingModal = ({ isOpen, onClose, order, onOrderUpdated }) => {
                     <button
                         onClick={handleMarkPacked}
                         disabled={!order.invoiceSent || !videoUploaded || loading}
-                        className="w-full py-3 bg-cyan-600 text-white font-bold rounded-xl hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-cyan-200 dark:shadow-none"
+                        className="w-full py-3 bg-cyan-600 text-text-onDark font-bold rounded-xl hover:bg-cyan-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg shadow-cyan-200 dark:shadow-none"
                     >
                         {loading ? 'Processing...' : 'Confirm Packed'}
                     </button>

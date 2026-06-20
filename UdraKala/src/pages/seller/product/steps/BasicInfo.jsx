@@ -7,14 +7,14 @@ import AiAssistButton from '../../../../components/AiAssistButton';
 
 const InputGroup = ({ label, name, type = "text", required = false, placeholder = "", value, onChange }) => (
     <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
+        <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">{label} {required && <span className="text-status-error">*</span>}</label>
         <input
             type={type}
             name={name}
             required={required}
             value={value}
             onChange={onChange}
-            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-gray-400 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100"
+            className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder-gray-400 bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary"
             placeholder={placeholder}
         />
     </div>
@@ -161,7 +161,7 @@ const BasicInfo = ({ onNext, initialData }) => {
 
                 <div className="md:col-span-2">
                     <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">Description</label>
+                        <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary">Description</label>
                         <AiAssistButton onClick={handleGenerateDescription} label="AI Write" className="text-xs py-1 px-2" />
                     </div>
                     <textarea
@@ -169,19 +169,19 @@ const BasicInfo = ({ onNext, initialData }) => {
                         rows="4"
                         onChange={handleChange}
                         value={formData.description || ''}
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder-gray-400 bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 resize-none"
+                        className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder-gray-400 bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary resize-none"
                         placeholder="Detailed description about the product..."
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Category <span className="text-red-500">*</span></label>
+                    <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">Category <span className="text-status-error">*</span></label>
                     <select
                         name="categoryId"
                         required
                         value={formData.categoryId || ''}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 dark:bg-gray-800 dark:text-gray-100"
+                        className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-bg-page dark:bg-bg-dark dark:text-text-secondary"
                     >
                         <option value="" disabled>Select Category</option>
                         {categories.map(cat => (
@@ -201,11 +201,11 @@ const BasicInfo = ({ onNext, initialData }) => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-band cursor-not-allowed' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
                 >
                     {loading ? (
                         <span className="flex items-center gap-2">
-                            <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-5 w-5 text-text-onDark" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>

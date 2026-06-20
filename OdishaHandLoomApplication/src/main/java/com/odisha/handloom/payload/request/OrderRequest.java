@@ -9,6 +9,24 @@ public class OrderRequest {
     private String paymentMethod;
     private String paymentId;
     private java.util.UUID addressId;
+    private String idempotencyKey;
+    private String couponCode;
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
+    }
+
+    public String getCouponCode() {
+        return couponCode;
+    }
+
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
 
     public List<OrderItemRequest> getItems() {
         return items;

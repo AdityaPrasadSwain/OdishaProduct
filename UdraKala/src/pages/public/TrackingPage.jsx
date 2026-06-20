@@ -59,8 +59,8 @@ const TrackingPage = () => {
 
     return (
         <div className="max-w-4xl mx-auto p-4 md:p-8">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div className="bg-orange-600 p-6 text-white">
+            <div className="bg-bg-surface rounded-xl shadow-lg overflow-hidden">
+                <div className="bg-primary p-6 text-text-onDark">
                     <h1 className="text-2xl font-bold">Tracking Shipment</h1>
                     <p className="opacity-90">Order #{shipment.orderId}</p>
                 </div>
@@ -68,9 +68,9 @@ const TrackingPage = () => {
                 <div className="p-6 grid md:grid-cols-2 gap-8">
                     <div>
                         <div className="mb-6">
-                            <h2 className="text-gray-500 text-sm uppercase tracking-wide">Status</h2>
-                            <p className="text-3xl font-bold text-gray-800 mt-1">{shipment.status}</p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <h2 className="text-text-secondary text-sm uppercase tracking-wide">Status</h2>
+                            <p className="text-3xl font-bold text-text-primary mt-1">{shipment.status}</p>
+                            <p className="text-sm text-text-secondary mt-1">
                                 EST Delivery: {new Date(shipment.estimatedDelivery).toLocaleDateString()}
                             </p>
                         </div>
@@ -79,20 +79,20 @@ const TrackingPage = () => {
                             <h3 className="text-lg font-semibold">Delivery Details</h3>
                             <ul className="list-none p-0 mt-2 space-y-2">
                                 <li>
-                                    <span className="font-medium text-gray-700">Agent:</span> {shipment.agentName || 'Assigning...'}
+                                    <span className="font-medium text-text-secondary">Agent:</span> {shipment.agentName || 'Assigning...'}
                                 </li>
                                 <li>
-                                    <span className="font-medium text-gray-700">Phone:</span> {shipment.agentPhone || 'N/A'}
+                                    <span className="font-medium text-text-secondary">Phone:</span> {shipment.agentPhone || 'N/A'}
                                 </li>
                                 <li>
-                                    <span className="font-medium text-gray-700">Shipping To:</span>
-                                    <p className="text-gray-600 text-sm mt-1">{shipment.shippingAddress}</p>
+                                    <span className="font-medium text-text-secondary">Shipping To:</span>
+                                    <p className="text-text-secondary text-sm mt-1">{shipment.shippingAddress}</p>
                                 </li>
                             </ul>
                         </div>
                     </div>
 
-                    <div className="h-64 md:h-auto bg-gray-100 rounded-lg overflow-hidden relative">
+                    <div className="h-64 md:h-auto bg-bg-band rounded-lg overflow-hidden relative">
                         {position ? (
                             <MapContainer center={position} zoom={13} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
                                 <TileLayer
@@ -106,7 +106,7 @@ const TrackingPage = () => {
                                 </Marker>
                             </MapContainer>
                         ) : (
-                            <div className="flex items-center justify-center h-full text-gray-400">
+                            <div className="flex items-center justify-center h-full text-text-secondary">
                                 Map data unavailable (Waiting for agent update)
                             </div>
                         )}

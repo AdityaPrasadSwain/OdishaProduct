@@ -294,12 +294,12 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
         else navigate(-1);
     };
 
-    if (loading) return <div className="h-screen w-full bg-black text-white flex items-center justify-center">Loading...</div>;
+    if (loading) return <div className="h-screen w-full bg-bg-dark text-text-onDark flex items-center justify-center">Loading...</div>;
 
     return (
-        <div className="bg-black h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none relative font-sans">
+        <div className="bg-bg-dark h-screen w-full overflow-y-scroll snap-y snap-mandatory scrollbar-none relative font-sans">
             {/* Close Button */}
-            <button onClick={handleClose} className="fixed top-4 right-4 z-50 bg-black/40 p-2 rounded-full text-white backdrop-blur-md">
+            <button onClick={handleClose} className="fixed top-4 right-4 z-50 bg-bg-dark/40 p-2 rounded-full text-text-onDark backdrop-blur-md">
                 <X size={24} />
             </button>
 
@@ -311,7 +311,7 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
                 if (!isValidVideo && reel.videoUrl) console.warn("Potential invalid video URL:", reel.videoUrl);
 
                 return (
-                    <div key={reel.id} id={`reel-${index}`} className="h-screen w-full snap-start relative flex items-center justify-center bg-gray-900">
+                    <div key={reel.id} id={`reel-${index}`} className="h-screen w-full snap-start relative flex items-center justify-center bg-bg-dark">
                         {/* Video */}
                         <video
                             ref={el => videoRefs.current[index] = el}
@@ -337,19 +337,19 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
                         {/* Play/Pause Overlay Icon */}
                         {!isPlaying && index === currentIndex && (
                             <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
-                                <div className="bg-black/40 p-4 rounded-full backdrop-blur-sm">
-                                    <Play fill="white" size={48} className="text-white ml-1" />
+                                <div className="bg-bg-dark/40 p-4 rounded-full backdrop-blur-sm">
+                                    <Play fill="white" size={48} className="text-text-onDark ml-1" />
                                 </div>
                             </div>
                         )}
 
                         {/* Mute Overlay */}
-                        <button onClick={toggleMute} className="absolute top-4 left-4 z-40 p-2 bg-black/40 rounded-full text-white">
+                        <button onClick={toggleMute} className="absolute top-4 left-4 z-40 p-2 bg-bg-dark/40 rounded-full text-text-onDark">
                             {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
                         </button>
 
                         {/* RIGHT SIDE ACTION BAR (Instagram Style) */}
-                        <div className="absolute right-4 bottom-24 flex flex-col gap-6 items-center z-50 text-white md:right-[calc(50%-224px+1rem)]">
+                        <div className="absolute right-4 bottom-24 flex flex-col gap-6 items-center z-50 text-text-onDark md:right-[calc(50%-224px+1rem)]">
                             {/* LIKE */}
                             <div className="flex flex-col items-center gap-1">
                                 <button onClick={() => handleLike(reel)} className="p-2 transition active:scale-90">
@@ -375,7 +375,7 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
                             </div>
 
                             {/* Product specific CTA icon if needed */}
-                            <Link to={`/product/${reel.productId}`} className="p-2 bg-white/20 backdrop-blur-md rounded-full mt-2">
+                            <Link to={`/product/${reel.productId}`} className="p-2 bg-bg-surface/20 backdrop-blur-md rounded-full mt-2">
                                 <ShoppingBag size={24} />
                             </Link>
                         </div>
@@ -386,13 +386,13 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
                                 {/* Seller Info Row */}
                                 <div className="flex items-center gap-3 mb-1">
                                     <Link to={`/seller/${reel.sellerId}`} className="block">
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white font-bold border-2 border-white text-xs">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-text-onDark font-bold border-2 border-white text-xs">
                                             {reel.sellerName ? reel.sellerName.charAt(0).toUpperCase() : 'S'}
                                         </div>
                                     </Link>
                                     <div className="flex flex-col items-start">
                                         <div className="flex items-center gap-2">
-                                            <Link to={`/seller/${reel.sellerId}`} className="text-white font-bold text-sm shadow-sm hover:underline">
+                                            <Link to={`/seller/${reel.sellerId}`} className="text-text-onDark font-bold text-sm shadow-sm hover:underline">
                                                 {reel.sellerName || 'Seller'}
                                             </Link>
                                             {reel.sellerId && (
@@ -401,7 +401,7 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        <span className="text-[10px] text-white/80 flex items-center gap-1">
+                                        <span className="text-[10px] text-text-onDark/80 flex items-center gap-1">
                                             <Volume2 size={10} /> Original Audio
                                         </span>
                                     </div>
@@ -409,9 +409,9 @@ const WatchReels = ({ isEmbedded, onClose, filterSellerId, initialReelId }) => {
 
                                 {/* Caption & Product */}
                                 <div className="space-y-1">
-                                    <h2 className="text-white text-lg font-bold line-clamp-1 drop-shadow-md">{reel.productName}</h2>
-                                    {reel.caption && <p className="text-sm text-white/95 line-clamp-2 leading-relaxed drop-shadow-md">{reel.caption}</p>}
-                                    <p className="text-orange-400 font-bold drop-shadow-md">₹{reel.price}</p>
+                                    <h2 className="text-text-onDark text-lg font-bold line-clamp-1 drop-shadow-md">{reel.productName}</h2>
+                                    {reel.caption && <p className="text-sm text-text-onDark/95 line-clamp-2 leading-relaxed drop-shadow-md">{reel.caption}</p>}
+                                    <p className="text-primary font-bold drop-shadow-md">₹{reel.price}</p>
                                 </div>
                             </div>
                         </div>
@@ -473,36 +473,36 @@ const CommentSheet = ({ reelId, onClose }) => {
     return (
         <>
             <motion.div
-                className="fixed inset-0 bg-black/60 z-50"
+                className="fixed inset-0 bg-bg-dark/60 z-50"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={onClose}
             />
             <motion.div
-                className="fixed bottom-0 w-full md:max-w-md md:left-1/2 md:-translate-x-1/2 h-[60vh] bg-gray-900 rounded-t-2xl z-50 flex flex-col border-t border-gray-700"
+                className="fixed bottom-0 w-full md:max-w-md md:left-1/2 md:-translate-x-1/2 h-[60vh] bg-bg-dark rounded-t-2xl z-50 flex flex-col border-t border-border"
                 initial={{ y: "100%" }}
                 animate={{ y: 0 }}
                 exit={{ y: "100%" }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
             >
-                <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                    <h3 className="text-white font-bold">Comments</h3>
-                    <button onClick={onClose}><X className="text-gray-400" size={20} /></button>
+                <div className="flex justify-between items-center p-4 border-b border-border">
+                    <h3 className="text-text-onDark font-bold">Comments</h3>
+                    <button onClick={onClose}><X className="text-text-secondary" size={20} /></button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {loading ? <p className="text-white/50 text-center">Loading...</p> : (
-                        comments.length === 0 ? <p className="text-white/50 text-center text-sm">No comments yet. Be the first!</p> :
+                    {loading ? <p className="text-text-onDark/50 text-center">Loading...</p> : (
+                        comments.length === 0 ? <p className="text-text-onDark/50 text-center text-sm">No comments yet. Be the first!</p> :
                             comments.map((c) => (
                                 <div key={c.id} className="space-y-2">
                                     <div className="flex gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-red-500 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-400 to-red-500 flex items-center justify-center text-xs font-bold text-text-onDark shrink-0">
                                             {c.user ? c.user.charAt(0).toUpperCase() : 'U'}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-xs text-white/60 font-medium">{c.user} <span className="text-[10px] ml-2 opacity-50">{new Date(c.createdAt).toLocaleDateString()}</span></span>
-                                            <p className="text-sm text-white/90">{c.content}</p>
+                                            <span className="text-xs text-text-onDark/60 font-medium">{c.user} <span className="text-[10px] ml-2 opacity-50">{new Date(c.createdAt).toLocaleDateString()}</span></span>
+                                            <p className="text-sm text-text-onDark/90">{c.content}</p>
                                         </div>
                                     </div>
                                     {/* Replies */}
@@ -510,15 +510,15 @@ const CommentSheet = ({ reelId, onClose }) => {
                                         <div className="pl-11 space-y-2">
                                             {c.replies.map(reply => (
                                                 <div key={reply.id} className="flex gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                                                    <div className="w-6 h-6 rounded-full bg-bg-dark flex items-center justify-center text-[10px] font-bold text-text-onDark shrink-0">
                                                         {reply.user.charAt(0)}
                                                     </div>
-                                                    <div className={`bg-gray-800 p-2 rounded-lg ${reply.isSellerReply ? 'border-l-2 border-orange-500' : ''}`}>
-                                                        <span className="text-xs text-white/60 font-medium flex items-center gap-2">
+                                                    <div className={`bg-bg-dark p-2 rounded-lg ${reply.isSellerReply ? 'border-l-2 border-primary' : ''}`}>
+                                                        <span className="text-xs text-text-onDark/60 font-medium flex items-center gap-2">
                                                             {reply.user}
-                                                            {reply.isSellerReply && <span className="text-[9px] bg-orange-500 text-white px-1 rounded">SELLER</span>}
+                                                            {reply.isSellerReply && <span className="text-[9px] bg-primary text-text-onDark px-1 rounded">SELLER</span>}
                                                         </span>
-                                                        <p className="text-xs text-white/90 mt-0.5">{reply.content}</p>
+                                                        <p className="text-xs text-text-onDark/90 mt-0.5">{reply.content}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -529,15 +529,15 @@ const CommentSheet = ({ reelId, onClose }) => {
                     )}
                 </div>
 
-                <form onSubmit={submitComment} className="p-4 border-t border-gray-800 flex gap-2">
+                <form onSubmit={submitComment} className="p-4 border-t border-border flex gap-2">
                     <input
                         type="text"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
                         placeholder="Add a comment..."
-                        className="flex-1 bg-gray-800 text-white rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500"
+                        className="flex-1 bg-bg-dark text-text-onDark rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                     />
-                    <button type="submit" disabled={!newComment.trim()} className="text-orange-500 font-bold p-2 hover:bg-white/10 rounded-full disabled:opacity-50">
+                    <button type="submit" disabled={!newComment.trim()} className="text-primary font-bold p-2 hover:bg-bg-surface/10 rounded-full disabled:opacity-50">
                         <Send size={20} />
                     </button>
                 </form>

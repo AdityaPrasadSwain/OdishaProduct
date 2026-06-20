@@ -1,12 +1,19 @@
 package com.odisha.handloom.exception;
 
+import com.odisha.handloom.payload.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import jakarta.servlet.http.HttpServletRequest;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice
@@ -14,53 +21,74 @@ public class GlobalExceptionHandler {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleGlobalException(Exception ex) {
-        logger.error("Unhandled exception occurred: ", ex);
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Internal Server Error");
-        error.put("message", ex.getMessage() != null ? ex.getMessage() : "Unknown error occurred");
-        error.put("details", ex.getClass().getName());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ErrorResponse> handleApiException(ApiException ex, HttpServletRequest request) {
+        // Domain exceptions don't need ERROR level stack traces, WARN/INFO is fine.
+        logger.warn("API Exception [{}]: {}", ex.getErrorCode(), ex.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(ex.getHttpStatus().value())
+                .errorCode(ex.getErrorCode())
+                .message(ex.getMessage())
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, ex.getHttpStatus());
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
-        logger.error("Runtime exception occurred: ", ex);
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Request Failed");
-        error.put("message", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(org.springframework.web.bind.MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(
-            org.springframework.web.bind.MethodArgumentNotValidException ex) {
-        Map<String, Object> error = new HashMap<>();
-        if (ex.getBindingResult().hasErrors()) {
-            org.springframework.validation.FieldError firstError = ex.getBindingResult().getFieldErrors().get(0);
-            error.put("status", HttpStatus.BAD_REQUEST.value());
-            error.put("field", firstError.getField());
-            error.put("message", firstError.getDefaultMessage());
-            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        List<Map<String, String>> fieldErrors = new ArrayList<>();
+        
+        for (FieldError fieldError : ex.getBindingResult().getFieldErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("field", fieldError.getField());
+            errorMap.put("message", fieldError.getDefaultMessage());
+            fieldErrors.add(errorMap);
         }
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .errorCode("VALIDATION_FAILED")
+                .message("Please fix the highlighted fields.")
+                .path(request.getRequestURI())
+                .fieldErrors(fieldErrors)
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException exc) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "File too large");
-        error.put("message", "File too large!");
-        return new ResponseEntity<>(error, HttpStatus.EXPECTATION_FAILED);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        logger.warn("Access denied for path {}: {}", request.getRequestURI(), ex.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.FORBIDDEN.value())
+                .errorCode("ACCESS_DENIED")
+                .message("You don't have permission to do that.")
+                .path(request.getRequestURI())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
-    public ResponseEntity<?> handleNoResourceFoundException(
-            org.springframework.web.servlet.resource.NoResourceFoundException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Not Found");
-        error.put("message", "The requested resource was not found: " + ex.getResourcePath());
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, HttpServletRequest request) {
+        // Fallback catch-all logs the full stack trace at ERROR level
+        logger.error("Unhandled exception at " + request.getRequestURI(), ex);
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .errorCode("INTERNAL_ERROR")
+                .message("Something went wrong on our end. Please try again in a few moments.")
+                .path(request.getRequestURI())
+                .build();
+
+        // Never leak the stack trace or internal message to the client
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

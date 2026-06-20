@@ -9,7 +9,7 @@ const CategoryCard = ({ category }) => {
             className="flex flex-col items-center gap-3 cursor-pointer group"
         >
             <Link to={`/products?category=${category.name}`} className="relative">
-                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-4 border-white dark:border-gray-800 group-hover:shadow-xl group-hover:border-orange-100 dark:group-hover:border-orange-900/30 transition-all duration-300">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden shadow-md border-4 border-white dark:border-border group-hover:shadow-xl group-hover:border-primary dark:group-hover:border-primary/30 transition-all duration-300">
                     <img
                         src={category.imageUrl || '/default_category_placeholder.png'}
                         alt={category.name}
@@ -20,7 +20,7 @@ const CategoryCard = ({ category }) => {
             </Link>
             <Link
                 to={`/products?category=${category.name}`}
-                className="text-sm md:text-base font-semibold text-gray-800 dark:text-gray-200 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors"
+                className="text-sm md:text-base font-semibold text-text-primary dark:text-text-secondary group-hover:text-primary dark:group-hover:text-primary transition-colors"
             >
                 {category.name}
             </Link>

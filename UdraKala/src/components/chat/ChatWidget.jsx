@@ -16,7 +16,7 @@ const ChatWidget = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsOpen(true)}
-                    className="fixed bottom-6 right-6 w-14 h-14 bg-orange-600 text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-orange-700 transition-colors"
+                    className="fixed bottom-6 right-6 w-14 h-14 bg-primary text-text-onDark rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-colors"
                 >
                     <MessageCircle size={28} />
                 </Motion.button>

@@ -36,7 +36,7 @@ const SellerWallet = () => {
             text: `Withdraw ₹${walletData.currentBalance}? This will be processed to your registered bank account.`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#ea580c',
+            confirmButtonColor: '#5747C7',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Withdraw'
         });
@@ -61,7 +61,7 @@ const SellerWallet = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -83,8 +83,8 @@ const SellerWallet = () => {
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                <Wallet className="text-orange-600" /> My Wallet
+            <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark flex items-center gap-2">
+                <Wallet className="text-primary" /> My Wallet
             </h2>
 
             {/* Overview Cards */}
@@ -93,21 +93,21 @@ const SellerWallet = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden"
+                    className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl p-6 text-text-onDark shadow-lg relative overflow-hidden"
                 >
                     <div className="absolute top-0 right-0 p-4 opacity-20">
                         <Wallet size={64} />
                     </div>
-                    <p className="text-orange-100 font-medium mb-1">Available Balance</p>
+                    <p className="text-primary font-medium mb-1">Available Balance</p>
                     <h3 className="text-4xl font-bold mb-4">₹{walletData?.currentBalance?.toLocaleString() || '0'}</h3>
                     <button
                         onClick={handleWithdraw}
                         disabled={!walletData || walletData.currentBalance <= 0}
-                        className="bg-white text-orange-600 px-4 py-2 rounded-lg font-semibold shadow hover:bg-orange-50 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        className="bg-bg-surface text-primary px-4 py-2 rounded-lg font-semibold shadow hover:bg-bg-band transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
                         <CreditCard size={18} /> Withdraw Money
                     </button>
-                    <p className="text-xs text-orange-200 mt-3 align-bottom">
+                    <p className="text-xs text-primary mt-3 align-bottom">
                         Minimum withdrawal limit: ₹100
                     </p>
                 </motion.div>
@@ -117,20 +117,20 @@ const SellerWallet = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 relative"
+                    className="bg-bg-surface dark:bg-bg-dark rounded-2xl p-6 shadow-sm border border-border dark:border-border relative"
                 >
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-gray-500 dark:text-gray-400 font-medium mb-1">Total Withdrawn</p>
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-white">₹{walletData?.totalWithdrawn?.toLocaleString() || '0'}</h3>
+                            <p className="text-text-secondary dark:text-text-secondary font-medium mb-1">Total Withdrawn</p>
+                            <h3 className="text-3xl font-bold text-text-primary dark:text-text-onDark">₹{walletData?.totalWithdrawn?.toLocaleString() || '0'}</h3>
                         </div>
-                        <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl text-green-600">
+                        <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl text-status-success">
                             <TrendingUp size={24} />
                         </div>
                     </div>
                     <div className="mt-4 h-24">
                         {/* Mini Chart can go here, for now placeholder */}
-                        <div className="text-xs text-gray-400 italic">Lifetime earnings withdrawn to bank.</div>
+                        <div className="text-xs text-text-secondary italic">Lifetime earnings withdrawn to bank.</div>
                     </div>
                 </motion.div>
 
@@ -139,24 +139,24 @@ const SellerWallet = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700"
+                    className="bg-bg-surface dark:bg-bg-dark rounded-2xl p-6 shadow-sm border border-border dark:border-border"
                 >
-                    <p className="text-gray-500 dark:text-gray-400 font-medium mb-1">Payout Status</p>
+                    <p className="text-text-secondary dark:text-text-secondary font-medium mb-1">Payout Status</p>
                     <div className="flex items-center gap-2 mt-2">
-                        <CheckCircle className="text-green-500" size={20} />
-                        <span className="text-gray-700 dark:text-gray-300 font-medium">Bank Account Verified</span>
+                        <CheckCircle className="text-status-success" size={20} />
+                        <span className="text-text-secondary dark:text-text-secondary font-medium">Bank Account Verified</span>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Next settlement cycle:</p>
-                        <p className="font-semibold text-gray-800 dark:text-white">Instant (On Request)</p>
+                    <div className="mt-4 pt-4 border-t border-border dark:border-border">
+                        <p className="text-sm text-text-secondary dark:text-text-secondary">Next settlement cycle:</p>
+                        <p className="font-semibold text-text-primary dark:text-text-onDark">Instant (On Request)</p>
                     </div>
                 </motion.div>
             </div>
 
             {/* Transaction History Graph */}
             {payouts.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                    <h3 className="text-lg font-bold mb-4 dark:text-white">Payout Trend</h3>
+                <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-2xl shadow-sm border border-border dark:border-border">
+                    <h3 className="text-lg font-bold mb-4 dark:text-text-onDark">Payout Trend</h3>
                     <div className="h-64">
                         <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
                     </div>
@@ -164,43 +164,43 @@ const SellerWallet = () => {
             )}
 
             {/* Recent Payouts Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 className="font-bold text-gray-800 dark:text-white">Recent Payouts</h3>
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-xl shadow-sm border border-border dark:border-border overflow-hidden">
+                <div className="px-6 py-4 border-b border-border dark:border-border">
+                    <h3 className="font-bold text-text-primary dark:text-text-onDark">Recent Payouts</h3>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-900/50">
+                        <thead className="bg-bg-page dark:bg-bg-dark/50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Reference ID</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Amount</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {walletData?.recentPayouts?.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-8 text-center text-gray-500">
+                                    <td colSpan="4" className="px-6 py-8 text-center text-text-secondary">
                                         No payout history found.
                                     </td>
                                 </tr>
                             ) : (
                                 walletData?.recentPayouts?.map((payout) => (
                                     <tr key={payout.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 dark:text-gray-300">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-text-secondary dark:text-text-secondary">
                                             {payout.payoutReference || 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 dark:text-white">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-text-primary dark:text-text-onDark">
                                             ₹{payout.totalAmount.toLocaleString()}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary dark:text-text-secondary">
                                             {new Date(payout.processedAt).toLocaleDateString()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                                 ${payout.status === 'SUCCESS' ? 'bg-green-100 text-green-800' :
-                                                    payout.status === 'FAILED' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                                                    payout.status === 'FAILED' ? 'text-status-error text-status-error' : 'bg-yellow-100 text-yellow-800'}`}>
                                                 {payout.status}
                                             </span>
                                         </td>

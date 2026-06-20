@@ -14,6 +14,7 @@ import java.util.UUID;
 @lombok.AllArgsConstructor
 @lombok.EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @lombok.ToString(onlyExplicitlyIncluded = true)
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class ProductPricing {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

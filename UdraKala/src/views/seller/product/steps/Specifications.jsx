@@ -46,8 +46,8 @@ const Specifications = ({ onNext, onBack }) => {
     return (
         <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
             <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                <h3 className="text-lg font-bold text-slate-100">Product Specifications</h3>
-                <button type="button" onClick={handleAdd} className="text-indigo-400 font-bold hover:text-indigo-300 text-sm transition-colors">+ Add Row</button>
+                <h3 className="text-lg font-bold text-text-secondary">Product Specifications</h3>
+                <button type="button" onClick={handleAdd} className="text-primary font-bold hover:text-primary text-sm transition-colors">+ Add Row</button>
             </div>
 
             <div className="space-y-4">
@@ -58,7 +58,7 @@ const Specifications = ({ onNext, onBack }) => {
                                 value={spec.key ?? ''}
                                 onChange={(e) => handleChange(idx, 'key', e.target.value)}
                                 placeholder="Attribute (e.g. Care Instructions)"
-                                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-900/50 text-slate-100 placeholder-slate-500 focus:bg-slate-900 transition-all"
+                                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-dark/50 text-text-secondary placeholder-slate-500 focus:bg-bg-dark transition-all"
                             />
                         </div>
                         <div className="flex-1">
@@ -66,13 +66,13 @@ const Specifications = ({ onNext, onBack }) => {
                                 value={spec.value ?? ''}
                                 onChange={(e) => handleChange(idx, 'value', e.target.value)}
                                 placeholder="Value (e.g. Dry Clean Only)"
-                                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-slate-900/50 text-slate-100 placeholder-slate-500 focus:bg-slate-900 transition-all"
+                                className="w-full px-4 py-3 border border-white/10 rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-dark/50 text-text-secondary placeholder-slate-500 focus:bg-bg-dark transition-all"
                             />
                         </div>
                         <button
                             type="button"
                             onClick={() => handleRemove(idx)}
-                            className="p-3 text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors"
+                            className="p-3 text-status-error hover:bg-status-error/10 rounded-xl transition-colors"
                         >
                             &times;
                         </button>
@@ -80,8 +80,8 @@ const Specifications = ({ onNext, onBack }) => {
                 ))}
                 {specs.length === 0 && (
                     <div className="text-center py-8 border-2 border-dashed border-white/5 rounded-2xl">
-                        <p className="text-slate-500 text-sm">No specifications added yet.</p>
-                        <button type="button" onClick={handleAdd} className="mt-2 text-indigo-400 font-bold text-sm">Click to add your first row</button>
+                        <p className="text-text-secondary text-sm">No specifications added yet.</p>
+                        <button type="button" onClick={handleAdd} className="mt-2 text-primary font-bold text-sm">Click to add your first row</button>
                     </div>
                 )}
             </div>
@@ -90,14 +90,14 @@ const Specifications = ({ onNext, onBack }) => {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 rounded-xl font-semibold text-slate-400 hover:bg-white/5 transition-colors"
+                    className="px-6 py-3 rounded-xl font-semibold text-text-secondary hover:bg-bg-surface/5 transition-colors"
                 >
                     &larr; Back
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-xl transition-all transform hover:-translate-y-1 ${loading ? 'bg-slate-700' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 shadow-indigo-900/20'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-xl transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-dark' : 'bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 shadow-indigo-900/20'}`}
                 >
                     {loading ? 'Saving...' : 'Save & Continue'}
                 </button>

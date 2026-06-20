@@ -22,6 +22,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Input from '../../components/ui/Input';
 import StatsCard from '../../components/admin/StatsCard';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import ScrollReveal from '../../components/ui/ScrollReveal';
 import { getUnreadNotificationCount } from '../../api/adminNotificationApi';
 import AdminCategories from './AdminCategories';
@@ -126,11 +127,11 @@ const AdminDashboard = () => {
     const handleAddFeature = async (e) => { e.preventDefault(); try { const res = await API.post('/features', { name: featName, description: featDesc }); setFeatures([...features, res.data]); setFeatName(''); setFeatDesc(''); Swal.fire({ icon: 'success', title: 'Added!', timer: 1500, showConfirmButton: false }); } catch (ERROR) { Swal.fire({ icon: 'error', title: 'Failed' }); } };
 
     // --- Theme Setup ---
-    const { theme } = useTheme();
+    const { theme, toggleTheme } = useTheme();
     const muiTheme = useMemo(() => createTheme({
         palette: {
             mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#ea580c' },
+            primary: { main: '#5747C7' },
             background: {
                 paper: theme === 'dark' ? '#1f2937' : '#ffffff',
                 default: theme === 'dark' ? '#111827' : '#ffffff',
@@ -142,19 +143,6 @@ const AdminDashboard = () => {
         },
         components: {
             MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-            MuiDataGrid: {
-                styleOverrides: {
-                    root: {
-                        border: 'none',
-                        '& .MuiDataGrid-cell': { borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
-                        '& .MuiDataGrid-columnHeaders': {
-                            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
-                            backgroundColor: theme === 'dark' ? '#374151' : '#f9fafb',
-                        },
-                        '& .MuiDataGrid-footerContainer': { borderTopColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
-                    },
-                },
-            },
         },
     }), [theme]);
 
@@ -195,10 +183,10 @@ const AdminDashboard = () => {
             minWidth: 200,
             renderCell: (params) => (
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <div className="h-10 w-10 rounded-md overflow-hidden bg-bg-band dark:bg-bg-dark">
                         {params.row.imageUrls?.[0] && <img className="h-full w-full object-cover" src={params.row.imageUrls[0]} alt="" />}
                     </div>
-                    <span className="font-medium text-gray-900 dark:text-white truncate" title={params.row.name}>{params.row.name}</span>
+                    <span className="font-medium text-text-primary dark:text-text-onDark truncate" title={params.row.name}>{params.row.name}</span>
                 </div>
             )
         },
@@ -229,7 +217,7 @@ const AdminDashboard = () => {
                         ) : (
                             <>
                                 <Button size="sm" variant="warning" onClick={() => handleProductUnapprove(params.row.id)}><AlertCircle size={16} /></Button>
-                                <Button size="sm" variant="ghost" onClick={() => handleProductReject(params.row.id)} className="text-red-500 hover:bg-red-50"><Trash2 size={16} /></Button>
+                                <Button size="sm" variant="ghost" onClick={() => handleProductReject(params.row.id)} className="text-status-error hover:bg-red-50"><Trash2 size={16} /></Button>
                             </>
                         )}
                     </div>
@@ -239,33 +227,63 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="space-y-8">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h2 className="text-3xl font-bold text-gray-900 dark:text-white font-serif">Admin Dashboard</h2>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your platform efficiently.</p>
-                </div>
+        <div className="flex h-screen overflow-hidden bg-bg-page dark:bg-bg-dark">
+            {/* Admin Sidebar */}
+            <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-                {/* Tabs */}
-                <div className="flex bg-white dark:bg-gray-800 p-1.5 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto">
-                    {['overview', 'sellers', 'products', 'categories', 'coupons', 'returns', 'features'].map(tab => (
-                        <motion.button
-                            key={tab}
-                            onClick={() => setActiveTab(tab)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize whitespace-nowrap
-                                ${activeTab === tab
-                                    ? 'bg-primary text-white shadow-md'
-                                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                                }`}
-                        >
-                            {tab}
-                        </motion.button>
-                    ))}
-                </div>
-            </div>
+            {/* Main Content Area */}
+            <div className="flex-1 min-w-0 flex flex-col h-screen relative">
+                {/* Topbar */}
+                <header className="h-16 flex items-center justify-between px-6 border-b border-border dark:border-white/5 bg-bg-surface dark:bg-bg-dark flex-shrink-0">
+                    <div className="flex-1 flex items-center">
+                        {/* Search Bar */}
+                        <div className="relative w-full max-w-md hidden md:block">
+                            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <circle cx="11" cy="11" r="8" strokeWidth="2"/><path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                            </span>
+                            <input
+                                className="w-full pl-10 pr-4 py-2 border border-border dark:border-white/10 rounded-lg text-sm bg-bg-page dark:bg-bg-surface/5 focus:outline-none focus:ring-2 focus:ring-primary/50 text-text-primary dark:text-text-onDark transition-colors placeholder-gray-400"
+                                type="text"
+                                placeholder="Search orders, sellers, or products..."
+                            />
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-5">
+                        {/* Theme Toggle */}
+                        <button onClick={toggleTheme} className="text-text-secondary hover:text-primary transition-colors">
+                            {theme === 'dark' ? (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                            ) : (
+                                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                            )}
+                        </button>
+                        <button className="text-text-secondary hover:text-primary transition-colors relative">
+                            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-bg-dark"></span>
+                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                        </button>
+                        {/* Profile */}
+                        <div className="flex items-center gap-3 pl-2 border-l border-border dark:border-white/10">
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+                                S
+                            </div>
+                            <div className="hidden md:block text-sm">
+                                <p className="font-semibold text-text-primary dark:text-text-onDark leading-none">Surendra Sahu</p>
+                                <p className="text-[11px] text-text-secondary mt-0.5 leading-none">Super Admin</p>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 scrollbar-hide">
+                    <div className="mb-8">
+                        <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark capitalize">
+                            {activeTab}
+                        </h2>
+                        <p className="text-text-secondary text-sm mt-1">Manage your platform efficiently.</p>
+                    </div>
 
             <AnimatePresence mode="wait">
                 {activeTab === 'overview' && (
@@ -355,8 +373,8 @@ const AdminDashboard = () => {
                                     <form onSubmit={handleAddFeature} className="space-y-4">
                                         <Input label="Name" value={featName} onChange={(e) => setFeatName(e.target.value)} placeholder="e.g. Handwoven" required />
                                         <div className="space-y-1">
-                                            <label className="text-sm font-medium text-dark dark:text-white">Description</label>
-                                            <textarea value={featDesc} onChange={(e) => setFeatDesc(e.target.value)} className="w-full px-4 py-2 bg-white dark:bg-dark border border-border dark:border-muted rounded-md text-dark dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50" rows="4" placeholder="Description..." />
+                                            <label className="text-sm font-medium text-dark dark:text-text-onDark">Description</label>
+                                            <textarea value={featDesc} onChange={(e) => setFeatDesc(e.target.value)} className="w-full px-4 py-2 bg-bg-surface dark:bg-dark border border-border dark:border-muted rounded-md text-dark dark:text-text-onDark focus:outline-none focus:ring-2 focus:ring-primary/50" rows="4" placeholder="Description..." />
                                         </div>
                                         <Button type="submit" className="w-full">Add Feature</Button>
                                     </form>
@@ -366,7 +384,7 @@ const AdminDashboard = () => {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {features.map((f, idx) => (
                                         <Card key={idx} className="hover:shadow-lg transition-shadow border-l-4 border-l-secondary">
-                                            <h4 className="font-bold text-lg text-dark dark:text-white">{f.name}</h4>
+                                            <h4 className="font-bold text-lg text-dark dark:text-text-onDark">{f.name}</h4>
                                             <p className="text-muted text-sm mt-1 line-clamp-2">{f.description || "No description"}</p>
                                         </Card>
                                     ))}
@@ -376,6 +394,8 @@ const AdminDashboard = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+                </div>
+            </div>
         </div>
     );
 };

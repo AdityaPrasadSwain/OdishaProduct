@@ -36,8 +36,8 @@ const StatCard = ({ label, value, icon: Icon, colorClass, onClick }) => (
             <Icon size={24} className={colorClass.replace('bg-', 'text-')} />
         </div>
         <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
+            <p className="text-sm text-text-secondary dark:text-text-secondary">{label}</p>
+            <h3 className="text-2xl font-bold text-text-primary dark:text-text-onDark">{value}</h3>
         </div>
     </Card>
 );
@@ -156,10 +156,10 @@ const DeliveryDashboard = () => {
     });
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark py-8">
             <Container maxWidth="lg">
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                    <Typography variant="h4" fontWeight="bold" className="text-gray-900 dark:text-white">
+                    <Typography variant="h4" fontWeight="bold" className="text-text-primary dark:text-text-onDark">
                         Delivery Dashboard
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
@@ -188,8 +188,8 @@ const DeliveryDashboard = () => {
                             My Proofs
                         </Button>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                            <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                            <Typography variant="body1" fontWeight="medium" className="text-gray-700 dark:text-gray-300">
+                            <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-status-success animate-pulse' : 'bg-bg-band'}`}></div>
+                            <Typography variant="body1" fontWeight="medium" className="text-text-secondary dark:text-text-secondary">
                                 {isOnline ? 'Active' : 'Offline'}
                             </Typography>
                         </Box>
@@ -214,7 +214,7 @@ const DeliveryDashboard = () => {
                             label="Total Orders"
                             value={summary.totalOrders}
                             icon={Package}
-                            colorClass="bg-blue-500"
+                            colorClass="bg-primary"
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
@@ -222,7 +222,7 @@ const DeliveryDashboard = () => {
                             label="Completed"
                             value={summary.completedOrders}
                             icon={CheckCircle}
-                            colorClass="bg-green-500"
+                            colorClass="bg-status-success"
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
@@ -230,7 +230,7 @@ const DeliveryDashboard = () => {
                             label="Today's Earnings"
                             value={`₹${summary.earningsToday}`}
                             icon={IndianRupee}
-                            colorClass="bg-orange-500"
+                            colorClass="bg-primary"
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={3}>
@@ -303,7 +303,7 @@ const DeliveryDashboard = () => {
                             </Box>
                         ) : (
                             <Table sx={{ minWidth: 650 }}>
-                                <TableHead className="bg-gray-50/50 dark:bg-gray-800/50">
+                                <TableHead className="bg-bg-page/50 dark:bg-bg-dark/50">
                                     <TableRow>
                                         <TableCell sx={{ fontWeight: 600, py: 2 }}>Order Details</TableCell>
                                         <TableCell sx={{ fontWeight: 600 }}>Customer Info</TableCell>
@@ -317,18 +317,18 @@ const DeliveryDashboard = () => {
                                         filteredOrders.map((order) => (
                                             <TableRow key={order.orderId} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                                 <TableCell component="th" scope="row">
-                                                    <Typography variant="body2" fontWeight="700" className="text-primary-600">
+                                                    <Typography variant="body2" fontWeight="700" className="text-primary">
                                                         #{order.orderId.substring(0, 8).toUpperCase()}
                                                     </Typography>
-                                                    <Typography variant="caption" className="text-gray-400">
+                                                    <Typography variant="caption" className="text-text-secondary">
                                                         {new Date(order.createdDate).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
                                                     </Typography>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Typography variant="body2" fontWeight="600" className="text-gray-900 dark:text-white">
+                                                    <Typography variant="body2" fontWeight="600" className="text-text-primary dark:text-text-onDark">
                                                         {order.customerName}
                                                     </Typography>
-                                                    <Typography variant="caption" display="block" className="text-gray-500 truncate max-w-[220px]">
+                                                    <Typography variant="caption" display="block" className="text-text-secondary truncate max-w-[220px]">
                                                         {order.shippingAddress}
                                                     </Typography>
                                                 </TableCell>

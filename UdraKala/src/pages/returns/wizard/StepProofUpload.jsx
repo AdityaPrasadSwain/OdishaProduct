@@ -24,7 +24,7 @@ const StepProofUpload = ({ formData, updateFormData }) => {
 
     return (
         <div className="space-y-6">
-            <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+            <div className="border-2 border-dashed border-border dark:border-border rounded-2xl p-8 text-center hover:bg-bg-page dark:hover:bg-bg-dark/50 transition">
                 <input
                     type="file"
                     id="proof-upload"
@@ -34,11 +34,11 @@ const StepProofUpload = ({ formData, updateFormData }) => {
                     onChange={handleFileChange}
                 />
                 <label htmlFor="proof-upload" className="cursor-pointer block">
-                    <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-primary-light text-primary rounded-full flex items-center justify-center mx-auto mb-4">
                         <CloudArrowUpIcon className="w-8 h-8" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Upload Proof Images</h3>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <h3 className="text-lg font-semibold text-text-primary dark:text-text-onDark">Upload Proof Images</h3>
+                    <p className="text-sm text-text-secondary mt-2">
                         Click to browse or drag and drop. <br /> Supported: JPG, PNG, WEBP.
                     </p>
                 </label>
@@ -47,10 +47,10 @@ const StepProofUpload = ({ formData, updateFormData }) => {
             {/* Preview Grid */}
             {formData.proofImages.length > 0 && (
                 <div>
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Selected Images ({formData.proofImages.length})</h4>
+                    <h4 className="text-sm font-medium text-text-secondary dark:text-text-secondary mb-3">Selected Images ({formData.proofImages.length})</h4>
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
                         {formData.proofImages.map((file, idx) => (
-                            <div key={idx} className="relative group aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
+                            <div key={idx} className="relative group aspect-square bg-bg-band rounded-lg overflow-hidden border border-border">
                                 <img
                                     src={URL.createObjectURL(file)}
                                     alt="preview"
@@ -58,7 +58,7 @@ const StepProofUpload = ({ formData, updateFormData }) => {
                                 />
                                 <button
                                     onClick={() => removeFile(idx)}
-                                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition shadow-sm"
+                                    className="absolute top-1 right-1 p-1 bg-status-error text-text-onDark rounded-full opacity-0 group-hover:opacity-100 transition shadow-sm"
                                 >
                                     <XMarkIcon className="w-4 h-4" />
                                 </button>
@@ -69,10 +69,10 @@ const StepProofUpload = ({ formData, updateFormData }) => {
             )}
 
             {!isProofRequired && formData.proofImages.length === 0 && (
-                <p className="text-sm text-gray-500 italic">Optional for this reason, but recommended.</p>
+                <p className="text-sm text-text-secondary italic">Optional for this reason, but recommended.</p>
             )}
             {isProofRequired && formData.proofImages.length === 0 && (
-                <p className="text-sm text-red-500 font-medium">Proof image is required for your selected reason.</p>
+                <p className="text-sm text-status-error font-medium">Proof image is required for your selected reason.</p>
             )}
         </div>
     );

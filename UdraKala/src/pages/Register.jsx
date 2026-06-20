@@ -22,6 +22,8 @@ const Register = () => {
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
 
     const handleChange = (e) => {
         if (e.target.name === 'profileImage') {
@@ -111,7 +113,7 @@ const Register = () => {
                 text: validationError,
                 icon: 'error',
                 confirmButtonText: 'Fix Now',
-                confirmButtonColor: '#ea580c' // Orange-600 to match theme
+                confirmButtonColor: '#5747C7' // Orange-600 to match theme
             });
             return;
         }
@@ -153,51 +155,67 @@ const Register = () => {
                 navigate('/');
             }
         } catch (err) {
-            // Backend Error Handling
-            const backendMessage = err.response?.data?.message || err.message || "Something went wrong. Please try again later.";
-            Swal.fire({
-                title: 'Registration Failed',
-                text: backendMessage,
-                icon: 'error',
-                confirmButtonText: 'Try Again',
-                confirmButtonColor: '#ea580c'
-            });
+            if (err.errorCode === 'VALIDATION_FAILED' && err.fieldErrors) {
+                const errorsMap = {};
+                err.fieldErrors.forEach(f => errorsMap[f.field] = f.message);
+                setFieldErrors(errorsMap);
+                setError(err.message);
+            } else if (err.errorCode === 'EMAIL_ALREADY_EXISTS') {
+                setError(err.message);
+            } else {
+                Swal.fire({
+                    title: 'Registration Failed',
+                    text: err.message || "Something went wrong. Please try again later.",
+                    icon: 'error',
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#5747C7'
+                });
+            }
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-12">
+        <div className="min-h-screen relative flex items-center justify-center overflow-hidden bg-bg-page dark:bg-bg-dark transition-colors duration-300 py-12">
             {/* Background Effects */}
-            <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-indigo-300/30 dark:bg-indigo-900/40 rounded-full blur-[120px] pointer-events-none transition-colors duration-300" />
-            <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-orange-400/20 dark:bg-orange-600/30 rounded-full blur-[120px] pointer-events-none transition-colors duration-300" />
+            <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary-light/30 dark:bg-primary-hover/40 rounded-full blur-[120px] pointer-events-none transition-colors duration-300" />
+            <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-primary/20 dark:bg-primary/30 rounded-full blur-[120px] pointer-events-none transition-colors duration-300" />
 
             <div className="max-w-2xl w-full px-4 relative z-10">
                 <Motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white/80 dark:bg-white/10 backdrop-blur-xl border border-gray-200 dark:border-white/20 p-8 md:p-10 rounded-3xl shadow-2xl dark:shadow-none transition-all duration-300"
+                    className="bg-bg-surface/80 dark:bg-bg-surface/10 backdrop-blur-xl border border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] p-8 md:p-10 rounded-3xl shadow-2xl dark:shadow-none transition-all duration-300"
                 >
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 transition-colors">Create Account</h2>
-                        <p className="text-gray-600 dark:text-gray-300 transition-colors">Join the community of artisans and connoisseurs</p>
+                        <h2 className="text-3xl md:text-4xl font-bold text-text-primary dark:text-text-onDark mb-2 transition-colors">Create Account</h2>
+                        <p className="text-text-secondary dark:text-text-secondary transition-colors">Join the community of artisans and connoisseurs</p>
                     </div>
+
+                    {error && (
+                        <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm p-3 rounded-lg mb-6">
+                            {error}
+                            {error === 'An account with this email already exists. Try logging in, or use a different email.' && (
+                                <Link to="/login" className="ml-2 font-bold underline">Log in instead</Link>
+                            )}
+                        </div>
+                    )}
 
                     <form className="space-y-6" onSubmit={handleSubmit} noValidate>
                         {/* Profile Photo - New Section */}
                         <div className="flex justify-center mb-6">
                             <div className="relative group">
                                 <label htmlFor="profileImage" className="cursor-pointer">
-                                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-orange-500 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary bg-bg-band dark:bg-bg-dark flex items-center justify-center">
                                         {preview ? (
                                             <img src={preview} alt="Profile Preview" className="w-full h-full object-cover" />
                                         ) : (
-                                            <span className="text-sm text-gray-500 text-center px-2">Add Photo</span>
+                                            <span className="text-sm text-text-secondary text-center px-2">Add Photo</span>
                                         )}
                                     </div>
-                                    <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="text-white text-xs font-bold">Change</span>
+                                    <div className="absolute inset-0 rounded-full bg-bg-dark/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <span className="text-text-onDark text-xs font-bold">Change</span>
                                     </div>
                                 </label>
                                 <input
@@ -209,18 +227,20 @@ const Register = () => {
                                     className="hidden"
                                 />
                             </div>
-                            <div className="ml-4 flex flex-col justify-center text-sm text-gray-500">
-                                <p className="font-medium dark:text-gray-300">Upload a profile photo (optional)</p>
+                            <div className="ml-4 flex flex-col justify-center text-sm text-text-secondary">
+                                <p className="font-medium dark:text-text-secondary">Upload a profile photo (optional)</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Full Name</label>
-                                <input name="fullName" type="text" value={formData.fullName} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="John Doe" />
+                                <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2 transition-colors">Full Name</label>
+                                <input name="fullName" type="text" value={formData.fullName} onChange={handleChange} className={`w-full bg-bg-surface dark:bg-bg-surface/5 border ${fieldErrors.fullName ? 'border-red-500' : 'border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]'} text-text-primary dark:text-text-onDark rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500`} placeholder="John Doe" />
+                                {fieldErrors.fullName && <p className="text-red-500 text-xs mt-1">{fieldErrors.fullName}</p>}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Email</label>
-                                <input name="email" type="email" value={formData.email} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="john@example.com" />
+                                <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2 transition-colors">Email</label>
+                                <input name="email" type="email" value={formData.email} onChange={handleChange} className={`w-full bg-bg-surface dark:bg-bg-surface/5 border ${fieldErrors.email ? 'border-red-500' : 'border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]'} text-text-primary dark:text-text-onDark rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500`} placeholder="john@example.com" />
+                                {fieldErrors.email && <p className="text-red-500 text-xs mt-1">{fieldErrors.email}</p>}
                             </div>
                         </div>
 
@@ -228,40 +248,42 @@ const Register = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Password</label>
+                                <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2 transition-colors">Password</label>
                                 <div className="relative">
                                     <input
                                         name="password"
                                         type={showPassword ? "text" : "password"}
                                         value={formData.password}
                                         onChange={handleChange}
-                                        className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all placeholder-gray-400 dark:placeholder-gray-500"
+                                        className={`w-full bg-bg-surface dark:bg-bg-surface/5 border ${fieldErrors.password ? 'border-red-500' : 'border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]'} text-text-primary dark:text-text-onDark rounded-lg px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500`}
                                         placeholder="Min 8 characters"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary dark:text-text-secondary hover:text-text-secondary dark:hover:text-text-onDark transition-colors"
                                     >
                                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                     </button>
                                 </div>
+                                {fieldErrors.password && <p className="text-red-500 text-xs mt-1">{fieldErrors.password}</p>}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Phone</label>
-                                <input name="phoneNumber" type="text" value={formData.phoneNumber} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all placeholder-gray-400 dark:placeholder-gray-500" placeholder="+91 98765 43210" />
+                                <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2 transition-colors">Phone</label>
+                                <input name="phoneNumber" type="text" value={formData.phoneNumber} onChange={handleChange} className={`w-full bg-bg-surface dark:bg-bg-surface/5 border ${fieldErrors.phoneNumber ? 'border-red-500' : 'border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]'} text-text-primary dark:text-text-onDark rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all placeholder-gray-400 dark:placeholder-gray-500`} placeholder="+91 98765 43210" />
+                                {fieldErrors.phoneNumber && <p className="text-red-500 text-xs mt-1">{fieldErrors.phoneNumber}</p>}
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors">Account Type</label>
+                            <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2 transition-colors">Account Type</label>
                             <div className="relative">
-                                <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-900 dark:text-white rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-500/50 transition-all appearance-none cursor-pointer">
-                                    <option value="CUSTOMER" className="text-gray-900 dark:text-black">Customer</option>
+                                <select name="role" value={formData.role} onChange={handleChange} className="w-full bg-bg-surface dark:bg-bg-surface/5 border border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-text-primary dark:text-text-onDark rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary hover:border-primary/50 transition-all appearance-none cursor-pointer">
+                                    <option value="CUSTOMER" className="text-text-primary dark:text-black">Customer</option>
                                     {/* Seller registration moved to dedicated page */}
-                                    <option value="ADMIN" className="text-gray-900 dark:text-black">Admin (Testing)</option>
+                                    <option value="ADMIN" className="text-text-primary dark:text-black">Admin (Testing)</option>
                                 </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-gray-500 dark:text-gray-400">
+                                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-text-secondary dark:text-text-secondary">
                                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
                                 </div>
                             </div>
@@ -269,14 +291,14 @@ const Register = () => {
 
                         {/* Seller Details removed - moved to separate flow */}
 
-                        <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-orange-500/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+                        <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-hover text-text-onDark font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
 
                         <div className="text-center mt-6">
-                            <p className="text-gray-500 dark:text-gray-400 transition-colors">
+                            <p className="text-text-secondary dark:text-text-secondary transition-colors">
                                 Already have an account?{' '}
-                                <Link to="/login" className="text-orange-600 dark:text-orange-400 hover:text-orange-500 dark:hover:text-orange-300 font-medium transition ml-1">
+                                <Link to="/login" className="text-primary dark:text-primary hover:text-primary dark:hover:text-primary font-medium transition ml-1">
                                     Login here
                                 </Link>
                             </p>

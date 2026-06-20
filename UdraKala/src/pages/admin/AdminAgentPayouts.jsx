@@ -57,7 +57,7 @@ const AdminAgentPayouts = () => {
     return (
         <Box className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-                <Typography variant="h4" className="font-bold text-gray-800">
+                <Typography variant="h4" className="font-bold text-text-primary">
                     Agent Payouts
                 </Typography>
                 <Button
@@ -71,7 +71,7 @@ const AdminAgentPayouts = () => {
 
             <TableContainer component={Paper} className="shadow-md rounded-lg overflow-hidden">
                 <Table>
-                    <TableHead className="bg-gray-100">
+                    <TableHead className="bg-bg-band">
                         <TableRow>
                             <TableCell>Date</TableCell>
                             <TableCell>Agent ID</TableCell>
@@ -91,7 +91,7 @@ const AdminAgentPayouts = () => {
                             </TableRow>
                         ) : earnings.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={7} align="center" className="py-10 text-gray-500">
+                                <TableCell colSpan={7} align="center" className="py-10 text-text-secondary">
                                     No pending payouts found
                                 </TableCell>
                             </TableRow>
@@ -100,9 +100,9 @@ const AdminAgentPayouts = () => {
                                 <TableRow key={item.id} hover>
                                     <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
                                     <TableCell className="font-mono text-xs">{item.agentId}</TableCell>
-                                    <TableCell className="font-mono text-xs text-gray-500">{item.shipmentId || '-'}</TableCell>
+                                    <TableCell className="font-mono text-xs text-text-secondary">{item.shipmentId || '-'}</TableCell>
                                     <TableCell>{item.distanceKm} km</TableCell>
-                                    <TableCell className="font-bold text-green-600">₹{item.amount}</TableCell>
+                                    <TableCell className="font-bold text-status-success">₹{item.amount}</TableCell>
                                     <TableCell>
                                         <Chip
                                             label={item.status}
@@ -123,7 +123,7 @@ const AdminAgentPayouts = () => {
                                                 Pay
                                             </Button>
                                         ) : (
-                                            <span className="text-xs text-green-600 font-mono">
+                                            <span className="text-xs text-status-success font-mono">
                                                 Ref: {item.transactionRef || 'N/A'}
                                             </span>
                                         )}

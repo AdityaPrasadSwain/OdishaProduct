@@ -9,7 +9,7 @@ const CategoryNavItem = ({ category }) => {
             className="flex flex-col items-center justify-center gap-2 cursor-pointer min-w-[80px] md:min-w-[100px]"
         >
             <Link to={`/products?category=${category.name}`} className="flex flex-col items-center">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300 bg-white dark:bg-gray-900 p-1">
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-border dark:border-border shadow-sm hover:shadow-md transition-shadow duration-300 bg-bg-surface dark:bg-bg-dark p-1">
                     <div className="w-full h-full rounded-full overflow-hidden relative">
                         {category.imageUrl ? (
                             <img
@@ -27,7 +27,7 @@ const CategoryNavItem = ({ category }) => {
                         )}
                     </div>
                 </div>
-                <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300 mt-2 text-center leading-tight hover:text-orange-600 dark:hover:text-orange-400 transition-colors">
+                <span className="text-xs md:text-sm font-medium text-text-secondary dark:text-text-secondary mt-2 text-center leading-tight hover:text-primary dark:hover:text-primary transition-colors">
                     {category.name}
                 </span>
             </Link>

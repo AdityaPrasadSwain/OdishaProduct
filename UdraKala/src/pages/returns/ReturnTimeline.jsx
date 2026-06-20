@@ -34,9 +34,9 @@ const ReturnTimeline = ({ status, type }) => {
         <div className="w-full py-6 px-4">
             <div className="relative flex items-center justify-between w-full">
                 {/* Connecting Line */}
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 dark:bg-gray-700 -z-0"></div>
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-bg-band dark:bg-bg-dark -z-0"></div>
                 <div
-                    className={`absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-green-500 transition-all duration-500 -z-0 ${isRejected ? 'bg-red-500' : ''}`}
+                    className={`absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-status-success transition-all duration-500 -z-0 ${isRejected ? 'bg-status-error' : ''}`}
                     style={{ width: isRejected ? '25%' : `${(activeIndex / (steps.length - 1)) * 100}%` }}
                 ></div>
 
@@ -55,10 +55,10 @@ const ReturnTimeline = ({ status, type }) => {
                             <div
                                 className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-300
                                     ${isStepRejected
-                                        ? 'bg-red-100 border-red-500 text-red-600'
+                                        ? 'text-status-error border-red-500 text-status-error'
                                         : isCompleted
-                                            ? 'bg-green-500 border-green-500 text-white'
-                                            : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+                                            ? 'bg-status-success border-green-500 text-text-onDark'
+                                            : 'bg-bg-surface dark:bg-bg-dark border-border dark:border-border text-text-secondary dark:text-text-secondary'
                                     }
                                 `}
                             >
@@ -68,10 +68,10 @@ const ReturnTimeline = ({ status, type }) => {
                                 <p
                                     className={`text-[10px] md:text-xs font-semibold uppercase tracking-wider transition-colors
                                         ${isStepRejected
-                                            ? 'text-red-600'
+                                            ? 'text-status-error'
                                             : isCompleted
-                                                ? 'text-gray-900 dark:text-white'
-                                                : 'text-gray-400 dark:text-gray-600'
+                                                ? 'text-text-primary dark:text-text-onDark'
+                                                : 'text-text-secondary dark:text-text-secondary'
                                         }
                                     `}
                                 >

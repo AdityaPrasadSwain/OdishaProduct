@@ -42,13 +42,11 @@ public class OrderController {
 
         try {
             System.out.println("Received Order Request: " + orderRequest);
-            List<Order> orders = orderService.createOrder(customer, orderRequest.getItems(),
-                    orderRequest.getShippingAddress(),
-                    orderRequest.getPaymentMethod(), orderRequest.getPaymentId(), orderRequest.getAddressId());
-            java.util.Map<String, Object> response = new java.util.HashMap<>();
+            java.util.Map<String, Object> response = orderService.createOrder(customer, orderRequest);
             response.put("status", "SUCCESS");
-            response.put("orders", orders);
             return ResponseEntity.ok(response);
+        } catch (org.springframework.orm.ObjectOptimisticLockingFailureException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("One or more items in your cart just went out of stock! Please refresh."));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }
@@ -63,6 +61,20 @@ public class OrderController {
         try {
             orderService.cancelOrder(id, customer.getId());
             return ResponseEntity.ok(new MessageResponse("Order cancelled successfully"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+        }
+    }
+
+    @PostMapping("/{id}/cancel-items")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<?> cancelOrderItems(@PathVariable UUID id, @RequestBody java.util.List<UUID> itemIds) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User customer = userRepository.findByEmail(auth.getName()).orElseThrow();
+
+        try {
+            orderService.cancelOrderItems(id, customer.getId(), itemIds);
+            return ResponseEntity.ok(new MessageResponse("Selected items cancelled successfully"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }

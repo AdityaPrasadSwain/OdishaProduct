@@ -180,7 +180,7 @@ const AdminUserManagement = () => {
     const muiTheme = React.useMemo(() => createTheme({
         palette: {
             mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#ea580c' }, // Orange-600
+            primary: { main: '#5747C7' }, // Orange-600
             background: {
                 paper: theme === 'dark' ? '#1f2937' : '#ffffff',
                 default: theme === 'dark' ? '#111827' : '#ffffff',
@@ -215,7 +215,7 @@ const AdminUserManagement = () => {
             width: 120,
             renderCell: (params) => (
                 <div className="flex items-center justify-start h-full">
-                    <span className="font-mono text-xs text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    <span className="font-mono text-xs text-text-secondary dark:text-text-secondary bg-bg-band dark:bg-bg-dark px-2 py-1 rounded">
                         {params.row.id.substring(0, 8)}
                     </span>
                 </div>
@@ -228,7 +228,7 @@ const AdminUserManagement = () => {
             minWidth: 200,
             renderCell: (params) => (
                 <div className="flex items-center gap-3 w-full h-full py-2">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold overflow-hidden text-sm border border-orange-200">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-bold overflow-hidden text-sm border border-primary">
                         {params.row.profilePicture ? (
                             <img src={params.row.profilePicture} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
@@ -236,7 +236,7 @@ const AdminUserManagement = () => {
                         )}
                     </div>
                     <div className="flex flex-col justify-center gap-0.5 overflow-hidden min-w-0">
-                        <span className="font-semibold text-gray-900 dark:text-gray-100 truncate w-full" title={params.row.fullName}>
+                        <span className="font-semibold text-text-primary dark:text-text-secondary truncate w-full" title={params.row.fullName}>
                             {params.row.fullName}
                         </span>
                     </div>
@@ -249,8 +249,8 @@ const AdminUserManagement = () => {
             width: 250,
             renderCell: (params) => (
                 <div className="flex flex-col justify-center h-full">
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-tight">{params.row.email}</p>
-                    <p className="text-xs text-gray-400">{params.row.phoneNumber}</p>
+                    <p className="text-sm text-text-secondary dark:text-text-secondary leading-tight">{params.row.email}</p>
+                    <p className="text-xs text-text-secondary">{params.row.phoneNumber}</p>
                 </div>
             )
         },
@@ -285,14 +285,14 @@ const AdminUserManagement = () => {
                         <>
                             <button
                                 onClick={() => handleApprove(params.row.id)}
-                                className="p-1.5 text-green-600 bg-green-50 rounded hover:bg-green-100"
+                                className="p-1.5 text-status-success bg-green-50 rounded hover:bg-green-100"
                                 title="Approve"
                             >
                                 <CheckCircle size={18} />
                             </button>
                             <button
                                 onClick={() => handleReject(params.row.id)}
-                                className="p-1.5 text-red-600 bg-red-50 rounded hover:bg-red-100"
+                                className="p-1.5 text-status-error bg-red-50 rounded hover:text-status-error"
                                 title="Reject"
                             >
                                 <XCircle size={18} />
@@ -302,7 +302,7 @@ const AdminUserManagement = () => {
 
                     <button
                         onClick={() => handleToggleBlock(params.row)}
-                        className={`p-1.5 rounded ${params.row.blocked ? 'text-green-600 bg-green-50 hover:bg-green-100' : 'text-orange-600 bg-orange-50 hover:bg-orange-100'}`}
+                        className={`p-1.5 rounded ${params.row.blocked ? 'text-status-success bg-green-50 hover:bg-green-100' : 'text-primary bg-bg-band hover:bg-primary-light'}`}
                         title={params.row.blocked ? "Unblock" : "Block"}
                     >
                         {params.row.blocked ? <Shield size={18} /> : <Ban size={18} />}
@@ -311,7 +311,7 @@ const AdminUserManagement = () => {
                     {activeTab !== 'customers' && (
                         <button
                             onClick={() => navigate(`/admin/sellers/${params.row.id}`)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"
+                            className="p-1.5 text-primary hover:bg-blue-50 rounded"
                             title="View Details"
                         >
                             <Eye size={18} />
@@ -320,7 +320,7 @@ const AdminUserManagement = () => {
 
                     <button
                         onClick={() => handleDelete(params.row.id)}
-                        className="p-1.5 text-red-600 hover:bg-red-50 rounded"
+                        className="p-1.5 text-status-error hover:bg-red-50 rounded"
                         title="Delete (Soft)"
                     >
                         <Trash2 size={18} />
@@ -333,35 +333,35 @@ const AdminUserManagement = () => {
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
-                    <User className="text-orange-600" /> User Management
+                <h1 className="text-2xl font-bold text-text-primary dark:text-text-secondary flex items-center gap-2">
+                    <User className="text-primary" /> User Management
                 </h1>
 
                 {/* Search */}
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" size={18} />
                     <input
                         type="text"
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500 outline-none"
+                        className="pl-10 pr-4 py-2 rounded-lg border border-border dark:border-border bg-bg-surface dark:bg-bg-dark focus:ring-2 focus:ring-primary outline-none"
                     />
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex justify-between items-center mb-4">
-                <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg w-fit">
+                <div className="flex space-x-1 bg-bg-band dark:bg-bg-dark p-1 rounded-lg w-fit">
                     <button
                         onClick={() => setActiveTab('customers')}
-                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'customers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'customers' ? 'bg-bg-surface dark:bg-bg-dark text-primary shadow-sm' : 'text-text-secondary hover:text-text-secondary'}`}
                     >
                         Customers
                     </button>
                     <button
                         onClick={() => setActiveTab('sellers')}
-                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'sellers' ? 'bg-white dark:bg-gray-700 text-orange-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                        className={`px-6 py-2 rounded-md text-sm font-medium transition ${activeTab === 'sellers' ? 'bg-bg-surface dark:bg-bg-dark text-primary shadow-sm' : 'text-text-secondary hover:text-text-secondary'}`}
                     >
                         Sellers
                     </button>
@@ -372,9 +372,9 @@ const AdminUserManagement = () => {
             </div>
 
             {/* Table */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-xl shadow-sm overflow-hidden border border-border dark:border-border">
                 {loading ? (
-                    <div className="p-10 text-center text-gray-500">Loading...</div>
+                    <div className="p-10 text-center text-text-secondary">Loading...</div>
                 ) : (
                     <MuiThemeProvider theme={muiTheme}>
                         <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>

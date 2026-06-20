@@ -18,18 +18,18 @@ class ErrorBoundary extends React.Component {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8">
-                    <h1 className="text-4xl font-bold text-red-500 mb-4">Something went wrong.</h1>
+                <div className="min-h-screen bg-bg-dark text-text-onDark flex flex-col items-center justify-center p-8">
+                    <h1 className="text-4xl font-bold text-status-error mb-4">Something went wrong.</h1>
                     <p className="text-xl mb-8">The application crashed. Here is the error:</p>
-                    <div className="bg-black/50 p-6 rounded border border-red-500/30 overflow-auto max-w-4xl w-full">
-                        <p className="text-red-300 font-mono mb-4">{this.state.error && this.state.error.toString()}</p>
-                        <pre className="text-gray-400 text-xs font-mono whitespace-pre-wrap">
+                    <div className="bg-bg-dark/50 p-6 rounded border border-red-500/30 overflow-auto max-w-4xl w-full">
+                        <p className="text-status-error font-mono mb-4">{this.state.error && this.state.error.toString()}</p>
+                        <pre className="text-text-secondary text-xs font-mono whitespace-pre-wrap">
                             {this.state.errorInfo && this.state.errorInfo.componentStack}
                         </pre>
                     </div>
                     <button
                         onClick={() => window.location.reload()}
-                        className="mt-8 px-6 py-3 bg-indigo-600 rounded hover:bg-indigo-700 font-bold"
+                        className="mt-8 px-6 py-3 bg-primary rounded hover:bg-primary-hover font-bold"
                     >
                         Reload Page
                     </button>

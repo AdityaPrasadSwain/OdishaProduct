@@ -22,7 +22,7 @@ const FollowButton = (props) => {
                 icon: 'warning',
                 title: 'Login Required',
                 text: 'Please login to follow sellers',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#5747C7'
             });
             return;
         }
@@ -68,8 +68,8 @@ const FollowButton = (props) => {
             className={`
                 flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 z-10 relative
                 ${following
-                    ? 'bg-gray-100 text-gray-700 hover:bg-red-50 hover:text-red-600 dark:bg-gray-800 dark:text-gray-300'
-                    : 'bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-200 dark:shadow-none'}
+                    ? 'bg-bg-band text-text-secondary hover:bg-red-50 hover:text-status-error dark:bg-bg-dark dark:text-text-secondary'
+                    : 'bg-primary text-text-onDark hover:bg-primary-hover shadow-md shadow-blue-200 dark:shadow-none'}
             `}
         >
             {following ? (

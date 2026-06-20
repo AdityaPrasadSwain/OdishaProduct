@@ -56,45 +56,45 @@ const SellerPayoutManager = () => {
         }
     };
 
-    if (loading) return <div className="p-10 text-center text-gray-500">Loading payout data...</div>;
+    if (loading) return <div className="p-10 text-center text-text-secondary">Loading payout data...</div>;
 
     return (
         <div className="space-y-6">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Seller Bank Verifications & Payouts</h2>
+            <h2 className="text-xl font-semibold mb-4 text-text-primary dark:text-text-onDark">Seller Bank Verifications & Payouts</h2>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow overflow-hidden">
                 <table className="min-w-full leading-normal">
                     <thead>
                         <tr>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Seller</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Bank Details</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Verification</th>
-                            <th className="px-5 py-3 border-b-2 border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Action</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Seller</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Bank Details</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Verification</th>
+                            <th className="px-5 py-3 border-b-2 border-border dark:border-border bg-bg-band dark:bg-bg-dark text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         {sellers.map((seller) => (
                             <tr key={seller.id}>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     <div className="flex items-center">
                                         <div className="ml-3">
-                                            <p className="text-gray-900 dark:text-white font-medium">{seller.fullName}</p>
-                                            <p className="text-gray-500 text-xs">{seller.shopName}</p>
+                                            <p className="text-text-primary dark:text-text-onDark font-medium">{seller.fullName}</p>
+                                            <p className="text-text-secondary text-xs">{seller.shopName}</p>
                                         </div>
                                     </div>
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     {seller.bankDetails ? (
-                                        <div className="text-xs space-y-1 text-gray-700 dark:text-gray-300">
+                                        <div className="text-xs space-y-1 text-text-secondary dark:text-text-secondary">
                                             <p><span className="font-semibold">Acct:</span> {seller.bankDetails.accountNumber}</p>
                                             <p><span className="font-semibold">IFSC:</span> {seller.bankDetails.ifscCode}</p>
                                             <p><span className="font-semibold">Holder:</span> {seller.bankDetails.accountHolderName}</p>
                                         </div>
                                     ) : (
-                                        <span className="text-gray-400 italic">No details added</span>
+                                        <span className="text-text-secondary italic">No details added</span>
                                     )}
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     {seller.bankDetails?.verified ? (
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             Verified
@@ -105,31 +105,31 @@ const SellerPayoutManager = () => {
                                                 <button
                                                     disabled={processingId === seller.id}
                                                     onClick={() => handleVerify(seller.id, true)}
-                                                    className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                                                    className="text-status-success hover:text-green-900 disabled:opacity-50"
                                                 >
                                                     <CheckCircle size={18} />
                                                 </button>
                                                 <button
                                                     disabled={processingId === seller.id}
                                                     onClick={() => handleVerify(seller.id, false)}
-                                                    className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                                                    className="text-status-error hover:text-status-error disabled:opacity-50"
                                                 >
                                                     <XCircle size={18} />
                                                 </button>
                                             </div>
                                         ) : (
-                                            <span className="text-yellow-600 text-xs">Pending Data</span>
+                                            <span className="text-status-warning text-xs">Pending Data</span>
                                         )
                                     )}
                                 </td>
-                                <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                                <td className="px-5 py-5 border-b border-border dark:border-border bg-bg-surface dark:bg-bg-dark text-sm">
                                     <button
                                         onClick={() => initiatePayout(seller.id)}
                                         disabled={!seller.bankDetails?.verified || processingId === seller.id}
                                         className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-semibold
                                             ${!seller.bankDetails?.verified
-                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'}`}
+                                                ? 'bg-bg-band text-text-secondary cursor-not-allowed'
+                                                : 'bg-primary text-text-onDark hover:bg-primary-hover shadow-sm'}`}
                                     >
                                         {processingId === seller.id ? <Loader className="animate-spin" size={14} /> : <CreditCard size={14} />}
                                         Pay Now
@@ -139,7 +139,7 @@ const SellerPayoutManager = () => {
                         ))}
                         {sellers.length === 0 && (
                             <tr>
-                                <td colSpan="4" className="px-5 py-5 bg-white dark:bg-gray-800 text-center text-gray-500">
+                                <td colSpan="4" className="px-5 py-5 bg-bg-surface dark:bg-bg-dark text-center text-text-secondary">
                                     No sellers found.
                                 </td>
                             </tr>

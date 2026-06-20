@@ -38,17 +38,39 @@ API.interceptors.request.use(
 API.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response) {
-      console.error(`[API Error] ${error.response.status} - ${error.config.url}`, error.response.data);
+    let normalizedError = {
+      errorCode: "INTERNAL_ERROR",
+      message: "Something went wrong on our end. Please try again in a few moments.",
+      fieldErrors: null
+    };
 
-      // Global 401/403 Handler
+    if (error.response) {
+      console.error(`[API Error] ${error.response.status} - ${error.config?.url}`, error.response.data);
+
+      // Extract standardized error format if available
+      if (error.response.data && error.response.data.errorCode) {
+        normalizedError = { ...error.response.data };
+      } else if (error.response.data && error.response.data.message) {
+        // Fallback for any lingering legacy errors
+        normalizedError.message = error.response.data.message;
+        if (error.response.status === 401 || error.response.status === 403) normalizedError.errorCode = "ACCESS_DENIED";
+      }
+
+      // Global 401/403 Handler (only redirect if it's not an auth flow like login/register)
       if ((error.response.status === 401 || error.response.status === 403) && !error.config.url.includes('/auth/')) {
-        // Dispatch custom event so AuthContext can hear it and logout
-        // We use a custom event to decouple API from Context
         window.dispatchEvent(new Event('auth:unauthorized'));
       }
+      
+    } else {
+      console.error(`[Network Error]`, error.message);
+      normalizedError = {
+        errorCode: "NETWORK_ERROR",
+        message: "Couldn't connect. Check your internet connection and try again.",
+        fieldErrors: null
+      };
     }
-    return Promise.reject(error);
+
+    return Promise.reject(normalizedError);
   }
 );
 

@@ -23,7 +23,7 @@ const AiAssistButton = ({ onClick, label = "AI Assist", loadingLabel = "Generati
         <button
             onClick={handleClick}
             disabled={loading}
-            className={`flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-md hover:from-purple-700 hover:to-indigo-700 transition-all shadow-sm ${loading ? 'opacity-70 cursor-not-allowed' : ''} ${className}`}
+            className={`flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-text-onDark text-sm font-medium rounded-md hover:from-purple-700 hover:to-indigo-700 transition-all shadow-sm ${loading ? 'opacity-70 cursor-not-allowed' : ''} ${className}`}
             title="Generate with AI"
         >
             {loading ? <Loader2 className="animate-spin" size={16} /> : <Sparkles size={16} />}

@@ -9,18 +9,22 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "shipments")
+@Table(name = "shipments", indexes = {
+    @Index(name = "idx_shipments_order_id", columnList = "order_id"),
+    @Index(name = "idx_shipments_agent_id", columnList = "agent_id"),
+    @Index(name = "idx_shipments_agent_status", columnList = "agent_id, status")
+})
 public class Shipment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "agent_id")
     private User agent;
 
@@ -87,7 +91,7 @@ public class Shipment {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
         private String barcodeValue;
-        private Boolean barcodeVerified;
+        private Boolean barcodeVerified = false;
 
         ShipmentBuilder() {
         }

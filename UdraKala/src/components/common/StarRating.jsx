@@ -10,7 +10,7 @@ const StarRating = ({ rating, setRating, readOnly = false, size = 20 }) => {
                     size={size}
                     className={`cursor-pointer transition-colors ${star <= rating
                             ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-300'
+                            : 'text-text-secondary'
                         } ${readOnly ? 'cursor-default' : 'hover:scale-110'}`}
                     onClick={() => !readOnly && setRating && setRating(star)}
                 />

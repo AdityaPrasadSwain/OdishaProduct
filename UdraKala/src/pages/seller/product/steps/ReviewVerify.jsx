@@ -21,19 +21,19 @@ const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
         if (productId) fetchSummary();
     }, [productId]);
 
-    if (loading) return <div className="text-center py-20 animate-pulse text-gray-500 dark:text-gray-400">Loading Summary...</div>;
-    if (!summary) return <div className="text-center py-20 text-red-500">Error loading product details.</div>;
+    if (loading) return <div className="text-center py-20 animate-pulse text-text-secondary dark:text-text-secondary">Loading Summary...</div>;
+    if (!summary) return <div className="text-center py-20 text-status-error">Error loading product details.</div>;
 
     const Section = ({ title, stepIndex, children }) => (
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 relative group transition-colors">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 border-b dark:border-gray-700 pb-2">{title}</h3>
+        <div className="bg-bg-page dark:bg-bg-dark rounded-xl p-6 border border-border dark:border-border relative group transition-colors">
+            <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark mb-4 border-b dark:border-border pb-2">{title}</h3>
             <button
                 onClick={() => onEditStep(stepIndex)}
-                className="absolute top-4 right-4 text-sm text-blue-600 dark:text-blue-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
+                className="absolute top-4 right-4 text-sm text-primary dark:text-primary font-semibold opacity-0 group-hover:opacity-100 transition-opacity hover:underline"
             >
                 Edit
             </button>
-            <div className="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+            <div className="space-y-3 text-sm text-text-secondary dark:text-text-secondary">
                 {children}
             </div>
         </div>
@@ -41,8 +41,8 @@ const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
 
     const Row = ({ label, value }) => (
         <div className="flex justify-between items-start">
-            <span className="font-semibold text-gray-500 dark:text-gray-400">{label}:</span>
-            <span className="text-gray-900 dark:text-white font-medium text-right max-w-[60%]">{value || '-'}</span>
+            <span className="font-semibold text-text-secondary dark:text-text-secondary">{label}:</span>
+            <span className="text-text-primary dark:text-text-onDark font-medium text-right max-w-[60%]">{value || '-'}</span>
         </div>
     );
 
@@ -71,10 +71,10 @@ const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
                     <div className="grid grid-cols-4 gap-2">
                         {summary.imageUrls && summary.imageUrls.length > 0 ? (
                             summary.imageUrls.map((url, i) => (
-                                <img key={i} src={url} alt="" className="w-16 h-16 object-cover rounded-lg border dark:border-gray-700" />
+                                <img key={i} src={url} alt="" className="w-16 h-16 object-cover rounded-lg border dark:border-border" />
                             ))
                         ) : (
-                            <span className="text-gray-400 dark:text-gray-500 italic">No images uploaded</span>
+                            <span className="text-text-secondary dark:text-text-secondary italic">No images uploaded</span>
                         )}
                     </div>
                 </Section>
@@ -85,7 +85,7 @@ const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
                             <Row key={i} label={spec.key} value={spec.value} />
                         ))
                     ) : (
-                        <span className="text-gray-400 dark:text-gray-500 italic">No specifications added</span>
+                        <span className="text-text-secondary dark:text-text-secondary italic">No specifications added</span>
                     )}
                 </Section>
             </div>
@@ -100,7 +100,7 @@ const ReviewVerify = ({ productId, onEditStep, onSubmit }) => {
             <div className="flex justify-end pt-8">
                 <button
                     onClick={onSubmit}
-                    className="px-12 py-4 rounded-xl font-bold text-lg text-white shadow-xl shadow-green-200 dark:shadow-green-900 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all transform hover:-translate-y-1"
+                    className="px-12 py-4 rounded-xl font-bold text-lg text-text-onDark shadow-xl shadow-green-200 dark:shadow-green-900 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 transition-all transform hover:-translate-y-1"
                 >
                     Verify & Publish Product
                 </button>

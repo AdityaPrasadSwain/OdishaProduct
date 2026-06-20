@@ -11,7 +11,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "payments")
+@Table(name = "payments", indexes = {
+    @Index(name = "idx_payments_order_id", columnList = "order_id"),
+    @Index(name = "idx_payments_user_id", columnList = "user_id"),
+    @Index(name = "idx_payments_seller_id", columnList = "seller_id"),
+    @Index(name = "idx_payments_seller_status", columnList = "seller_id, status")
+})
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

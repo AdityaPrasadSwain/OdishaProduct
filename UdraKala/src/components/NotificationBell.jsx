@@ -116,25 +116,25 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="text-gray-600 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 relative p-1"
+                className="text-text-secondary dark:text-text-secondary hover:text-primary dark:hover:text-primary relative p-1"
             >
                 <Bell size={22} />
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white dark:border-gray-900">
+                    <span className="absolute -top-1 -right-1 bg-status-error text-text-onDark text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white dark:border-border">
                         {unreadCount > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden border border-gray-100 dark:border-gray-700 origin-top-right transform transition-all">
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden border border-border dark:border-border origin-top-right transform transition-all">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex justify-between items-center sticky top-0 z-10">
-                        <h3 className="text-sm font-bold text-gray-800 dark:text-gray-200">Notifications</h3>
+                    <div className="px-4 py-3 border-b dark:border-border bg-bg-page dark:bg-bg-dark flex justify-between items-center sticky top-0 z-10">
+                        <h3 className="text-sm font-bold text-text-primary dark:text-text-secondary">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={markAllAsRead}
-                                className="text-xs flex items-center gap-1 text-orange-600 hover:text-orange-700 font-semibold px-2 py-1 rounded hover:bg-orange-50 dark:hover:bg-gray-800 transition-colors"
+                                className="text-xs flex items-center gap-1 text-primary hover:text-primary font-semibold px-2 py-1 rounded hover:bg-bg-band dark:hover:bg-bg-dark transition-colors"
                             >
                                 <CheckCheck size={14} />
                                 Mark all read
@@ -150,15 +150,15 @@ const NotificationBell = () => {
                                     <li
                                         key={notification.id}
                                         onClick={() => markAsRead(notification)}
-                                        className={`px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-750 cursor-pointer transition-colors border-l-4 ${!notification.isRead
-                                            ? 'border-orange-500 bg-orange-50/30 dark:bg-orange-900/10'
+                                        className={`px-4 py-3 hover:bg-bg-page dark:hover:bg-gray-750 cursor-pointer transition-colors border-l-4 ${!notification.isRead
+                                            ? 'border-primary bg-bg-band/30 dark:bg-primary-hover/10'
                                             : 'border-transparent'
                                             }`}
                                     >
                                         <div className="flex gap-3">
                                             {/* Avatar / Icon Placeholder */}
                                             <div className="flex-shrink-0 mt-1">
-                                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${!notification.isRead ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-500'
+                                                <div className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold ${!notification.isRead ? 'bg-primary-light text-primary' : 'bg-bg-band text-text-secondary'
                                                     }`}>
                                                     {(notification.senderName || "Sys").charAt(0).toUpperCase()}
                                                 </div>
@@ -166,16 +166,16 @@ const NotificationBell = () => {
 
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
-                                                    <p className={`text-sm font-semibold mb-0.5 ${!notification.isRead ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'
+                                                    <p className={`text-sm font-semibold mb-0.5 ${!notification.isRead ? 'text-text-primary dark:text-text-onDark' : 'text-text-secondary dark:text-text-secondary'
                                                         }`}>
                                                         {notification.senderName || 'System'}
                                                     </p>
-                                                    <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                                                    <span className="text-xs text-text-secondary whitespace-nowrap ml-2">
                                                         {new Date(notification.createdAt).toLocaleDateString()}
                                                     </span>
                                                 </div>
 
-                                                <p className={`text-sm leading-snug ${!notification.isRead ? 'text-gray-800 dark:text-gray-200 font-medium' : 'text-gray-500 dark:text-gray-400'
+                                                <p className={`text-sm leading-snug ${!notification.isRead ? 'text-text-primary dark:text-text-secondary font-medium' : 'text-text-secondary dark:text-text-secondary'
                                                     }`}>
                                                     {notification.message}
                                                 </p>
@@ -186,9 +186,9 @@ const NotificationBell = () => {
                             </ul>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                                <Bell className="h-12 w-12 text-gray-200 dark:text-gray-700 mb-3" />
-                                <p className="text-gray-500 dark:text-gray-400 font-medium">No notifications yet</p>
-                                <p className="text-xs text-gray-400 mt-1">We'll let you know when updates arrive.</p>
+                                <Bell className="h-12 w-12 text-text-secondary dark:text-text-secondary mb-3" />
+                                <p className="text-text-secondary dark:text-text-secondary font-medium">No notifications yet</p>
+                                <p className="text-xs text-text-secondary mt-1">We'll let you know when updates arrive.</p>
                             </div>
                         )}
                     </div>

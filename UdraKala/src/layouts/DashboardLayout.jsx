@@ -6,14 +6,17 @@ import Header from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const DashboardLayout = () => {
+    const location = useLocation();
+    const isDashboardView = location.pathname.includes('/seller/dashboard') || location.pathname.includes('/admin/dashboard');
+
     return (
-        <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+        <div className="min-h-screen w-full bg-bg-page dark:bg-bg-dark transition-colors duration-300">
             {/* Header / Navbar */}
-            <Header />
+            {!isDashboardView && <Header />}
 
             {/* Main Content Wrapper */}
-            <main className="p-4 md:p-6 pb-20">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className={`${isDashboardView ? 'h-screen w-screen overflow-hidden' : 'p-4 md:p-6 pb-20 pt-24 md:pt-[72px]'}`}>
+                <div className={`${isDashboardView ? 'w-full h-full' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-8'}`}>
                     <Outlet />
                 </div>
             </main>

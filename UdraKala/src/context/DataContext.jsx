@@ -62,6 +62,42 @@ export const DataProvider = ({ children }) => {
         localStorage.setItem('cart', JSON.stringify(cart));
     }, [cart]);
 
+    // Handle login merge cart
+    useEffect(() => {
+        const handleLogin = async () => {
+            const savedCart = localStorage.getItem('cart');
+            let guestItems = [];
+            if (savedCart) {
+                try {
+                    const guestCart = JSON.parse(savedCart);
+                    guestItems = guestCart.map(item => ({ productId: item.id, quantity: item.quantity }));
+                } catch (e) {}
+            }
+            
+            try {
+                let res;
+                if (guestItems.length > 0) {
+                    res = await API.post('/cart/merge', guestItems);
+                } else {
+                    res = await API.get('/cart');
+                }
+
+                if (res && res.data && res.data.items) {
+                    const serverCart = res.data.items.map(cartItem => ({
+                        ...cartItem.product,
+                        quantity: cartItem.quantity
+                    }));
+                    setCart(serverCart);
+                }
+            } catch (err) {
+                console.error('Failed to sync cart with server', err);
+            }
+        };
+
+        window.addEventListener('auth:login', handleLogin);
+        return () => window.removeEventListener('auth:login', handleLogin);
+    }, []);
+
     // Listen for storage changes (Multi-tab persistence)
     useEffect(() => {
         const handleStorageChange = (e) => {

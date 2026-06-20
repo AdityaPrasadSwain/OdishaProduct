@@ -20,5 +20,6 @@ public enum OrderStatus {
     RTO_INITIATED,
     RTO_COMPLETED,
     INVOICE_SENT,
-    SHIPPED
+    SHIPPED,
+    EXPIRED
 }

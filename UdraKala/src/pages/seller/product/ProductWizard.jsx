@@ -80,16 +80,16 @@ const ProductWizard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8 font-sans transition-colors duration-300">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark p-8 font-sans transition-colors duration-300">
             {/* Stepper UI */}
             <div className="max-w-6xl mx-auto mb-12">
                 <div className="flex items-center justify-between relative">
                     {/* Background Line */}
-                    <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 -z-0 rounded"></div>
+                    <div className="absolute top-5 left-0 w-full h-1 bg-bg-band dark:bg-bg-dark -z-0 rounded"></div>
 
                     {/* Active Progress Line */}
                     <div
-                        className="absolute top-5 left-0 h-1 bg-green-500 transition-all duration-500 ease-in-out -z-0 rounded"
+                        className="absolute top-5 left-0 h-1 bg-status-success transition-all duration-500 ease-in-out -z-0 rounded"
                         style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
                     ></div>
 
@@ -101,10 +101,10 @@ const ProductWizard = () => {
                         return (
                             <div key={label} className="z-10 flex flex-col items-center group cursor-pointer" onClick={() => jumpToStep(index)}>
                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border-4 transition-all duration-300 ${isActive
-                                    ? 'bg-blue-600 border-blue-200 text-white scale-110 shadow-lg dark:border-blue-800'
+                                    ? 'bg-primary border-primary text-text-onDark scale-110 shadow-lg dark:border-primary'
                                     : isCompleted
-                                        ? 'bg-green-500 border-green-200 text-white dark:border-green-800'
-                                        : 'bg-white border-gray-300 text-gray-400 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-500'
+                                        ? 'bg-status-success border-green-200 text-text-onDark dark:border-green-800'
+                                        : 'bg-bg-surface border-border text-text-secondary dark:bg-bg-dark dark:border-border dark:text-text-secondary'
                                     }`}>
                                     {isCompleted ? (
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
@@ -112,7 +112,7 @@ const ProductWizard = () => {
                                         index + 1
                                     )}
                                 </div>
-                                <span className={`mt-3 text-xs font-bold uppercase tracking-wider transition-colors duration-300 ${isActive ? 'text-blue-700 dark:text-blue-400' : isCompleted ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-600'
+                                <span className={`mt-3 text-xs font-bold uppercase tracking-wider transition-colors duration-300 ${isActive ? 'text-primary dark:text-primary' : isCompleted ? 'text-status-success dark:text-green-400' : 'text-text-secondary dark:text-text-secondary'
                                     }`}>
                                     {label}
                                 </span>
@@ -123,14 +123,14 @@ const ProductWizard = () => {
             </div>
 
             {/* Content Card */}
-            <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+            <div className="max-w-5xl mx-auto bg-bg-surface dark:bg-bg-dark rounded-2xl shadow-xl overflow-hidden border border-border dark:border-border transition-colors duration-300">
                 <div className="p-1 bg-gradient-to-r from-blue-500 to-green-500"></div>
                 <div className="p-8">
-                    <div className="mb-6 border-b border-gray-100 dark:border-gray-700 pb-4">
-                        <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            <span className="text-blue-600 dark:text-blue-400">#</span> {steps[activeStep]}
+                    <div className="mb-6 border-b border-border dark:border-border pb-4">
+                        <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark flex items-center gap-2">
+                            <span className="text-primary dark:text-primary">#</span> {steps[activeStep]}
                         </h2>
-                        <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+                        <p className="text-text-secondary dark:text-text-secondary text-sm mt-1">
                             {activeStep === steps.length - 1 ? 'Verify all details before publishing.' : 'Please fill in the details below to proceed.'}
                         </p>
                     </div>
@@ -148,7 +148,7 @@ const ProductWizard = () => {
                 </div>
             </div>
 
-            <div className="text-center mt-8 text-gray-400 dark:text-gray-600 text-sm">
+            <div className="text-center mt-8 text-text-secondary dark:text-text-secondary text-sm">
                 Udrakala Helper &copy; 2026
             </div>
         </div>

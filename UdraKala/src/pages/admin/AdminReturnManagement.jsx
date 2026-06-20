@@ -48,26 +48,26 @@ const AdminReturnManagement = () => {
         switch (status) {
             case 'PENDING': return 'bg-yellow-100 text-yellow-800';
             case 'APPROVED': return 'bg-green-100 text-green-800';
-            case 'REJECTED': return 'bg-red-100 text-red-800';
-            case 'PICKUP_SCHEDULED': return 'bg-blue-100 text-blue-800';
+            case 'REJECTED': return 'text-status-error text-status-error';
+            case 'PICKUP_SCHEDULED': return 'bg-primary-light text-primary';
             case 'REFUND_INITIATED': return 'bg-purple-100 text-purple-800';
-            case 'COMPLETED': return 'bg-gray-200 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'COMPLETED': return 'bg-bg-band text-text-primary';
+            default: return 'bg-bg-band text-text-primary';
         }
     };
 
     const filteredReturns = filterStatus === 'ALL' ? returns : returns.filter(r => r.status === filterStatus);
 
-    if (loading) return <div className="p-8 text-center dark:text-gray-300">Loading admin returns...</div>;
+    if (loading) return <div className="p-8 text-center dark:text-text-secondary">Loading admin returns...</div>;
 
     return (
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Return Management</h1>
+                <h1 className="text-2xl font-bold text-text-primary dark:text-text-onDark">Admin Return Management</h1>
                 <select
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="p-2 border rounded-md dark:bg-gray-700 dark:text-white"
+                    className="p-2 border rounded-md dark:bg-bg-dark dark:text-text-onDark"
                 >
                     <option value="ALL">All Statuses</option>
                     <option value="REQUESTED">Requested</option>
@@ -77,28 +77,28 @@ const AdminReturnManagement = () => {
                 </select>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-700">
+                        <thead className="bg-bg-page dark:bg-bg-dark">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Seller</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Customer</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">ID</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Seller</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Customer</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-text-secondary dark:text-text-secondary uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody className="bg-bg-surface dark:bg-bg-dark divide-y divide-gray-200 dark:divide-gray-700">
                             {filteredReturns.map((req) => (
                                 <tr key={req.id}>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary dark:text-text-secondary">
                                         {req.id.substring(0, 8)}...
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary dark:text-text-onDark">
                                         {req.sellerName}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-text-primary dark:text-text-onDark">
                                         {req.customerName}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -110,7 +110,7 @@ const AdminReturnManagement = () => {
                                         <select
                                             onChange={(e) => handleStatusUpdate(req.id, e.target.value)}
                                             value=""
-                                            className="text-indigo-600 hover:text-indigo-900 text-sm border-none bg-transparent focus:ring-0 cursor-pointer"
+                                            className="text-primary hover:text-primary text-sm border-none bg-transparent focus:ring-0 cursor-pointer"
                                         >
                                             <option value="" disabled>Update Status</option>
                                             <option value="APPROVED">Approve Override</option>

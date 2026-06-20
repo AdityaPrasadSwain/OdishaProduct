@@ -68,73 +68,73 @@ const Step3BankDetails = ({ onNext }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <h2 className="text-2xl font-bold mb-2 text-center text-gray-800">Bank Details</h2>
-            <p className="text-center text-gray-500 text-sm mb-6">Enter your bank account details for payouts.</p>
+            <h2 className="text-2xl font-bold mb-2 text-center text-text-primary">Bank Details</h2>
+            <p className="text-center text-text-secondary text-sm mb-6">Enter your bank account details for payouts.</p>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Account Holder Name</label>
+                <label className="block text-sm font-semibold text-text-secondary mb-1">Account Holder Name</label>
                 <div className="relative">
-                    <UserIcon className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <UserIcon className="absolute left-3 top-3 text-text-secondary" size={18} />
                     <input
                         type="text"
                         name="accountHolderName"
                         value={formData.accountHolderName}
                         onChange={handleChange}
-                        className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none ${errors.accountHolderName ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-primary outline-none ${errors.accountHolderName ? 'border-red-500' : 'border-border'}`}
                         placeholder="John Doe"
                     />
                 </div>
-                {errors.accountHolderName && <p className="text-red-500 text-xs mt-1">{errors.accountHolderName}</p>}
+                {errors.accountHolderName && <p className="text-status-error text-xs mt-1">{errors.accountHolderName}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Bank Name</label>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">Bank Name</label>
                     <div className="relative">
-                        <Building className="absolute left-3 top-3 text-gray-400" size={18} />
+                        <Building className="absolute left-3 top-3 text-text-secondary" size={18} />
                         <input
                             type="text"
                             name="bankName"
                             value={formData.bankName}
                             onChange={handleChange}
-                            className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none ${errors.bankName ? 'border-red-500' : 'border-gray-300'}`}
+                            className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-primary outline-none ${errors.bankName ? 'border-red-500' : 'border-border'}`}
                             placeholder="State Bank of India"
                         />
                     </div>
-                    {errors.bankName && <p className="text-red-500 text-xs mt-1">{errors.bankName}</p>}
+                    {errors.bankName && <p className="text-status-error text-xs mt-1">{errors.bankName}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">IFSC Code</label>
+                    <label className="block text-sm font-semibold text-text-secondary mb-1">IFSC Code</label>
                     <input
                         type="text"
                         name="ifscCode"
                         maxLength={11}
                         value={formData.ifscCode}
                         onChange={handleChange}
-                        className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none uppercase ${errors.ifscCode ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full p-2.5 border rounded-lg focus:ring-2 focus:ring-primary outline-none uppercase ${errors.ifscCode ? 'border-red-500' : 'border-border'}`}
                         placeholder="SBIN0001234"
                     />
-                    {errors.ifscCode && <p className="text-red-500 text-xs mt-1">{errors.ifscCode}</p>}
+                    {errors.ifscCode && <p className="text-status-error text-xs mt-1">{errors.ifscCode}</p>}
                 </div>
             </div>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Account Number</label>
+                <label className="block text-sm font-semibold text-text-secondary mb-1">Account Number</label>
                 <div className="relative">
-                    <CreditCard className="absolute left-3 top-3 text-gray-400" size={18} />
+                    <CreditCard className="absolute left-3 top-3 text-text-secondary" size={18} />
                     <input
                         type="text"
                         name="accountNumber"
                         value={formData.accountNumber}
                         onChange={handleChange}
-                        className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none ${errors.accountNumber ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full pl-10 p-2.5 border rounded-lg focus:ring-2 focus:ring-primary outline-none ${errors.accountNumber ? 'border-red-500' : 'border-border'}`}
                         placeholder="0000 0000 0000 0000"
                     />
                 </div>
-                {errors.accountNumber && <p className="text-red-500 text-xs mt-1">{errors.accountNumber}</p>}
+                {errors.accountNumber && <p className="text-status-error text-xs mt-1">{errors.accountNumber}</p>}
             </div>
 
-            <button type="submit" disabled={loading} className="w-full py-3 mt-6 bg-green-600 text-white rounded-lg font-bold shadow-md hover:bg-green-700 transition disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
+            <button type="submit" disabled={loading} className="w-full py-3 mt-6 bg-status-success text-text-onDark rounded-lg font-bold shadow-md hover:bg-green-700 transition disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2">
                 {loading ? 'Submitting...' : 'Complete Registration'}
             </button>
         </form>

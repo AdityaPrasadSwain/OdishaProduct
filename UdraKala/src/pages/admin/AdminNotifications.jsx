@@ -89,19 +89,19 @@ const AdminNotifications = () => {
 
     const getIcon = (type) => {
         switch (type) {
-            case 'SELLER_REGISTERED': return <User className="text-blue-500" />;
-            case 'SELLER_APPROVED': return <User className="text-green-500" />;
-            case 'ORDER_CREATED': return <Package className="text-orange-500" />;
-            case 'HIGH_VALUE_ORDER': return <AlertTriangle className="text-red-500" />;
+            case 'SELLER_REGISTERED': return <User className="text-primary" />;
+            case 'SELLER_APPROVED': return <User className="text-status-success" />;
+            case 'ORDER_CREATED': return <Package className="text-primary" />;
+            case 'HIGH_VALUE_ORDER': return <AlertTriangle className="text-status-error" />;
             case 'RETURN_REQUEST': return <RefreshCw className="text-purple-500" />;
-            default: return <Info className="text-gray-500" />;
+            default: return <Info className="text-text-secondary" />;
         }
     };
 
     const getPriorityColor = (priority) => {
         switch (priority) {
             case 'HIGH': return 'border-l-4 border-red-500';
-            case 'MEDIUM': return 'border-l-4 border-orange-400';
+            case 'MEDIUM': return 'border-l-4 border-primary';
             default: return 'border-l-4 border-green-400'; // Low
         }
     };
@@ -123,16 +123,16 @@ const AdminNotifications = () => {
         <div className="max-w-4xl mx-auto p-6 min-h-screen">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                        <Bell className="fill-current text-orange-600" /> System Notifications
+                    <h1 className="text-2xl font-bold text-text-primary dark:text-text-onDark flex items-center gap-2">
+                        <Bell className="fill-current text-primary" /> System Notifications
                     </h1>
-                    <p className="text-gray-500 text-sm">Real-time alerts for admin actions</p>
+                    <p className="text-text-secondary text-sm">Real-time alerts for admin actions</p>
                 </div>
                 <button
                     onClick={handleMarkAllRead}
-                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm"
+                    className="flex items-center gap-2 px-4 py-2 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-lg text-sm hover:bg-bg-page dark:hover:bg-bg-dark transition-colors shadow-sm"
                 >
-                    <CheckCheck size={16} className="text-green-600" /> Mark all read
+                    <CheckCheck size={16} className="text-status-success" /> Mark all read
                 </button>
             </div>
 
@@ -150,8 +150,8 @@ const AdminNotifications = () => {
                         onClick={() => setFilter(tab.id)}
                         className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
                             ${filter === tab.id
-                                ? 'bg-orange-600 text-white shadow-md'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200'}`}
+                                ? 'bg-primary text-text-onDark shadow-md'
+                                : 'bg-bg-band dark:bg-bg-dark text-text-secondary dark:text-text-secondary hover:bg-bg-band'}`}
                     >
                         {tab.label}
                     </button>
@@ -161,14 +161,14 @@ const AdminNotifications = () => {
             {/* Notification List */}
             <div className="space-y-3">
                 {loading ? (
-                    <div className="text-center py-12 text-gray-500">Loading notifications...</div>
+                    <div className="text-center py-12 text-text-secondary">Loading notifications...</div>
                 ) : filteredNotifications.length === 0 ? (
                     <div className="text-center py-12 flex flex-col items-center">
-                        <div className="bg-gray-100 dark:bg-gray-800 p-4 rounded-full mb-4">
-                            <Bell size={32} className="text-gray-400" />
+                        <div className="bg-bg-band dark:bg-bg-dark p-4 rounded-full mb-4">
+                            <Bell size={32} className="text-text-secondary" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 dark:text-white">All caught up!</h3>
-                        <p className="text-gray-500">No notifications to display.</p>
+                        <h3 className="text-lg font-medium text-text-primary dark:text-text-onDark">All caught up!</h3>
+                        <p className="text-text-secondary">No notifications to display.</p>
                     </div>
                 ) : (
                     <AnimatePresence>
@@ -179,30 +179,30 @@ const AdminNotifications = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, height: 0 }}
                                 onClick={() => handleNotificationClick(notification)}
-                                className={`relative flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-800/50 
-                                    ${!notification.read ? 'bg-white dark:bg-gray-800 shadow-sm' : 'bg-gray-50/50 dark:bg-gray-900/50 text-gray-500'}
-                                    ${getPriorityColor(notification.priority)} border border-gray-100 dark:border-gray-800`}
+                                className={`relative flex items-start gap-4 p-4 rounded-xl cursor-pointer transition-all hover:bg-bg-page dark:hover:bg-bg-dark/50 
+                                    ${!notification.read ? 'bg-bg-surface dark:bg-bg-dark shadow-sm' : 'bg-bg-page/50 dark:bg-bg-dark/50 text-text-secondary'}
+                                    ${getPriorityColor(notification.priority)} border border-border dark:border-border`}
                             >
-                                <div className={`p-2 rounded-lg ${!notification.read ? 'bg-gray-100 dark:bg-gray-700' : 'bg-transparent'}`}>
+                                <div className={`p-2 rounded-lg ${!notification.read ? 'bg-bg-band dark:bg-bg-dark' : 'bg-transparent'}`}>
                                     {getIcon(notification.type)}
                                 </div>
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
-                                        <h4 className={`text-sm font-semibold mb-1 ${!notification.read ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
+                                        <h4 className={`text-sm font-semibold mb-1 ${!notification.read ? 'text-text-primary dark:text-text-onDark' : 'text-text-secondary dark:text-text-secondary'}`}>
                                             {notification.title}
                                         </h4>
-                                        <span className="text-xs text-gray-400 whitespace-nowrap ml-2">
+                                        <span className="text-xs text-text-secondary whitespace-nowrap ml-2">
                                             {formatDate(notification.createdAt)}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                                    <p className="text-sm text-text-secondary dark:text-text-secondary line-clamp-2">
                                         {notification.message}
                                     </p>
                                 </div>
 
                                 {!notification.read && (
-                                    <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
+                                    <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-primary animate-pulse" />
                                 )}
                             </Motion.div>
                         ))}

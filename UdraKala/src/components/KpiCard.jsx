@@ -12,22 +12,22 @@ const KpiCard = ({ title, value, delta, icon }) => {
     const displayDelta = deltaString;
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+        <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-xl shadow-sm border border-border dark:border-border">
             <div className="flex justify-between items-start">
                 <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-2">{value}</h3>
+                    <p className="text-sm font-medium text-text-secondary dark:text-text-secondary">{title}</p>
+                    <h3 className="text-2xl font-bold text-text-primary dark:text-text-onDark mt-2">{value}</h3>
                 </div>
-                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
-                    <IconComponent className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-indigo-50 dark:bg-primary-hover/20 rounded-lg">
+                    <IconComponent className="w-6 h-6 text-primary dark:text-primary" />
                 </div>
             </div>
             {delta && (
                 <div className="mt-4 flex items-center text-sm">
-                    <span className={`font-medium ${isPositive ? 'text-green-600' : isNegative ? 'text-red-600' : 'text-gray-600'}`}>
+                    <span className={`font-medium ${isPositive ? 'text-status-success' : isNegative ? 'text-status-error' : 'text-text-secondary'}`}>
                         {displayDelta}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 ml-2">from last month</span>
+                    <span className="text-text-secondary dark:text-text-secondary ml-2">from last month</span>
                 </div>
             )}
         </div>

@@ -46,27 +46,27 @@ const AadhaarVerification = ({ onNext, token }) => {
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Step 2: Aadhaar Verification</h3>
+        <div className="max-w-md mx-auto bg-bg-surface p-6 rounded-lg shadow-sm">
+            <h3 className="text-xl font-bold mb-4 text-text-primary">Step 2: Aadhaar Verification</h3>
 
             {!showOtpModal ? (
                 <form onSubmit={handleSendOtp} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Aadhaar Number</label>
+                        <label className="block text-sm font-medium text-text-secondary">Aadhaar Number</label>
                         <input
                             type="text"
                             value={aadhaarNumber}
                             onChange={(e) => setAadhaarNumber(e.target.value.replace(/\D/g, ''))}
                             maxLength={12}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                            className="mt-1 w-full border border-border rounded-md p-2"
                             required
                         />
-                        <p className="text-xs text-gray-500 mt-1">We do not store your Aadhaar number.</p>
+                        <p className="text-xs text-text-secondary mt-1">We do not store your Aadhaar number.</p>
                     </div>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition disabled:bg-gray-400"
+                        className="w-full bg-status-success text-text-onDark py-2 rounded-md hover:bg-green-700 transition disabled:bg-bg-band"
                     >
                         {loading ? 'Sending OTP...' : 'Send OTP'}
                     </button>
@@ -74,25 +74,25 @@ const AadhaarVerification = ({ onNext, token }) => {
             ) : (
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Enter OTP</label>
+                        <label className="block text-sm font-medium text-text-secondary">Enter OTP</label>
                         <input
                             type="text"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                             maxLength={6}
-                            className="mt-1 w-full border border-gray-300 rounded-md p-2 text-center tracking-widest text-xl"
+                            className="mt-1 w-full border border-border rounded-md p-2 text-center tracking-widest text-xl"
                         />
                     </div>
                     <button
                         onClick={handleVerifyOtp}
                         disabled={loading}
-                        className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:bg-gray-400"
+                        className="w-full bg-primary text-text-onDark py-2 rounded-md hover:bg-primary-hover transition disabled:bg-bg-band"
                     >
                         {loading ? 'Verifying...' : 'Verify OTP'}
                     </button>
                     <button
                         onClick={() => setShowOtpModal(false)}
-                        className="w-full text-gray-500 text-sm hover:underline"
+                        className="w-full text-text-secondary text-sm hover:underline"
                     >
                         Back to Aadhaar Input
                     </button>

@@ -11,10 +11,10 @@ const PublicRoute = ({ children }) => {
     // Show loading spinner while checking authentication
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+            <div className="flex items-center justify-center min-h-screen bg-bg-page dark:bg-bg-dark">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-orange-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">Loading...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mx-auto"></div>
+                    <p className="mt-4 text-text-secondary dark:text-text-secondary font-medium">Loading...</p>
                 </div>
             </div>
         );

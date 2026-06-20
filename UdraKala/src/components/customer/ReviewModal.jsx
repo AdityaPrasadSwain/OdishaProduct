@@ -77,13 +77,13 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 bg-bg-dark/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-bg-surface rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
                 {/* Header */}
                 <div className="flex justify-between items-center p-4 border-b">
-                    <h3 className="text-lg font-semibold text-gray-800">{existingReview ? 'Edit Review' : 'Write a Review'}</h3>
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
-                        <X size={20} className="text-gray-500" />
+                    <h3 className="text-lg font-semibold text-text-primary">{existingReview ? 'Edit Review' : 'Write a Review'}</h3>
+                    <button onClick={onClose} className="p-1 hover:bg-bg-band rounded-full transition-colors">
+                        <X size={20} className="text-text-secondary" />
                     </button>
                 </div>
 
@@ -97,8 +97,8 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
                             className="w-16 h-16 object-cover rounded-lg border"
                         />
                         <div>
-                            <p className="font-medium text-gray-900 line-clamp-1">{product.title || product.name}</p>
-                            <p className="text-sm text-gray-500">How would you rate this product?</p>
+                            <p className="font-medium text-text-primary line-clamp-1">{product.title || product.name}</p>
+                            <p className="text-sm text-text-secondary">How would you rate this product?</p>
                         </div>
                     </div>
 
@@ -109,18 +109,18 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
 
                     {/* Review Text */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
+                        <label className="block text-sm font-medium text-text-secondary mb-1">Your Review</label>
                         <textarea
                             value={reviewText}
                             onChange={(e) => setReviewText(e.target.value)}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all resize-none h-32"
+                            className="w-full p-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none h-32"
                             placeholder="Tell us what you liked or didn't like..."
                         />
                     </div>
 
                     {/* Image Upload */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-text-secondary mb-2">
                             {existingReview ? 'Update Photos (Uploading new ones will replace old ones)' : 'Add Photos (Optional)'}
                         </label>
                         {/* Show existing images if in edit mode and no new images selected yet? 
@@ -140,7 +140,7 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
                                     />
                                     <button
                                         onClick={() => removeImage(index)}
-                                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="absolute -top-1 -right-1 bg-status-error text-text-onDark rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
                                         <Trash2 size={12} />
                                     </button>
@@ -148,7 +148,7 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
                             ))}
 
                             {images.length < 5 && (
-                                <label className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:text-orange-500 transition-all text-gray-400">
+                                <label className="w-20 h-20 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-primary hover:text-primary transition-all text-text-secondary">
                                     <Upload size={20} />
                                     <input
                                         type="file"
@@ -160,22 +160,22 @@ const ReviewModal = ({ isOpen, onClose, product, orderItemId, existingReview, on
                                 </label>
                             )}
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">{images.length}/5 images</p>
+                        <p className="text-xs text-text-secondary mt-1">{images.length}/5 images</p>
                     </div>
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
+                <div className="p-4 border-t bg-bg-page flex justify-end gap-3">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                        className="px-4 py-2 text-text-secondary font-medium hover:bg-bg-band rounded-lg transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
                         disabled={uploading}
-                        className="px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-white font-medium rounded-lg shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all"
+                        className="px-6 py-2 bg-gradient-to-r from-orange-500 to-pink-500 text-text-onDark font-medium rounded-lg shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed transition-all"
                     >
                         {uploading ? 'Submitting...' : (existingReview ? 'Update Review' : 'Submit Review')}
                     </button>

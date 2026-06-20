@@ -36,10 +36,10 @@ public class PaymentService {
         }
 
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+                .orElseThrow(() -> new com.odisha.handloom.exception.AppExceptions.OrderNotFoundException());
 
         if (!order.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Unauthorized payment attempt");
+            throw new com.odisha.handloom.exception.AppExceptions.AccessDeniedException();
         }
 
         // Check if cached payment exists and is PENDING
@@ -64,9 +64,6 @@ public class PaymentService {
             order.setPaymentMethod("COD");
             order.setStatus(OrderStatus.CONFIRMED);
             orderRepository.save(order);
-
-            // Notify
-            sendOrderConfirmationEmail(order);
         }
 
         return paymentRepository.save(payment);
@@ -76,7 +73,7 @@ public class PaymentService {
     public Payment verifyPayment(UUID userId, UUID orderId, String paymentId, String orderRef, String signature) {
         Payment payment = paymentRepository.findByOrderId(orderId);
         if (payment == null) {
-            throw new ResourceNotFoundException("Payment", "orderId", orderId);
+            throw new com.odisha.handloom.exception.AppExceptions.ResourceNotFoundException("Payment");
         }
 
         boolean isValid = gatewayService.verifyPayment(paymentId, orderRef, signature);

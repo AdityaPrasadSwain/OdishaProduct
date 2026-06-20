@@ -65,24 +65,24 @@ const SellerKycFlow = () => {
     if (loading) return <div className="text-center p-10">Loading KYC Status...</div>;
 
     if (kycStatus === 'APPROVED') {
-        return <div className="text-center p-10 text-green-600 font-bold text-xl">✅ Your Seller Account is Approved!</div>;
+        return <div className="text-center p-10 text-status-success font-bold text-xl">✅ Your Seller Account is Approved!</div>;
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10 px-4">
+        <div className="min-h-screen bg-bg-page py-10 px-4">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8 text-center">Seller Verification</h1>
+                <h1 className="text-3xl font-bold text-text-primary mb-8 text-center">Seller Verification</h1>
 
                 {/* Stepper Header */}
                 <div className="flex justify-between mb-8 relative">
-                    <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-10 transform -translate-y-1/2"></div>
+                    <div className="absolute top-1/2 left-0 w-full h-1 bg-bg-band -z-10 transform -translate-y-1/2"></div>
                     {steps.map((step, index) => (
-                        <div key={index} className="flex flex-col items-center bg-gray-50 px-2">
+                        <div key={index} className="flex flex-col items-center bg-bg-page px-2">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-2 
-                                ${index <= currentStep ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-500'}`}>
+                                ${index <= currentStep ? 'bg-primary text-text-onDark' : 'bg-bg-band text-text-secondary'}`}>
                                 {index < currentStep ? <CheckCircle size={18} /> : <span>{index + 1}</span>}
                             </div>
-                            <span className={`text-sm font-medium ${index <= currentStep ? 'text-blue-600' : 'text-gray-400'}`}>
+                            <span className={`text-sm font-medium ${index <= currentStep ? 'text-primary' : 'text-text-secondary'}`}>
                                 {step.title}
                             </span>
                         </div>
@@ -90,7 +90,7 @@ const SellerKycFlow = () => {
                 </div>
 
                 {/* Step Content */}
-                <div className="bg-white rounded-xl shadow-lg p-1">
+                <div className="bg-bg-surface rounded-xl shadow-lg p-1">
                     {steps[currentStep]?.component}
                 </div>
             </div>

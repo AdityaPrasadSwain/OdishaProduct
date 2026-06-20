@@ -25,27 +25,27 @@ const GstVerification = ({ onNext, onSkip, token }) => {
     };
 
     return (
-        <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-sm">
-            <h3 className="text-xl font-bold mb-4 text-gray-800">Step 3: GST Verification (Optional)</h3>
+        <div className="max-w-md mx-auto bg-bg-surface p-6 rounded-lg shadow-sm">
+            <h3 className="text-xl font-bold mb-4 text-text-primary">Step 3: GST Verification (Optional)</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">GSTIN</label>
+                    <label className="block text-sm font-medium text-text-secondary">GSTIN</label>
                     <input
                         type="text"
                         value={formData.gstNumber}
                         onChange={(e) => setFormData({ ...formData, gstNumber: e.target.value.toUpperCase() })}
                         maxLength={15}
-                        className="mt-1 w-full border border-gray-300 rounded-md p-2 uppercase"
+                        className="mt-1 w-full border border-border rounded-md p-2 uppercase"
                         required
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Business Name</label>
+                    <label className="block text-sm font-medium text-text-secondary">Business Name</label>
                     <input
                         type="text"
                         value={formData.businessName}
                         onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                        className="mt-1 w-full border border-gray-300 rounded-md p-2"
+                        className="mt-1 w-full border border-border rounded-md p-2"
                         required
                     />
                 </div>
@@ -54,14 +54,14 @@ const GstVerification = ({ onNext, onSkip, token }) => {
                     <button
                         type="button"
                         onClick={onSkip}
-                        className="flex-1 bg-gray-200 text-gray-800 py-2 rounded-md hover:bg-gray-300 transition"
+                        className="flex-1 bg-bg-band text-text-primary py-2 rounded-md hover:bg-bg-band transition"
                     >
                         Skip
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        className="flex-1 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:bg-gray-400"
+                        className="flex-1 bg-primary text-text-onDark py-2 rounded-md hover:bg-primary-hover transition disabled:bg-bg-band"
                     >
                         {loading ? 'Verifying...' : 'Verify GST'}
                     </button>

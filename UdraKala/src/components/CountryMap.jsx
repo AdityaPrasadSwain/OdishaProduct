@@ -5,33 +5,33 @@ const CountryMap = ({ data }) => {
     // and implementing a full D3/SVG map is out of scope for a quick fix.
 
     const stats = data || [
-        { country: 'India', value: 75, color: 'bg-blue-500' },
+        { country: 'India', value: 75, color: 'bg-primary' },
         { country: 'USA', value: 15, color: 'bg-purple-500' },
         { country: 'UK', value: 5, color: 'bg-pink-500' },
-        { country: 'Others', value: 5, color: 'bg-gray-500' },
+        { country: 'Others', value: 5, color: 'bg-bg-dark' },
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Sales by Country</h3>
+        <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-xl shadow-sm border border-border dark:border-border">
+            <h3 className="text-lg font-semibold text-text-primary dark:text-text-onDark mb-6">Sales by Country</h3>
             <div className="space-y-4">
                 {stats.map((item, index) => (
                     <div key={index} className="space-y-2">
                         <div className="flex justify-between text-sm">
-                            <span className="text-gray-600 dark:text-gray-300">{item.country}</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">{item.value}%</span>
+                            <span className="text-text-secondary dark:text-text-secondary">{item.country}</span>
+                            <span className="font-semibold text-text-primary dark:text-text-onDark">{item.value}%</span>
                         </div>
-                        <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2">
+                        <div className="w-full bg-bg-band dark:bg-bg-dark rounded-full h-2">
                             <div
-                                className={`h-2 rounded-full ${item.color || 'bg-indigo-600'}`}
+                                className={`h-2 rounded-full ${item.color || 'bg-primary'}`}
                                 style={{ width: `${item.value}%` }}
                             ></div>
                         </div>
                     </div>
                 ))}
             </div>
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Map visualization coming soon</p>
+            <div className="mt-6 p-4 bg-bg-page dark:bg-bg-dark/50 rounded-lg text-center">
+                <p className="text-sm text-text-secondary dark:text-text-secondary">Map visualization coming soon</p>
             </div>
         </div>
     );

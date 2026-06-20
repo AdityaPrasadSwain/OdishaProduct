@@ -22,32 +22,32 @@ const WizardContent = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center py-10 px-4 transition-colors duration-300">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark flex flex-col items-center py-10 px-4 transition-colors duration-300">
             {/* Header */}
             <div className="mb-8 text-center">
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Become a Seller</h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-2">Create your shop in minutes</p>
+                <h1 className="text-3xl font-bold text-text-primary dark:text-text-onDark">Become a Seller</h1>
+                <p className="text-text-secondary dark:text-text-secondary mt-2">Create your shop in minutes</p>
             </div>
 
             {/* Stepper / Progress Bar */}
             <div className="w-full max-w-3xl mb-8">
                 <div className="flex items-center justify-between relative px-6">
                     {/* Progress Bar Background */}
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 dark:bg-gray-700 -z-10 rounded-full"></div>
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-bg-band dark:bg-bg-dark -z-10 rounded-full"></div>
 
                     {/* Active Progress Bar */}
                     <div
-                        className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-orange-600 -z-10 transition-all duration-500 rounded-full"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary -z-10 transition-all duration-500 rounded-full"
                         style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
                     ></div>
 
                     {[1, 2, 3, 4].map((step) => (
-                        <div key={step} className="flex flex-col items-center bg-white dark:bg-gray-900 p-1">
+                        <div key={step} className="flex flex-col items-center bg-bg-surface dark:bg-bg-dark p-1">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 border-2 
-                                ${currentStep >= step ? 'bg-orange-600 text-white border-orange-600 scale-110' : 'bg-white dark:bg-gray-800 text-gray-400 dark:text-gray-500 border-gray-300 dark:border-gray-600'}`}>
+                                ${currentStep >= step ? 'bg-primary text-text-onDark border-primary scale-110' : 'bg-bg-surface dark:bg-bg-dark text-text-secondary dark:text-text-secondary border-border dark:border-border'}`}>
                                 {step}
                             </div>
-                            <span className={`text-xs mt-1 font-medium ${currentStep >= step ? 'text-orange-600' : 'text-gray-400 dark:text-gray-500'}`}>
+                            <span className={`text-xs mt-1 font-medium ${currentStep >= step ? 'text-primary' : 'text-text-secondary dark:text-text-secondary'}`}>
                                 {step === 1 ? 'Personal' : step === 2 ? 'Business' : step === 3 ? 'KYC' : 'Review'}
                             </span>
                         </div>
@@ -56,7 +56,7 @@ const WizardContent = () => {
             </div>
 
             {/* Step Content */}
-            <div className="w-full max-w-2xl bg-white dark:bg-gray-800 p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 transition-all">
+            <div className="w-full max-w-2xl bg-bg-surface dark:bg-bg-dark p-6 md:p-8 rounded-2xl shadow-xl border border-border dark:border-border transition-all">
                 {renderStep()}
             </div>
         </div>

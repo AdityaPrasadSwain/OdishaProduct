@@ -4,11 +4,11 @@ import { updatePricingStep2 } from '../../../../api/productWizardApi';
 
 const InputGroup = ({ label, name, type = "number", required = false, placeholder = "", value, onChange }) => (
     <div>
-        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">{label} {required && <span className="text-red-500">*</span>}</label>
+        <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">{label} {required && <span className="text-status-error">*</span>}</label>
         <div className="relative">
             {/* Symbol prefix for price */}
             {(name === 'price' || name === 'discountPrice') &&
-                <span className="absolute left-4 top-3.5 text-gray-400 font-bold">₹</span>
+                <span className="absolute left-4 top-3.5 text-text-secondary font-bold">₹</span>
             }
             <input
                 type={type}
@@ -16,7 +16,7 @@ const InputGroup = ({ label, name, type = "number", required = false, placeholde
                 required={required}
                 value={value}
                 onChange={onChange}
-                className={`w-full ${name === 'price' || name === 'discountPrice' ? 'pl-10' : 'pl-4'} pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100`}
+                className={`w-full ${name === 'price' || name === 'discountPrice' ? 'pl-10' : 'pl-4'} pr-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary`}
                 placeholder={placeholder}
             />
         </div>
@@ -73,13 +73,13 @@ const PricingStock = ({ productId, onNext, onBack, initialData }) => {
         <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2">Pricing Details</h3>
+                    <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark border-b dark:border-border pb-2">Pricing Details</h3>
                     <InputGroup label="MRP (Original Price)" name="price" required placeholder="0.00" value={formData.price} onChange={handleChange} />
                     <InputGroup label="Selling Price (Discounted)" name="discountPrice" placeholder="0.00" value={formData.discountPrice} onChange={handleChange} />
                 </div>
 
                 <div className="space-y-6">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2">Stock & Inventory</h3>
+                    <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark border-b dark:border-border pb-2">Stock & Inventory</h3>
                     <InputGroup label="Stock Quantity" name="stockQuantity" required placeholder="Total units available" value={formData.stockQuantity} onChange={handleChange} />
                     <div className="grid grid-cols-2 gap-4">
                         <InputGroup label="Min Order Qty" name="minOrderQuantity" placeholder="1" value={formData.minOrderQuantity} onChange={handleChange} />
@@ -88,14 +88,14 @@ const PricingStock = ({ productId, onNext, onBack, initialData }) => {
                 </div>
             </div>
 
-            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800 flex items-center justify-between">
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-primary-hover/20 rounded-xl border border-primary dark:border-primary flex items-center justify-between">
                 <div>
-                    <h4 className="font-bold text-gray-800 dark:text-gray-200">Cash On Delivery (COD)</h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Enable COD for this product</p>
+                    <h4 className="font-bold text-text-primary dark:text-text-secondary">Cash On Delivery (COD)</h4>
+                    <p className="text-sm text-text-secondary dark:text-text-secondary">Enable COD for this product</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" name="isCodAvailable" checked={formData.isCodAvailable} onChange={handleChange} className="sr-only peer" />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none ring-4 ring-blue-100 dark:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <div className="w-11 h-6 bg-bg-band peer-focus:outline-none ring-4 ring-blue-100 dark:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
             </div>
 
@@ -103,14 +103,14 @@ const PricingStock = ({ productId, onNext, onBack, initialData }) => {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 rounded-xl font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="px-6 py-3 rounded-xl font-semibold text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors"
                 >
                     &larr; Back
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-gray-400' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-band' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
                 >
                     {loading ? 'Saving...' : 'Save & Continue'}
                 </button>

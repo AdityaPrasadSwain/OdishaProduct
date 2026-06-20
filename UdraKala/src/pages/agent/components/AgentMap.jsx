@@ -61,15 +61,15 @@ const AgentMap = ({ shipmentId }) => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-64 bg-gray-50 rounded-lg">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <div className="flex justify-center items-center h-64 bg-bg-page rounded-lg">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="flex justify-center items-center h-64 bg-red-50 text-red-600 rounded-lg">
+            <div className="flex justify-center items-center h-64 bg-red-50 text-status-error rounded-lg">
                 <p>{error}</p>
             </div>
         );
@@ -98,7 +98,7 @@ const AgentMap = ({ shipmentId }) => {
                 {customerPos && (
                     <button
                         onClick={() => openGoogleMaps(customerPos.lat, customerPos.lng)}
-                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-blue-700 transition"
+                        className="flex-1 bg-primary text-text-onDark py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-hover transition"
                     >
                         <Navigation size={16} />
                         Navigate to Customer
@@ -107,7 +107,7 @@ const AgentMap = ({ shipmentId }) => {
                 {sellerPos && (
                     <button
                         onClick={() => openGoogleMaps(sellerPos.lat, sellerPos.lng)}
-                        className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-orange-700 transition"
+                        className="flex-1 bg-primary text-text-onDark py-2 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-primary-hover transition"
                     >
                         <MapPin size={16} />
                         Navigate to Seller
@@ -116,7 +116,7 @@ const AgentMap = ({ shipmentId }) => {
             </div>
 
             {/* Map Container */}
-            <div className="border border-gray-200 rounded-lg overflow-hidden relative">
+            <div className="border border-border rounded-lg overflow-hidden relative">
                 <LoadScript googleMapsApiKey="YOUR_GOOGLE_MAPS_API_KEY">
                     <GoogleMap mapContainerStyle={containerStyle} center={mapCenter} zoom={13}>
                         {/* Agent Marker (Green) */}

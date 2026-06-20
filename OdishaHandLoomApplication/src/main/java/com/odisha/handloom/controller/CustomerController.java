@@ -71,9 +71,9 @@ public class CustomerController {
         User customer = userRepository.findByEmail(auth.getName()).orElseThrow();
 
         try {
-            orderService.createOrder(customer, orderRequest.getItems(), orderRequest.getShippingAddress(),
-                    orderRequest.getPaymentMethod(), orderRequest.getPaymentId(), orderRequest.getAddressId());
-            return ResponseEntity.ok(new MessageResponse("Orders placed successfully!"));
+            java.util.Map<String, Object> response = orderService.createOrder(customer, orderRequest);
+            response.put("status", "SUCCESS");
+            return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
         }

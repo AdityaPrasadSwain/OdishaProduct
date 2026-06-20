@@ -28,7 +28,7 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-8 flex flex-col items-center text-center relative overflow-hidden"
+                className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-sm p-8 flex flex-col items-center text-center relative overflow-hidden"
             >
                 {/* Confetti Background Effect (Subtle) */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -106,7 +106,7 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
 
                 {/* Text Animations */}
                 <motion.h2
-                    className="text-2xl font-bold text-gray-800 mb-2"
+                    className="text-2xl font-bold text-text-primary mb-2"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
@@ -115,7 +115,7 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
                 </motion.h2>
 
                 <motion.p
-                    className="text-gray-500 mb-8"
+                    className="text-text-secondary mb-8"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
@@ -131,7 +131,7 @@ const OrderSuccessAnimation = ({ onContinueShopping }) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 1, type: "spring" }}
                     onClick={handleContinue}
-                    className="w-full bg-slate-900 text-white font-medium py-3 rounded-xl shadow-lg shadow-slate-200 hover:shadow-xl transition-all"
+                    className="w-full bg-bg-dark text-text-onDark font-medium py-3 rounded-xl shadow-lg shadow-slate-200 hover:shadow-xl transition-all"
                 >
                     Continue Shopping
                 </motion.button>

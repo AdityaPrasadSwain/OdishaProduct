@@ -100,9 +100,9 @@ api.interceptors.response.use(
       text: message,
       customClass: {
         popup:
-          "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-100 dark:border-gray-700",
-        title: "text-gray-900 dark:text-white",
-        content: "text-gray-600 dark:text-gray-300",
+          "bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark border border-border dark:border-border",
+        title: "text-text-primary dark:text-text-onDark",
+        content: "text-text-secondary dark:text-text-secondary",
       },
     });
 

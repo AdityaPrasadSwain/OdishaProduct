@@ -52,9 +52,9 @@ const DashboardCard = ({ title, children, className = "" }) => (
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`bg-white dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm dark:shadow-lg border border-gray-100 dark:border-white/5 ${className}`}
+        className={`bg-bg-surface dark:bg-[#1E293B] rounded-2xl p-6 shadow-sm dark:shadow-lg border border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] ${className}`}
     >
-        {title && <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-4 uppercase tracking-wider">{title}</h3>}
+        {title && <h3 className="text-text-secondary dark:text-text-secondary text-sm font-medium mb-4 uppercase tracking-wider">{title}</h3>}
         {children}
     </motion.div>
 );
@@ -91,9 +91,9 @@ const AnalyticsDashboard = () => {
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-teal-500 to-blue-600 dark:from-teal-400 dark:to-blue-500">
                         Admin Analytics
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">Platform Overview • {new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                    <p className="text-text-secondary dark:text-text-secondary text-sm mt-1">Platform Overview • {new Date().toLocaleString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                 </div>
-                <div className="bg-white dark:bg-[#1E293B] px-4 py-2 rounded-lg border border-gray-200 dark:border-white/10 text-sm text-gray-600 dark:text-gray-300 shadow-sm">
+                <div className="bg-bg-surface dark:bg-[#1E293B] px-4 py-2 rounded-lg border border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-sm text-text-secondary dark:text-text-secondary shadow-sm">
                     Currency: <span className="text-teal-600 dark:text-teal-400 font-bold ml-1">INR (₹)</span>
                 </div>
             </div>
@@ -104,9 +104,9 @@ const AnalyticsDashboard = () => {
                 <DashboardCard className="relative overflow-hidden group">
                     <div className="flex justify-between items-start z-10 relative">
                         <div>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm">Platform Sales (Today)</p>
-                            <h2 className="text-3xl font-bold mt-1 text-gray-900 dark:text-white">{formatINR(1425400)}</h2>
-                            <p className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold mt-2 flex items-center">
+                            <p className="text-text-secondary dark:text-text-secondary text-sm">Platform Sales (Today)</p>
+                            <h2 className="text-3xl font-bold mt-1 text-text-primary dark:text-text-onDark">{formatINR(1425400)}</h2>
+                            <p className="text-status-success dark:text-emerald-400 text-xs font-semibold mt-2 flex items-center">
                                 <TrendingUp size={14} className="mr-1" />
                                 +{formatINR(125000)} vs last week
                             </p>
@@ -135,15 +135,15 @@ const AnalyticsDashboard = () => {
                 <DashboardCard>
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Orders (Today)</p>
+                            <p className="text-text-secondary dark:text-text-secondary text-sm">Total Orders (Today)</p>
                             <h2 className="text-3xl font-bold mt-1">1,450</h2>
-                            <p className="text-blue-600 dark:text-blue-400 text-xs font-semibold mt-2 flex items-center">
+                            <p className="text-primary dark:text-primary text-xs font-semibold mt-2 flex items-center">
                                 <TrendingUp size={14} className="mr-1" />
                                 +12% volume
                             </p>
                         </div>
-                        <div className="p-3 bg-blue-100 dark:bg-blue-500/10 rounded-xl">
-                            <ShoppingBag className="text-blue-600 dark:text-blue-400" size={24} />
+                        <div className="p-3 bg-primary-light dark:bg-primary/10 rounded-xl">
+                            <ShoppingBag className="text-primary dark:text-primary" size={24} />
                         </div>
                     </div>
                     <div className="h-16 mt-4">
@@ -159,36 +159,36 @@ const AnalyticsDashboard = () => {
                 <DashboardCard>
                     <div className="flex justify-between items-start">
                         <div>
-                            <p className="text-gray-500 dark:text-gray-400 text-sm">Net Commission (Monthly)</p>
+                            <p className="text-text-secondary dark:text-text-secondary text-sm">Net Commission (Monthly)</p>
                             <h2 className="text-3xl font-bold mt-1 text-lime-600 dark:text-lime-400">{formatINR(3127000)}</h2>
-                            <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                                Growth: <span className="text-gray-900 dark:text-white font-bold">18%</span>
+                            <p className="text-text-secondary dark:text-text-secondary text-xs mt-2">
+                                Growth: <span className="text-text-primary dark:text-text-onDark font-bold">18%</span>
                             </p>
                         </div>
                         <div className="p-3 bg-lime-100 dark:bg-lime-500/10 rounded-xl">
                             <Activity className="text-lime-600 dark:text-lime-400" size={24} />
                         </div>
                     </div>
-                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between text-xs">
-                        <span className="text-gray-500 dark:text-gray-400">Previous: {formatINR(2925000)}</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 flex items-center"><TrendingUp size={12} className="mr-1" /> +{formatINR(202000)}</span>
+                    <div className="mt-4 pt-4 border-t border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex items-center justify-between text-xs">
+                        <span className="text-text-secondary dark:text-text-secondary">Previous: {formatINR(2925000)}</span>
+                        <span className="text-status-success dark:text-emerald-400 flex items-center"><TrendingUp size={12} className="mr-1" /> +{formatINR(202000)}</span>
                     </div>
                 </DashboardCard>
 
                 {/* 4. Avg Order Value (Gauge Style Sim) */}
                 <DashboardCard>
                     <div className="flex justify-between items-start mb-6">
-                        <p className="text-gray-500 dark:text-gray-400 text-sm">Avg Order Value</p>
+                        <p className="text-text-secondary dark:text-text-secondary text-sm">Avg Order Value</p>
                         <div className="p-3 bg-purple-100 dark:bg-purple-500/10 rounded-xl">
                             <Box className="text-purple-600 dark:text-purple-400" size={24} />
                         </div>
                     </div>
                     <div className="relative flex items-center justify-center py-4">
                         <div className="w-32 h-16 border-t-[12px] border-r-[12px] border-l-[12px] border-purple-500 rounded-t-full border-b-0 absolute top-0"></div>
-                        <div className="w-32 h-16 border-[12px] border-gray-200 dark:border-gray-700 rounded-t-full border-b-0 opacity-30"></div>
+                        <div className="w-32 h-16 border-[12px] border-border dark:border-border rounded-t-full border-b-0 opacity-30"></div>
                         <div className="mt-8 text-center">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{formatINR(2300)}</h3>
-                            <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Target: {formatINR(2500)}</p>
+                            <h3 className="text-2xl font-bold text-text-primary dark:text-text-onDark">{formatINR(2300)}</h3>
+                            <p className="text-[10px] text-text-secondary uppercase tracking-widest mt-1">Target: {formatINR(2500)}</p>
                         </div>
                     </div>
                 </DashboardCard>
@@ -202,16 +202,16 @@ const AnalyticsDashboard = () => {
                         {mockChannels.map((channel) => (
                             <div key={channel.name}>
                                 <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                                    <span className="text-text-secondary dark:text-text-secondary flex items-center gap-2">
                                         {channel.name === 'Marketplace' && <Globe size={16} />}
                                         {channel.name === 'Store' && <ShoppingBag size={16} />}
                                         {channel.name === 'Website' && <Monitor size={16} />}
                                         {channel.name === 'Social' && <Instagram size={16} />}
                                         {channel.name}
                                     </span>
-                                    <span className="font-bold text-gray-900 dark:text-white">{channel.value}%</span>
+                                    <span className="font-bold text-text-primary dark:text-text-onDark">{channel.value}%</span>
                                 </div>
-                                <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-3 w-full bg-bg-band dark:bg-bg-dark rounded-full overflow-hidden">
                                     <div
                                         className="h-full rounded-full"
                                         style={{ width: `${channel.value}%`, backgroundColor: channel.color }}
@@ -232,14 +232,14 @@ const AnalyticsDashboard = () => {
                             { title: 'Chennai', amount: 1500000, percent: 12 },
                             { title: 'Kolkata', amount: 750000, percent: 6 },
                         ].map((loc, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition-colors cursor-default">
+                            <div key={i} className="flex items-center justify-between p-3 hover:bg-bg-page dark:hover:bg-bg-surface/5 rounded-lg transition-colors cursor-default">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-teal-400"></div>
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">{loc.title}</span>
+                                    <span className="text-sm text-text-secondary dark:text-text-secondary">{loc.title}</span>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-sm font-bold text-gray-900 dark:text-white">{formatINR(loc.amount)}</p>
-                                    <p className="text-xs text-gray-500">{loc.percent}%</p>
+                                    <p className="text-sm font-bold text-text-primary dark:text-text-onDark">{formatINR(loc.amount)}</p>
+                                    <p className="text-xs text-text-secondary">{loc.percent}%</p>
                                 </div>
                             </div>
                         ))}
@@ -252,29 +252,29 @@ const AnalyticsDashboard = () => {
                 {/* 7. P&L Statement */}
                 <DashboardCard title="Platform Revenue (Monthly)" className="lg:col-span-1 border-l-4 border-l-teal-500">
                     <div className="space-y-3">
-                        <div className="flex justify-between text-sm py-2 border-b border-gray-100 dark:border-white/5">
-                            <span className="text-gray-500 dark:text-gray-400">Total GMV</span>
-                            <span className="text-gray-900 dark:text-white font-medium">{formatINR(12540000)}</span>
+                        <div className="flex justify-between text-sm py-2 border-b border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+                            <span className="text-text-secondary dark:text-text-secondary">Total GMV</span>
+                            <span className="text-text-primary dark:text-text-onDark font-medium">{formatINR(12540000)}</span>
                         </div>
                         <div className="flex justify-between text-sm py-1">
-                            <span className="text-red-500 dark:text-red-400">Seller Payouts</span>
-                            <span className="text-red-500 dark:text-red-400">-{formatINR(10000000)}</span>
+                            <span className="text-status-error dark:text-red-400">Seller Payouts</span>
+                            <span className="text-status-error dark:text-red-400">-{formatINR(10000000)}</span>
                         </div>
                         <div className="flex justify-between text-sm py-1">
-                            <span className="text-red-500 dark:text-red-400">Refunds</span>
-                            <span className="text-red-500 dark:text-red-400">-{formatINR(25000)}</span>
+                            <span className="text-status-error dark:text-red-400">Refunds</span>
+                            <span className="text-status-error dark:text-red-400">-{formatINR(25000)}</span>
                         </div>
                         <div className="flex justify-between text-sm py-1">
-                            <span className="text-red-500 dark:text-red-400">Logistics Cost</span>
-                            <span className="text-red-500 dark:text-red-400">-{formatINR(80000)}</span>
+                            <span className="text-status-error dark:text-red-400">Logistics Cost</span>
+                            <span className="text-status-error dark:text-red-400">-{formatINR(80000)}</span>
                         </div>
                         <div className="flex justify-between text-sm py-1">
-                            <span className="text-red-500 dark:text-red-400">Server Costs</span>
-                            <span className="text-red-500 dark:text-red-400">-{formatINR(5000)}</span>
+                            <span className="text-status-error dark:text-red-400">Server Costs</span>
+                            <span className="text-status-error dark:text-red-400">-{formatINR(5000)}</span>
                         </div>
-                        <div className="flex justify-between text-sm py-1 border-b border-gray-100 dark:border-white/5 pb-2">
-                            <span className="text-red-500 dark:text-red-400">Marketing</span>
-                            <span className="text-red-500 dark:text-red-400">-{formatINR(120000)}</span>
+                        <div className="flex justify-between text-sm py-1 border-b border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] pb-2">
+                            <span className="text-status-error dark:text-red-400">Marketing</span>
+                            <span className="text-status-error dark:text-red-400">-{formatINR(120000)}</span>
                         </div>
                         <div className="flex justify-between text-base font-bold pt-2">
                             <span className="text-teal-600 dark:text-teal-400">Net Platform Profit</span>
@@ -286,25 +286,25 @@ const AnalyticsDashboard = () => {
                 {/* 9. Seller Reels Analytics */}
                 <DashboardCard title="Platform Reels Performance" className="lg:col-span-2">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
-                            <p className="text-xs text-gray-500 mb-1">Total Reels</p>
-                            <p className="text-xl font-bold text-gray-900 dark:text-white">5,400</p>
+                        <div className="bg-bg-band dark:bg-bg-dark/20 p-4 rounded-xl">
+                            <p className="text-xs text-text-secondary mb-1">Total Reels</p>
+                            <p className="text-xl font-bold text-text-primary dark:text-text-onDark">5,400</p>
                         </div>
-                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
-                            <p className="text-xs text-gray-500 mb-1">Total Views</p>
-                            <p className="text-xl font-bold text-gray-900 dark:text-white">12.5M</p>
+                        <div className="bg-bg-band dark:bg-bg-dark/20 p-4 rounded-xl">
+                            <p className="text-xs text-text-secondary mb-1">Total Views</p>
+                            <p className="text-xl font-bold text-text-primary dark:text-text-onDark">12.5M</p>
                         </div>
-                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl">
-                            <p className="text-xs text-gray-500 mb-1">Avg CTR %</p>
-                            <p className="text-xl font-bold text-yellow-500 dark:text-yellow-400">4.1%</p>
+                        <div className="bg-bg-band dark:bg-bg-dark/20 p-4 rounded-xl">
+                            <p className="text-xs text-text-secondary mb-1">Avg CTR %</p>
+                            <p className="text-xl font-bold text-status-warning dark:text-yellow-400">4.1%</p>
                         </div>
-                        <div className="bg-gray-100 dark:bg-black/20 p-4 rounded-xl border border-teal-500/30">
-                            <p className="text-xs text-gray-500 mb-1">Driven Revenue</p>
+                        <div className="bg-bg-band dark:bg-bg-dark/20 p-4 rounded-xl border border-teal-500/30">
+                            <p className="text-xs text-text-secondary mb-1">Driven Revenue</p>
                             <p className="text-xl font-bold text-teal-600 dark:text-teal-400">{formatINR(4500000)}</p>
                         </div>
                     </div>
                     {/* Engagement Chart */}
-                    <div className="h-48 w-full bg-gray-50 dark:bg-black/20 rounded-xl p-4 border border-gray-100 dark:border-none">
+                    <div className="h-48 w-full bg-bg-page dark:bg-bg-dark/20 rounded-xl p-4 border border-border dark:border-none">
                         <ResponsiveContainer width="100%" height="100%">
                             <AreaChart data={mockReelsTrend}>
                                 <defs>
@@ -332,7 +332,7 @@ const AnalyticsDashboard = () => {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="text-gray-500 text-xs border-b border-gray-200 dark:border-white/10">
+                                <tr className="text-text-secondary text-xs border-b border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
                                     <th className="py-3 font-medium">Product</th>
                                     <th className="py-3 font-medium">Sold</th>
                                     <th className="py-3 font-medium text-right">Revenue</th>
@@ -345,15 +345,15 @@ const AnalyticsDashboard = () => {
                                     { name: 'Running Shoes Gen 3', stock: 120, revenue: 450000, status: 'Out of Stock' },
                                     { name: 'Laptop Backpack', stock: 3000, revenue: 320000, status: 'In Stock' },
                                 ].map((product, idx) => (
-                                    <tr key={idx} className="border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                    <tr key={idx} className="border-b border-border dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] last:border-0 hover:bg-bg-page dark:hover:bg-bg-surface/5 transition-colors">
                                         <td className="py-3 flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded bg-gray-200 dark:bg-gray-700"></div>
-                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{product.name}</span>
+                                            <div className="w-8 h-8 rounded bg-bg-band dark:bg-bg-dark"></div>
+                                            <span className="text-sm font-medium text-text-secondary dark:text-text-secondary">{product.name}</span>
                                         </td>
                                         <td className="py-3">
-                                            <span className={`text-xs px-2 py-1 rounded-full ${product.stock === 0 ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' :
-                                                product.stock < 50 ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400' :
-                                                    'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400'
+                                            <span className={`text-xs px-2 py-1 rounded-full ${product.stock === 0 ? 'text-status-error dark:bg-status-error/20 text-status-error dark:text-red-400' :
+                                                product.stock < 50 ? 'bg-yellow-100 dark:bg-status-warning/20 text-status-warning dark:text-yellow-400' :
+                                                    'bg-green-100 dark:bg-status-success/20 text-status-success dark:text-green-400'
                                                 }`}>
                                                 {product.stock} sold
                                             </span>
@@ -390,21 +390,21 @@ const AnalyticsDashboard = () => {
                                 </PieChart>
                             </ResponsiveContainer>
                             <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
-                                <span className="text-2xl font-bold text-gray-900 dark:text-white">2.5k</span>
-                                <span className="text-[10px] text-gray-500 uppercase">Returns</span>
+                                <span className="text-2xl font-bold text-text-primary dark:text-text-onDark">2.5k</span>
+                                <span className="text-[10px] text-text-secondary uppercase">Returns</span>
                             </div>
                         </div>
 
                         {/* Stats Info */}
                         <div className="flex-1 w-full">
                             <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="bg-gray-100 dark:bg-white/5 p-3 rounded-lg text-center">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Refunded Val</p>
-                                    <p className="text-lg font-bold text-red-500 dark:text-red-400">{formatINR(55000)}</p>
+                                <div className="bg-bg-band dark:bg-bg-surface/5 p-3 rounded-lg text-center">
+                                    <p className="text-xs text-text-secondary dark:text-text-secondary">Refunded Val</p>
+                                    <p className="text-lg font-bold text-status-error dark:text-red-400">{formatINR(55000)}</p>
                                 </div>
-                                <div className="bg-gray-100 dark:bg-white/5 p-3 rounded-lg text-center">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Cancellations</p>
-                                    <p className="text-lg font-bold text-gray-700 dark:text-white">120</p>
+                                <div className="bg-bg-band dark:bg-bg-surface/5 p-3 rounded-lg text-center">
+                                    <p className="text-xs text-text-secondary dark:text-text-secondary">Cancellations</p>
+                                    <p className="text-lg font-bold text-text-secondary dark:text-text-onDark">120</p>
                                 </div>
                             </div>
                             <div className="space-y-2">
@@ -412,9 +412,9 @@ const AnalyticsDashboard = () => {
                                     <div key={item.name} className="flex items-center justify-between text-xs">
                                         <div className="flex items-center gap-2">
                                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
-                                            <span className="text-gray-500 dark:text-gray-400">{item.name}</span>
+                                            <span className="text-text-secondary dark:text-text-secondary">{item.name}</span>
                                         </div>
-                                        <span className="font-bold text-gray-700 dark:text-white">{Math.round((item.value / 1200) * 100)}%</span>
+                                        <span className="font-bold text-text-secondary dark:text-text-onDark">{Math.round((item.value / 1200) * 100)}%</span>
                                     </div>
                                 ))}
                             </div>

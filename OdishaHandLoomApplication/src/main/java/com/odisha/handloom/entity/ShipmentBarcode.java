@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "shipments_barcodes")
+@Table(name = "shipments_barcodes", indexes = {
+    @Index(name = "idx_shipment_barcodes_val", columnList = "barcodeValue", unique = true)
+})
 public class ShipmentBarcode {
 
     @Id

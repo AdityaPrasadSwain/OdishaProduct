@@ -42,12 +42,12 @@ const PaymentSuccess = () => {
     }, []);
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark flex items-center justify-center p-4">
             <Motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, type: 'spring' }}
-                className="bg-white dark:bg-gray-900 max-w-md w-full rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800 text-center relative"
+                className="bg-bg-surface dark:bg-bg-dark max-w-md w-full rounded-3xl shadow-2xl overflow-hidden border border-border dark:border-border text-center relative"
             >
                 {/* Decorative Background Mesh */}
                 <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-green-500/10 to-transparent pointer-events-none" />
@@ -57,16 +57,16 @@ const PaymentSuccess = () => {
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
                         transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                        className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30"
+                        className="w-24 h-24 bg-status-success rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/30"
                     >
-                        <CheckCircle size={48} className="text-white" strokeWidth={3} />
+                        <CheckCircle size={48} className="text-text-onDark" strokeWidth={3} />
                     </Motion.div>
 
                     <Motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="text-3xl font-bold text-gray-900 dark:text-white mb-2"
+                        className="text-3xl font-bold text-text-primary dark:text-text-onDark mb-2"
                     >
                         Payment Successful!
                     </Motion.h1>
@@ -75,7 +75,7 @@ const PaymentSuccess = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}
-                        className="text-gray-500 dark:text-gray-400 mb-8"
+                        className="text-text-secondary dark:text-text-secondary mb-8"
                     >
                         Thank you for your purchase. Your order has been confirmed and will be shipped soon.
                     </Motion.p>
@@ -86,7 +86,7 @@ const PaymentSuccess = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.6 }}
                             onClick={() => navigate('/customer/orders')}
-                            className="w-full py-3.5 px-6 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold hover:bg-gray-800 dark:hover:bg-gray-100 transition shadow-lg flex items-center justify-center gap-2 group"
+                            className="w-full py-3.5 px-6 rounded-xl bg-bg-dark dark:bg-bg-surface text-text-onDark dark:text-text-primary font-bold hover:bg-bg-dark dark:hover:bg-bg-band transition shadow-lg flex items-center justify-center gap-2 group"
                         >
                             View Order Details
                             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -97,7 +97,7 @@ const PaymentSuccess = () => {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.7 }}
                             onClick={() => navigate('/products')}
-                            className="w-full py-3.5 px-6 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2"
+                            className="w-full py-3.5 px-6 rounded-xl border border-border dark:border-border text-text-secondary dark:text-text-secondary font-semibold hover:bg-bg-page dark:hover:bg-bg-dark transition flex items-center justify-center gap-2"
                         >
                             <ShoppingBag size={18} />
                             Continue Shopping
@@ -105,7 +105,7 @@ const PaymentSuccess = () => {
                     </div>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-800/50 p-4 text-xs text-gray-400 border-t border-gray-100 dark:border-gray-800">
+                <div className="bg-bg-page dark:bg-bg-dark/50 p-4 text-xs text-text-secondary border-t border-border dark:border-border">
                     Transaction ID: {state?.paymentIntentId || 'TXN_PENDING'}
                 </div>
             </Motion.div>

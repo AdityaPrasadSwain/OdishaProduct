@@ -58,9 +58,9 @@ const Specifications = ({ productId, onNext, onBack, initialData }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
-            <div className="flex justify-between items-center border-b dark:border-gray-700 pb-2">
-                <h3 className="text-lg font-bold text-gray-800 dark:text-white">Product Specifications</h3>
-                <button type="button" onClick={handleAdd} className="text-blue-600 dark:text-blue-400 font-bold hover:underline text-sm">+ Add Row</button>
+            <div className="flex justify-between items-center border-b dark:border-border pb-2">
+                <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark">Product Specifications</h3>
+                <button type="button" onClick={handleAdd} className="text-primary dark:text-primary font-bold hover:underline text-sm">+ Add Row</button>
             </div>
 
             <div className="space-y-4">
@@ -71,7 +71,7 @@ const Specifications = ({ productId, onNext, onBack, initialData }) => {
                                 value={spec.key}
                                 onChange={(e) => handleChange(idx, 'key', e.target.value)}
                                 placeholder="Attribute (e.g. Care Instructions)"
-                                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 placeholder-gray-400"
+                                className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary placeholder-gray-400"
                             />
                         </div>
                         <div className="flex-1">
@@ -79,13 +79,13 @@ const Specifications = ({ productId, onNext, onBack, initialData }) => {
                                 value={spec.value}
                                 onChange={(e) => handleChange(idx, 'value', e.target.value)}
                                 placeholder="Value (e.g. Dry Clean Only)"
-                                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 placeholder-gray-400"
+                                className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary placeholder-gray-400"
                             />
                         </div>
                         <button
                             type="button"
                             onClick={() => handleRemove(idx)}
-                            className="p-3 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-colors"
+                            className="p-3 text-status-error hover:bg-red-50 dark:hover:text-status-error/20 rounded-xl transition-colors"
                         >
                             &times;
                         </button>
@@ -97,14 +97,14 @@ const Specifications = ({ productId, onNext, onBack, initialData }) => {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 rounded-xl font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="px-6 py-3 rounded-xl font-semibold text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors"
                 >
                     &larr; Back
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-gray-400' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-band' : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
                 >
                     {loading ? 'Saving...' : 'Save & Continue'}
                 </button>

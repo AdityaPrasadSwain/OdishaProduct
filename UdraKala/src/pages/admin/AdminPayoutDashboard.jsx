@@ -134,28 +134,28 @@ const AdminPayoutDashboard = () => {
     });
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
+        <div className="p-6 bg-bg-page min-h-screen">
             <div className="max-w-7xl mx-auto">
-                <h1 className="text-2xl font-bold text-gray-900 mb-6">Seller Payout Dashboard</h1>
+                <h1 className="text-2xl font-bold text-text-primary mb-6">Seller Payout Dashboard</h1>
 
                 {/* Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <SummaryCard
                         title="Platform Balance"
                         amount={platformBalance}
-                        icon={<BanknotesIcon className="h-6 w-6 text-blue-600" />}
+                        icon={<BanknotesIcon className="h-6 w-6 text-primary" />}
                         color="bg-blue-50"
                     />
                     <SummaryCard
                         title="Pending Payouts"
                         amount={totalPendingPayouts}
-                        icon={<ArrowPathIcon className="h-6 w-6 text-orange-600" />}
-                        color="bg-orange-50"
+                        icon={<ArrowPathIcon className="h-6 w-6 text-primary" />}
+                        color="bg-bg-band"
                     />
                     <SummaryCard
                         title="Commission Earned"
                         amount={totalCommissionEarned}
-                        icon={<CurrencyRupeeIcon className="h-6 w-6 text-green-600" />}
+                        icon={<CurrencyRupeeIcon className="h-6 w-6 text-status-success" />}
                         color="bg-green-50"
                     />
                     <SummaryCard
@@ -167,14 +167,14 @@ const AdminPayoutDashboard = () => {
                 </div>
 
                 {/* Filters & Actions */}
-                <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 mb-6">
+                <div className="bg-bg-surface p-4 rounded-lg shadow-sm border border-border flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 mb-6">
                     <div className="relative w-full sm:w-96">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                            <MagnifyingGlassIcon className="h-5 w-5 text-text-secondary" />
                         </div>
                         <input
                             type="text"
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-bg-surface placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm"
                             placeholder="Search seller by name or shop..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -182,9 +182,9 @@ const AdminPayoutDashboard = () => {
                     </div>
                     <div className="flex items-center space-x-4 w-full sm:w-auto">
                         <div className="flex items-center space-x-2">
-                            <FunnelIcon className="h-5 w-5 text-gray-500" />
+                            <FunnelIcon className="h-5 w-5 text-text-secondary" />
                             <select
-                                className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                                className="block w-full pl-3 pr-10 py-2 text-base border-border focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md"
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
                             >
@@ -197,34 +197,34 @@ const AdminPayoutDashboard = () => {
                 </div>
 
                 {/* Sellers Table */}
-                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div className="bg-bg-surface shadow overflow-hidden sm:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-bg-page">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bank Status</th>
-                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Gross Sales</th>
-                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Net Payable</th>
-                                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Seller</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Bank Status</th>
+                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Gross Sales</th>
+                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Net Payable</th>
+                                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-text-secondary uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-bg-surface divide-y divide-gray-200">
                             {filteredSellers.map((seller) => {
                                 const netPayable = seller.pendingEarnings.reduce((acc, curr) => acc + curr.netAmount, 0);
                                 const grossSales = seller.pendingEarnings.reduce((acc, curr) => acc + curr.grossAmount, 0);
 
                                 return (
-                                    <tr key={seller.id} className="hover:bg-gray-50">
+                                    <tr key={seller.id} className="hover:bg-bg-page">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <span className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
+                                                    <span className="h-10 w-10 rounded-full bg-primary-light flex items-center justify-center text-primary font-bold">
                                                         {seller.name.charAt(0)}
                                                     </span>
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{seller.name}</div>
-                                                    <div className="text-sm text-gray-500">{seller.shopName}</div>
+                                                    <div className="text-sm font-medium text-text-primary">{seller.name}</div>
+                                                    <div className="text-sm text-text-secondary">{seller.shopName}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -234,23 +234,23 @@ const AdminPayoutDashboard = () => {
                                                     Verified
                                                 </span>
                                             ) : (
-                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-status-error text-status-error">
                                                     Unverified
                                                 </span>
                                             )}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-text-secondary">
                                             ₹{grossSales.toFixed(2)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-right">
-                                            <span className={`text-sm font-bold ${netPayable > 0 ? 'text-green-600' : 'text-gray-400'}`}>
+                                            <span className={`text-sm font-bold ${netPayable > 0 ? 'text-status-success' : 'text-text-secondary'}`}>
                                                 ₹{netPayable.toFixed(2)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                                             <button
                                                 onClick={() => handleViewDetails(seller)}
-                                                className="text-primary-600 hover:text-primary-900"
+                                                className="text-primary hover:text-primary"
                                             >
                                                 View & Pay
                                             </button>
@@ -261,7 +261,7 @@ const AdminPayoutDashboard = () => {
                         </tbody>
                     </table>
                     {filteredSellers.length === 0 && (
-                        <div className="text-center py-10 text-gray-500">No sellers found matching your criteria.</div>
+                        <div className="text-center py-10 text-text-secondary">No sellers found matching your criteria.</div>
                     )}
                 </div>
             </div>
@@ -286,13 +286,13 @@ const AdminPayoutDashboard = () => {
 };
 
 const SummaryCard = ({ title, amount, icon, color }) => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100 flex items-center space-x-4">
+    <div className="bg-bg-surface rounded-lg p-6 shadow-sm border border-border flex items-center space-x-4">
         <div className={`p-3 rounded-full ${color}`}>
             {icon}
         </div>
         <div>
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <p className="text-2xl font-bold text-gray-900">₹{amount.toFixed(2)}</p>
+            <p className="text-sm font-medium text-text-secondary">{title}</p>
+            <p className="text-2xl font-bold text-text-primary">₹{amount.toFixed(2)}</p>
         </div>
     </div>
 );

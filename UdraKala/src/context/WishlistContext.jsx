@@ -37,7 +37,7 @@ export const WishlistProvider = ({ children }) => {
                 title: 'Sign In Required',
                 text: 'Please sign in to add items to your wishlist.',
                 icon: 'info',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#5747C7'
             });
             return;
         }
@@ -47,7 +47,7 @@ export const WishlistProvider = ({ children }) => {
                 title: 'Customer Only',
                 text: 'Only customers can manage wishlists.',
                 icon: 'warning',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#5747C7'
             });
             return;
         }
@@ -85,7 +85,7 @@ export const WishlistProvider = ({ children }) => {
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Something went wrong!',
-                confirmButtonColor: '#ea580c'
+                confirmButtonColor: '#5747C7'
             });
         }
     };

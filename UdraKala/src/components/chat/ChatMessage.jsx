@@ -19,8 +19,8 @@ const ChatMessage = ({ message, onOptionClick }) => {
         >
             <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2 ${isBot
-                    ? 'bg-gray-100 text-gray-800 rounded-tl-none'
-                    : 'bg-orange-600 text-white rounded-tr-none'
+                    ? 'bg-bg-band text-text-primary rounded-tl-none'
+                    : 'bg-primary text-text-onDark rounded-tr-none'
                     }`}
             >
                 <p className="text-sm pre-wrap">{message.message}</p>
@@ -36,15 +36,15 @@ const ChatMessage = ({ message, onOptionClick }) => {
                         <div
                             key={order.orderId}
                             onClick={() => onOptionClick && onOptionClick(`ORDER_SELECTED:${order.orderId}`)}
-                            className="bg-white border border-gray-200 rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer transition-shadow flex justify-between items-center group"
+                            className="bg-bg-surface border border-border rounded-xl p-3 shadow-sm hover:shadow-md cursor-pointer transition-shadow flex justify-between items-center group"
                         >
                             <div>
-                                <p className="font-semibold text-sm text-gray-800">Order #{order.orderId.substring(0, 8)}</p>
-                                <p className="text-xs text-gray-500">{new Date(order.orderDate).toLocaleDateString()}</p>
-                                <p className="text-xs font-medium text-orange-600 mt-1">₹{order.amount}</p>
+                                <p className="font-semibold text-sm text-text-primary">Order #{order.orderId.substring(0, 8)}</p>
+                                <p className="text-xs text-text-secondary">{new Date(order.orderDate).toLocaleDateString()}</p>
+                                <p className="text-xs font-medium text-primary mt-1">₹{order.amount}</p>
                             </div>
                             <div className="text-right">
-                                <span className={`text-xs px-2 py-1 rounded-full ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                                <span className={`text-xs px-2 py-1 rounded-full ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-700' : 'bg-primary-light text-primary'
                                     }`}>
                                     {order.status}
                                 </span>
@@ -61,7 +61,7 @@ const ChatMessage = ({ message, onOptionClick }) => {
                         <button
                             key={idx}
                             onClick={() => onOptionClick && onOptionClick(opt)}
-                            className="px-3 py-1.5 bg-orange-50 text-orange-700 text-sm border border-orange-200 rounded-full hover:bg-orange-100 transition-colors"
+                            className="px-3 py-1.5 bg-bg-band text-primary text-sm border border-primary rounded-full hover:bg-primary-light transition-colors"
                         >
                             {opt}
                         </button>

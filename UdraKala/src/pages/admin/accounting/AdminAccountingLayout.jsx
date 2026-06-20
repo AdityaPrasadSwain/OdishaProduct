@@ -9,16 +9,16 @@ const AdminAccountingLayout = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Financial Accounting</h1>
+            <h1 className="text-2xl font-bold mb-6 text-text-primary dark:text-text-onDark">Financial Accounting</h1>
 
             {/* Tabs */}
-            <div className="flex space-x-4 mb-8 border-b dark:border-gray-700 pb-1">
+            <div className="flex space-x-4 mb-8 border-b dark:border-border pb-1">
                 <button
                     onClick={() => setActiveTab('sellers')}
                     className={`flex items-center gap-2 pb-3 px-2 border-b-2 transition-colors font-medium text-sm
                         ${activeTab === 'sellers'
-                            ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                            ? 'border-primary text-primary dark:text-primary'
+                            : 'border-transparent text-text-secondary hover:text-text-secondary dark:hover:text-text-secondary'}`}
                 >
                     <BadgeIndianRupee size={18} />
                     Seller Payouts
@@ -27,8 +27,8 @@ const AdminAccountingLayout = () => {
                     onClick={() => setActiveTab('refunds')}
                     className={`flex items-center gap-2 pb-3 px-2 border-b-2 transition-colors font-medium text-sm
                         ${activeTab === 'refunds'
-                            ? 'border-red-600 text-red-600 dark:text-red-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+                            ? 'border-red-600 text-status-error dark:text-red-400'
+                            : 'border-transparent text-text-secondary hover:text-text-secondary dark:hover:text-text-secondary'}`}
                 >
                     <RotateCcw size={18} />
                     Refunds

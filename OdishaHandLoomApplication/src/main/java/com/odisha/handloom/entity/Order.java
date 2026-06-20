@@ -10,18 +10,23 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = {
+    @Index(name = "idx_orders_user_id", columnList = "user_id"),
+    @Index(name = "idx_orders_seller_id", columnList = "seller_id"),
+    @Index(name = "idx_orders_tracking_id", columnList = "trackingId", unique = true),
+    @Index(name = "idx_orders_user_created", columnList = "user_id, createdAt")
+})
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user; // Customer
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller; // Seller (Added for multi-vendor support)
 
@@ -64,6 +69,15 @@ public class Order {
 
     @Column(name = "discount_amount")
     private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "shipping_cost")
+    private BigDecimal shippingCost = BigDecimal.ZERO;
+
+    @Column(name = "tax_amount")
+    private BigDecimal taxAmount = BigDecimal.ZERO;
+
+    @Column(name = "idempotency_key", unique = true)
+    private String idempotencyKey;
 
     // Transient fields for Frontend UI (Not stored in DB)
     @Transient
@@ -139,6 +153,9 @@ public class Order {
         private Boolean invoiceSent;
         private LocalDateTime invoiceSentAt;
         private String invoiceNumber;
+        private BigDecimal shippingCost;
+        private BigDecimal taxAmount;
+        private String idempotencyKey;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
@@ -215,6 +232,21 @@ public class Order {
             return this;
         }
 
+        public OrderBuilder shippingCost(BigDecimal shippingCost) {
+            this.shippingCost = shippingCost;
+            return this;
+        }
+
+        public OrderBuilder taxAmount(BigDecimal taxAmount) {
+            this.taxAmount = taxAmount;
+            return this;
+        }
+
+        public OrderBuilder idempotencyKey(String idempotencyKey) {
+            this.idempotencyKey = idempotencyKey;
+            return this;
+        }
+
         public OrderBuilder createdAt(LocalDateTime createdAt) {
             this.createdAt = createdAt;
             return this;
@@ -226,9 +258,13 @@ public class Order {
         }
 
         public Order build() {
-            return new Order(id, user, seller, orderItems, totalAmount, status, shippingAddress, paymentMethod,
+            Order order = new Order(id, user, seller, orderItems, totalAmount, status, shippingAddress, paymentMethod,
                     paymentId, courierName, trackingId, invoiceSent, invoiceSentAt, invoiceNumber,
                     createdAt, updatedAt);
+            order.setShippingCost(shippingCost);
+            order.setTaxAmount(taxAmount);
+            order.setIdempotencyKey(idempotencyKey);
+            return order;
         }
     }
 
@@ -432,6 +468,30 @@ public class Order {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getShippingCost() {
+        return shippingCost;
+    }
+
+    public void setShippingCost(BigDecimal shippingCost) {
+        this.shippingCost = shippingCost;
+    }
+
+    public BigDecimal getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(BigDecimal taxAmount) {
+        this.taxAmount = taxAmount;
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 
     public String getShiprocketOrderId() {

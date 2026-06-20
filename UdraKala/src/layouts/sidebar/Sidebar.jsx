@@ -24,13 +24,13 @@ const Sidebar = ({ isMobile, setMobileSidebarOpen }) => {
 
     return (
         <div className={`
-      fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-dark border-r border-border dark:border-dark-light transition-transform duration-300 ease-in-out
+      fixed inset-y-0 left-0 z-50 w-64 bg-bg-surface dark:bg-dark border-r border-border dark:border-dark-light transition-transform duration-300 ease-in-out
       ${isMobile ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:static lg:inset-0'}
     `}>
             {/* Logo */}
             <div className="flex items-center gap-3 px-6 h-16 border-b border-border dark:border-dark-light">
                 <img src={udraKalaLogo} alt="Logo" className="h-8 w-8 rounded-full" />
-                <span className="text-xl font-bold font-sans text-dark dark:text-white">UdraKala</span>
+                <span className="text-xl font-bold font-sans text-dark dark:text-text-onDark">UdraKala</span>
             </div>
 
             {/* Nav Items */}
@@ -46,8 +46,8 @@ const Sidebar = ({ isMobile, setMobileSidebarOpen }) => {
                             className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors
                 ${isActive
-                                    ? 'bg-primary text-white shadow-md shadow-primary/30'
-                                    : 'text-dark dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-dark-light hover:text-primary'}
+                                    ? 'bg-primary text-text-onDark shadow-md shadow-primary/30'
+                                    : 'text-dark dark:text-text-secondary hover:bg-bg-band dark:hover:bg-dark-light hover:text-primary'}
               `}
                         >
                             <Icon size={20} />

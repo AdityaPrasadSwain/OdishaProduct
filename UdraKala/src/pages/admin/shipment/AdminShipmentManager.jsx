@@ -103,30 +103,30 @@ const AdminShipmentManager = () => {
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white flex items-center gap-2">
-                <Truck className="text-orange-600" /> Shipment Management
+            <h1 className="text-2xl font-bold mb-6 text-text-primary dark:text-text-onDark flex items-center gap-2">
+                <Truck className="text-primary" /> Shipment Management
             </h1>
 
             {/* Quick Test Create */}
-            <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 flex gap-4 items-center">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Quick Create:</span>
+            <div className="mb-6 bg-bg-surface dark:bg-bg-dark p-4 rounded-lg shadow-sm border border-border dark:border-border flex gap-4 items-center">
+                <span className="font-semibold text-text-secondary dark:text-text-secondary">Quick Create:</span>
                 <input
                     type="text"
                     placeholder="Enter Order ID (UUID)"
                     id="orderInput"
-                    className="border p-2 rounded w-80 focus:ring-2 focus:ring-orange-500 outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="border p-2 rounded w-80 focus:ring-2 focus:ring-primary outline-none dark:bg-bg-dark dark:border-border dark:text-text-onDark"
                 />
                 <button
                     onClick={() => handleCreateShipment(document.getElementById('orderInput').value)}
-                    className="bg-orange-600 text-white px-4 py-2 rounded flex items-center gap-2 hover:bg-orange-700 transition"
+                    className="bg-primary text-text-onDark px-4 py-2 rounded flex items-center gap-2 hover:bg-primary-hover transition"
                 >
                     <Plus size={18} /> Create Shipment
                 </button>
             </div>
 
-            <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-100 dark:border-gray-700">
+            <div className="overflow-x-auto bg-bg-surface dark:bg-bg-dark rounded-lg shadow border border-border dark:border-border">
                 <table className="w-full text-left">
-                    <thead className="bg-gray-50 dark:bg-gray-700 border-b dark:border-gray-600 text-gray-600 dark:text-gray-300 text-sm uppercase">
+                    <thead className="bg-bg-page dark:bg-bg-dark border-b dark:border-border text-text-secondary dark:text-text-secondary text-sm uppercase">
                         <tr>
                             <th className="p-4">Shipment ID</th>
                             <th className="p-4">Order Details</th>
@@ -138,19 +138,19 @@ const AdminShipmentManager = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                         {shipments.map(s => (
-                            <tr key={s.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                <td className="p-4 text-xs font-mono text-gray-500 dark:text-gray-400">#{s.id.substring(0, 8)}</td>
+                            <tr key={s.id} className="hover:bg-bg-page dark:hover:bg-bg-dark transition">
+                                <td className="p-4 text-xs font-mono text-text-secondary dark:text-text-secondary">#{s.id.substring(0, 8)}</td>
                                 <td className="p-4">
-                                    <div className="font-semibold text-gray-800 dark:text-white">Order: #{s.orderId.substring(0, 8)}</div>
+                                    <div className="font-semibold text-text-primary dark:text-text-onDark">Order: #{s.orderId.substring(0, 8)}</div>
                                 </td>
                                 <td className="p-4">
-                                    <div className="font-bold text-gray-800 dark:text-white">{s.customerName}</div>
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{s.shippingAddress}</div>
+                                    <div className="font-bold text-text-primary dark:text-text-onDark">{s.customerName}</div>
+                                    <div className="text-xs text-text-secondary dark:text-text-secondary mt-1">{s.shippingAddress}</div>
                                 </td>
                                 <td className="p-4">
                                     <span className={`px-3 py-1 rounded-full text-xs font-bold 
                                         ${s.status === 'DELIVERED' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
-                                            s.status === 'SHIPPED' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
+                                            s.status === 'SHIPPED' ? 'bg-primary-light text-primary dark:bg-primary-hover dark:text-primary' :
                                                 s.status === 'OUT_FOR_DELIVERY' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' :
                                                     'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'}`}>
                                         {s.status}
@@ -158,7 +158,7 @@ const AdminShipmentManager = () => {
                                     {s.status === 'DELIVERED' && (
                                         <button
                                             onClick={() => handleViewProof(s.id)}
-                                            className="ml-2 p-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition"
+                                            className="ml-2 p-1 bg-bg-band hover:bg-bg-band rounded-full text-text-secondary dark:bg-bg-dark dark:text-text-secondary dark:hover:bg-bg-dark transition"
                                             title="View Proof"
                                         >
                                             <Eye size={14} />
@@ -167,13 +167,13 @@ const AdminShipmentManager = () => {
                                 </td>
                                 <td className="p-4">
                                     {s.agentName ? (
-                                        <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/30 px-3 py-1 rounded-lg inline-block">
+                                        <div className="flex items-center gap-2 text-primary dark:text-primary font-medium bg-blue-50 dark:bg-primary-hover/30 px-3 py-1 rounded-lg inline-block">
                                             <UserPlus size={14} /> {s.agentName}
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
                                             <select
-                                                className="border rounded p-2 text-sm focus:ring-2 focus:ring-orange-500 outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                className="border rounded p-2 text-sm focus:ring-2 focus:ring-primary outline-none dark:bg-bg-dark dark:border-border dark:text-text-onDark"
                                                 value={selectedAgents[s.id] || ''}
                                                 onChange={(e) => handleAgentSelect(s.id, e.target.value)}
                                             >
@@ -192,21 +192,21 @@ const AdminShipmentManager = () => {
                                             disabled={!selectedAgents[s.id]}
                                             className={`flex items-center gap-1 px-3 py-1.5 rounded text-sm transition
                                                 ${selectedAgents[s.id]
-                                                    ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-sm'
-                                                    : 'bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed'}`}
+                                                    ? 'bg-primary text-text-onDark hover:bg-primary-hover shadow-sm'
+                                                    : 'bg-bg-band text-text-secondary dark:bg-bg-dark dark:text-text-secondary cursor-not-allowed'}`}
                                         >
                                             <UserPlus size={16} /> Assign
                                         </button>
                                     ) : (
-                                        <span className="text-gray-400 text-sm italic">Assigned</span>
+                                        <span className="text-text-secondary text-sm italic">Assigned</span>
                                     )}
                                 </td>
                             </tr>
                         ))}
                         {shipments.length === 0 && (
                             <tr>
-                                <td colSpan="6" className="p-8 text-center text-gray-500">
-                                    <Package className="mx-auto h-12 w-12 text-gray-300 mb-2" />
+                                <td colSpan="6" className="p-8 text-center text-text-secondary">
+                                    <Package className="mx-auto h-12 w-12 text-text-secondary mb-2" />
                                     No shipments found.
                                 </td>
                             </tr>

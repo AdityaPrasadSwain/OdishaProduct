@@ -200,8 +200,7 @@ public class AuthController {
                     user.getProfilePictureUrl()));
         } catch (org.springframework.security.authentication.BadCredentialsException e) {
             System.out.println("DEBUG: BadCredentialsException occurred. Message: " + e.getMessage());
-
-            throw e;
+            throw new com.odisha.handloom.exception.AppExceptions.InvalidCredentialsException();
         }
     }
 
@@ -210,10 +209,7 @@ public class AuthController {
         try {
             // 1. Check Uniqueness
             if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "email",
-                        "message", "This email is already registered."));
+                throw new com.odisha.handloom.exception.AppExceptions.EmailAlreadyExistsException();
             }
 
             if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
@@ -332,12 +328,11 @@ public class AuthController {
 
             return ResponseEntity.ok(new MessageResponse(role == Role.SELLER ? "Seller account created successfully."
                     : "Account created successfully. Please login."));
+        } catch (com.odisha.handloom.exception.ApiException e) {
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(java.util.Map.of(
-                    "status", 500,
-                    "message", "Registration failed: " + e.getMessage(),
-                    "trace", e.toString()));
+            throw new RuntimeException("Registration failed", e);
         }
     }
 

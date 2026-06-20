@@ -1,214 +1,194 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion as Motion } from 'motion/react';
+import { useSearchParams } from 'react-router-dom';
+import { motion as Motion, AnimatePresence } from 'motion/react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import { useData } from '../context/DataContext';
-import { useWishlist } from '../context/WishlistContext';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay, EffectCreative, Navigation } from 'swiper/modules';
-import { Minus, Plus, Heart } from 'lucide-react';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-creative';
-import 'swiper/css/navigation';
-
-
-
+import ProductCard from '../components/shared/ProductCard';
 import ProductCardSkeleton from '../components/skeletons/ProductCardSkeleton';
 
-import CategoryNavbar from '../components/category/CategoryNavbar';
-
 const ProductList = () => {
-    // ... existing hook calls ...
-    const { products, loading, addToCart, cart, updateCartQuantity, removeFromCart } = useData();
+    const { products, loading } = useData();
     const [searchParams] = useSearchParams();
+    
+    // Initial states from URL params
     const initialCategory = searchParams.get('category') || 'All';
+    const initialSearch = searchParams.get('search') || '';
 
-    const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [categoryFilter, setCategoryFilter] = useState(initialCategory);
-    const { toggleWishlist, isInWishlist } = useWishlist();
-    const navigate = useNavigate();
-
+    const [maxPrice, setMaxPrice] = useState(10000); // Default max
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     // Update filter if URL param changes
     useEffect(() => {
         const categoryFromUrl = searchParams.get('category');
-        if (categoryFromUrl) {
-            setCategoryFilter(categoryFromUrl);
-        }
+        if (categoryFromUrl) setCategoryFilter(categoryFromUrl);
+        
+        const searchFromUrl = searchParams.get('search');
+        if (searchFromUrl !== null) setSearchTerm(searchFromUrl);
     }, [searchParams]);
 
-    // ... existing filter logic ...
+    // Calculate max price from products for slider
+    const highestPriceInCatalog = products.reduce((max, p) => p.price > max ? p.price : max, 10000);
+
+    // Filter Logic
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         const categoryName = product.category?.name || 'Uncategorized';
         const matchesCategory = categoryFilter === 'All' || categoryName === categoryFilter;
-        return matchesSearch && matchesCategory;
+        const matchesPrice = product.discountPrice > 0 ? product.discountPrice <= maxPrice : product.price <= maxPrice;
+        
+        return matchesSearch && matchesCategory && matchesPrice;
     });
 
     const categories = ['All', ...new Set(products.map(p => p.category?.name || 'Uncategorized'))];
 
+    // Sidebar Content Component
+    const FilterSidebarContent = () => (
+        <div className="space-y-8">
+            <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary dark:text-text-onDark mb-4">Categories</h3>
+                <div className="space-y-3">
+                    {categories.map((cat, idx) => (
+                        <label key={idx} className="flex items-center gap-3 cursor-pointer group">
+                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${categoryFilter === cat ? 'bg-primary border-primary' : 'border-border dark:border-border group-hover:border-primary'}`}>
+                                {categoryFilter === cat && <div className="w-2.5 h-2.5 bg-bg-surface rounded-sm" />}
+                            </div>
+                            <input 
+                                type="radio" 
+                                name="category" 
+                                value={cat}
+                                checked={categoryFilter === cat}
+                                onChange={(e) => setCategoryFilter(e.target.value)}
+                                className="hidden"
+                            />
+                            <span className={`text-sm ${categoryFilter === cat ? 'text-primary font-semibold' : 'text-text-secondary group-hover:text-text-primary dark:group-hover:text-text-onDark'}`}>
+                                {cat}
+                            </span>
+                        </label>
+                    ))}
+                </div>
+            </div>
+
+            <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-text-primary dark:text-text-onDark mb-4">Max Price: ₹{maxPrice}</h3>
+                <input 
+                    type="range" 
+                    min="0" 
+                    max={highestPriceInCatalog} 
+                    step="100"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="w-full accent-primary h-2 bg-bg-band dark:bg-bg-dark rounded-lg appearance-none cursor-pointer"
+                />
+                <div className="flex justify-between mt-2 text-xs text-text-secondary font-medium">
+                    <span>₹0</span>
+                    <span>₹{highestPriceInCatalog}+</span>
+                </div>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-12">
-            <CategoryNavbar />
-            {/* Header & Search */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-                <h1 className="text-3xl font-bold text-orange-900 dark:text-orange-400" style={{ fontFamily: 'serif' }}>Our Collection</h1>
-
-                <div className="w-full md:w-96 relative">
-                    <input
-                        type="text"
-                        placeholder="Search for handlooms..."
-                        className="w-full p-3 pl-10 border border-gray-200 dark:border-gray-700 rounded-full focus:ring-2 focus:ring-orange-500 bg-gray-50 dark:bg-gray-800 transition-all shadow-sm"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark pt-8 pb-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                {/* Page Header (Mobile) */}
+                <div className="lg:hidden flex items-center justify-between mb-6">
+                    <div>
+                        <h1 className="text-2xl font-bold text-text-primary dark:text-text-onDark">All Products</h1>
+                        <p className="text-sm text-text-secondary mt-1">Showing {filteredProducts.length} products</p>
+                    </div>
+                    <button 
+                        onClick={() => setIsMobileFiltersOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-full text-sm font-semibold shadow-sm"
+                    >
+                        <SlidersHorizontal size={16} /> Filters
+                    </button>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                {loading ? (
-                    Array.from({ length: 8 }).map((_, i) => (
-                        <ProductCardSkeleton key={i} />
-                    ))
-                ) : (
-                    filteredProducts.map(product => (
-                        <Motion.div
-                            key={product.id}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.3 }}
-                            onClick={() => navigate(`/product/${product.id}`)}
-                            className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700 cursor-pointer group flex flex-col"
-                        >
-                            {/* Image Section with Swiper */}
-                            <div className="h-64 bg-gray-100 dark:bg-gray-700 relative overflow-hidden group">
-
-                                {product.images && product.images.length > 0 ? (
-                                    product.images.length > 1 ? (
-                                        <Swiper
-                                            modules={[Pagination, Autoplay, EffectCreative, Navigation]}
-                                            effect={'creative'}
-                                            creativeEffect={{
-                                                prev: {
-                                                    shadow: true,
-                                                    translate: [0, 0, -400],
-                                                },
-                                                next: {
-                                                    translate: ['100%', 0, 0],
-                                                },
-                                            }}
-                                            navigation={true}
-                                            pagination={{ clickable: true, dynamicBullets: true }}
-                                            spaceBetween={0}
-                                            slidesPerView={1}
-                                            loop={true}
-                                            autoplay={{ delay: 3000, disableOnInteraction: false }}
-                                            className="h-full w-full"
-                                            style={{
-                                                '--swiper-navigation-color': '#ea580c',
-                                                '--swiper-pagination-color': '#ea580c',
-                                                '--swiper-navigation-size': '25px',
-                                            }}
-                                        >
-                                            {product.images.map((img, index) => (
-                                                <SwiperSlide key={img.id || index}>
-                                                    <div className="block w-full h-full">
-                                                        <img
-                                                            src={img.imagePath}
-                                                            alt={`${product.name} - ${index + 1}`}
-                                                            className="w-full h-full object-cover"
-                                                        />
-                                                    </div>
-                                                </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-                                    ) : (
-                                        <div className="block w-full h-full">
-                                            <img
-                                                src={product.images[0].imagePath}
-                                                alt={product.name}
-                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                            />
-                                        </div>
-                                    )
-                                ) : (
-                                    <div className="flex items-center justify-center w-full h-full text-gray-400">
-                                        No Image
-                                    </div>
-                                )}
-
-                                {product.discountPrice > 0 && (
-                                    <span className="absolute top-2 right-2 z-10 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-                                        {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
-                                    </span>
-                                )}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    
+                    {/* Desktop Sidebar */}
+                    <div className="hidden lg:block w-72 flex-shrink-0">
+                        <div className="sticky top-32 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-3xl p-6 shadow-sm">
+                            <div className="mb-8 pb-6 border-b border-border dark:border-border">
+                                <h1 className="text-2xl font-bold text-text-primary dark:text-text-onDark font-sans">All Products</h1>
+                                <p className="text-sm text-text-secondary mt-1">Showing {filteredProducts.length} products</p>
                             </div>
+                            <h2 className="text-lg font-bold text-text-primary dark:text-text-onDark mb-6 flex items-center gap-2">
+                                <SlidersHorizontal size={18} /> Filters
+                            </h2>
+                            <FilterSidebarContent />
+                        </div>
+                    </div>
 
-                            <div className="p-5 flex-1 flex flex-col">
-                                <div className="flex items-center justify-between mb-2">
-                                    <p className="text-xs text-orange-600 dark:text-orange-400 font-semibold uppercase">{product.category?.name || 'Uncategorized'}</p>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            toggleWishlist(product);
-                                        }}
-                                        className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-                                        aria-label="Add to wishlist"
-                                    >
-                                        <Heart
-                                            size={20}
-                                            className={isInWishlist(product.id) ? 'text-red-500 fill-red-500' : ''}
-                                        />
-                                    </button>
-
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 truncate group-hover:text-orange-700 dark:group-hover:text-orange-400 transition">{product.name}</h3>
-
-                                {product.seller?.id && (
-                                    <div className="mb-2 flex items-center justify-between" onClick={e => e.stopPropagation()}>
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">By {product.seller.shopName || "Seller"}</span>
-                                    </div>
-                                )}
-
-                                <div className="flex justify-between items-end mt-auto">
-                                    <div>
-                                        {product.discountPrice > 0 ? (
-                                            <div className="flex flex-col">
-                                                <span className="text-gray-400 line-through text-sm">₹{product.price}</span>
-                                                <span className="text-xl font-bold text-orange-700 dark:text-orange-400">₹{product.discountPrice}</span>
-                                            </div>
-                                        ) : (
-                                            <span className="text-xl font-bold text-orange-700 dark:text-orange-400">₹{product.price}</span>
-                                        )}
-                                    </div>
-                                    {product.stockQuantity <= 0 ? (
-                                        <span className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-lg text-xs font-bold border border-gray-200 dark:border-gray-600 select-none">
-                                            Out of Stock
-                                        </span>
-                                    ) : (
-                                        <button
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                addToCart(product);
-                                            }}
-                                            className="px-4 py-2 bg-orange-700 text-white rounded-lg text-sm font-semibold hover:bg-orange-800 transition shadow-md active:transform active:scale-95"
-                                        >
-                                            Add +
+                    {/* Mobile Filters Drawer */}
+                    <AnimatePresence>
+                        {isMobileFiltersOpen && (
+                            <>
+                                <Motion.div 
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    onClick={() => setIsMobileFiltersOpen(false)}
+                                    className="fixed inset-0 bg-bg-dark/50 z-40 lg:hidden"
+                                />
+                                <Motion.div 
+                                    initial={{ x: '-100%' }}
+                                    animate={{ x: 0 }}
+                                    exit={{ x: '-100%' }}
+                                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                                    className="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-bg-surface dark:bg-bg-dark shadow-2xl z-50 p-6 overflow-y-auto lg:hidden"
+                                >
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h2 className="text-xl font-bold flex items-center gap-2">
+                                            <SlidersHorizontal size={20} /> Filters
+                                        </h2>
+                                        <button onClick={() => setIsMobileFiltersOpen(false)} className="p-2 bg-bg-band dark:bg-bg-dark rounded-full">
+                                            <X size={20} />
                                         </button>
-                                    )}
-                                </div>
+                                    </div>
+                                    <FilterSidebarContent />
+                                </Motion.div>
+                            </>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Main Product Grid */}
+                    <div className="flex-1">
+                        {loading ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <ProductCardSkeleton key={i} />
+                                ))}
                             </div>
-                        </Motion.div>
-                    ))
-                )}
-            </div>
-            {!loading && filteredProducts.length === 0 && (
-                <div className="text-center py-20 text-gray-500 dark:text-gray-400">
-                    <p className="text-xl">No products found matching your criteria.</p>
+                        ) : filteredProducts.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {filteredProducts.map(product => (
+                                    <ProductCard key={product.id} product={product} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-bg-surface dark:bg-bg-dark rounded-3xl p-12 text-center border border-border dark:border-border shadow-sm mt-8 lg:mt-0">
+                                <h3 className="text-xl font-bold text-text-primary dark:text-text-onDark mb-2">No products found</h3>
+                                <p className="text-text-secondary">Try adjusting your filters or search criteria.</p>
+                                <button 
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setCategoryFilter('All');
+                                        setMaxPrice(highestPriceInCatalog);
+                                    }}
+                                    className="mt-6 px-6 py-2.5 bg-primary/10 text-primary font-bold rounded-full hover:bg-primary/20 transition-colors"
+                                >
+                                    Clear all filters
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    
                 </div>
-            )}
+            </div>
         </div>
     );
 };

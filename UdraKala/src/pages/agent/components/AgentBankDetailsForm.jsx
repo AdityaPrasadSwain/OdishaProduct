@@ -57,13 +57,13 @@ const AgentBankDetailsForm = () => {
 
     return (
         <Card className="shadow-lg rounded-xl overflow-hidden mt-6">
-            <div className="bg-gray-800 p-4 text-white flex items-center gap-3">
-                <Building2 size={24} className="text-orange-500" />
+            <div className="bg-bg-dark p-4 text-text-onDark flex items-center gap-3">
+                <Building2 size={24} className="text-primary" />
                 <Typography variant="h6" fontWeight="bold">
                     My Bank Details
                 </Typography>
             </div>
-            <CardContent className="dark:bg-gray-900">
+            <CardContent className="dark:bg-bg-dark">
                 <Box mb={3}>
                     <Alert severity="info" sx={{ borderRadius: 2 }}>
                         These details will be used for your weekly payouts. Please ensure they are correct.
@@ -141,7 +141,7 @@ const AgentBankDetailsForm = () => {
                                 disabled={loading}
                                 startIcon={<Save />}
                                 sx={{
-                                    bgcolor: '#ea580c',
+                                    bgcolor: '#5747C7',
                                     '&:hover': { bgcolor: '#c2410c' },
                                     px: 5,
                                     borderRadius: 2

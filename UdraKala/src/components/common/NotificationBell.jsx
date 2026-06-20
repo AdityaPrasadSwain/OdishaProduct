@@ -80,20 +80,20 @@ const NotificationBell = () => {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={toggleDropdown}
-                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 relative transition-colors"
+                className="p-2 rounded-full hover:bg-bg-band dark:hover:bg-bg-dark text-text-secondary dark:text-text-secondary relative transition-colors"
             >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-600 rounded-full border-2 border-white dark:border-gray-900 min-w-[20px]">
+                    <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-text-onDark transform translate-x-1/4 -translate-y-1/4 bg-status-error rounded-full border-2 border-white dark:border-border min-w-[20px]">
                         {unreadCount > 99 ? '99+' : unreadCount}
                     </span>
                 )}
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
-                    <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <h3 className="font-semibold text-gray-900 dark:text-white">Notifications</h3>
+                <div className="absolute right-0 mt-2 w-80 bg-bg-surface dark:bg-bg-dark rounded-lg shadow-xl border border-border dark:border-border z-50 overflow-hidden">
+                    <div className="p-3 border-b border-border dark:border-border flex justify-between items-center">
+                        <h3 className="font-semibold text-text-primary dark:text-text-onDark">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
@@ -106,7 +106,7 @@ const NotificationBell = () => {
 
                     <div className="max-h-96 overflow-y-auto">
                         {notifications.length === 0 ? (
-                            <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+                            <div className="p-4 text-center text-text-secondary dark:text-text-secondary text-sm">
                                 No notifications
                             </div>
                         ) : (
@@ -114,23 +114,23 @@ const NotificationBell = () => {
                                 {notifications.map((notification) => (
                                     <li
                                         key={notification.id}
-                                        className={`p-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors ${!notification.read ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                        className={`p-3 hover:bg-bg-page dark:hover:bg-bg-dark/50 transition-colors ${!notification.read ? 'bg-blue-50/50 dark:bg-primary-hover/10' : ''}`}
                                         onClick={() => handleMarkAsRead(notification.id)}
                                     >
                                         <div className="flex justify-between items-start gap-2">
                                             <div>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-white capitalize">
+                                                <p className="text-sm font-medium text-text-primary dark:text-text-onDark capitalize">
                                                     {notification.title}
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                                                <p className="text-xs text-text-secondary dark:text-text-secondary mt-1 line-clamp-2">
                                                     {notification.message}
                                                 </p>
-                                                <p className="text-[10px] text-gray-400 mt-1">
+                                                <p className="text-[10px] text-text-secondary mt-1">
                                                     {new Date(notification.createdAt).toLocaleString()}
                                                 </p>
                                             </div>
                                             {!notification.read && (
-                                                <span className="h-2 w-2 bg-blue-500 rounded-full flex-shrink-0 mt-1"></span>
+                                                <span className="h-2 w-2 bg-primary rounded-full flex-shrink-0 mt-1"></span>
                                             )}
                                         </div>
                                     </li>

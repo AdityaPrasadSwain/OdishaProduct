@@ -1,17 +1,6 @@
-import { useState } from 'react';
-import { Menu as LucideMenu, Sun, Moon, Search, User, ShoppingCart } from 'lucide-react';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
-import Settings from '@mui/icons-material/Settings';
-import Logout from '@mui/icons-material/Logout';
+import { useState, useRef, useEffect } from 'react';
+import { Menu as LucideMenu, Sun, Moon, Search, User, ShoppingCart, Settings, LogOut, LayoutDashboard, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
@@ -22,6 +11,19 @@ const Header = () => {
     const { theme, toggleTheme } = useTheme();
     const { user, logout } = useAuth();
     const { cart } = useData();
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const userMenuRef = useRef(null);
+
+    // Close user menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+                setIsUserMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     // Determine dashboard path based on role
     const getDashboardPath = () => {
@@ -30,136 +32,133 @@ const Header = () => {
         return '/customer/dashboard';
     };
 
-    // Determine analytics path (Admin has specific one, others might point to dashboard or placeholder)
     const getAnalyticsPath = () => {
         if (user?.roles?.includes('ROLE_ADMIN')) return '/admin/analytics';
-        // For others, we can point to dashboard or keep it distinct if routes existed.
-        // User asked for "Analytics" button specifically.
-        return '/admin/analytics'; // Fallback or adjust if needed.
+        return '/admin/analytics';
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    const handleClick = (event) => setAnchorEl(event.currentTarget);
-    const handleClose = () => setAnchorEl(null);
-
     return (
-        <header className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 md:px-6 h-16 flex items-center justify-between transition-colors duration-300">
-
+        <header className="sticky top-0 z-40 bg-bg-surface/80 dark:bg-bg-dark/80 backdrop-blur-xl border-b border-border/50 dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] px-4 md:px-8 h-16 flex items-center justify-between transition-all duration-300 shadow-sm">
             {/* Left Side: Logo/Search */}
             <div className="flex items-center gap-8">
-                {/* Logo - acting as home/dashboard link */}
-                <a href={getDashboardPath()} className="text-xl font-bold font-serif text-gray-900 dark:text-white flex items-center gap-2">
-                    <img src={udraKalaLogo} alt="UdraKala" className="h-8 w-8 rounded-full object-cover" />
-                    UdraKala
+                {/* Logo */}
+                <a href={getDashboardPath()} className="flex items-center group relative z-10">
+                    <motion.div 
+                        whileHover={{ rotate: 10, scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="relative overflow-hidden rounded-full mr-3 border-2 border-transparent bg-clip-padding"
+                        style={{
+                            backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, #10b981, #3b82f6)',
+                            backgroundOrigin: 'border-box',
+                            backgroundClip: 'padding-box, border-box'
+                        }}
+                    >
+                        <img src={udraKalaLogo} className="h-8 w-8 object-cover" alt="UdraKala Logo" />
+                    </motion.div>
+                    <span className="self-center whitespace-nowrap text-xl font-serif font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400 tracking-tight hidden sm:block">
+                        UdraKala
+                    </span>
                 </a>
             </div>
 
             {/* Right Side: Navigation & Actions */}
-            <div className="flex items-center gap-6">
-
+            <div className="flex items-center gap-4 sm:gap-6">
                 {/* Navigation Links (Desktop) */}
-                <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-                    <a href={getDashboardPath()} className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">
+                <nav className="hidden md:flex items-center gap-1">
+                    <a href={getDashboardPath()} className="px-4 py-2 rounded-full text-sm font-semibold text-text-secondary dark:text-text-secondary hover:text-primary hover:bg-bg-band dark:hover:bg-bg-dark transition-all">
                         Dashboard
                     </a>
-                    <a href={getAnalyticsPath()} className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">
+                    <a href={getAnalyticsPath()} className="px-4 py-2 rounded-full text-sm font-semibold text-text-secondary dark:text-text-secondary hover:text-primary hover:bg-bg-band dark:hover:bg-bg-dark transition-all">
                         Analytics
-                    </a>
-                    <a href="#" className="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-white transition-colors">
-                        Settings
                     </a>
                 </nav>
 
-                <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 hidden md:block"></div>
+                <div className="h-6 w-px bg-bg-band dark:bg-bg-dark hidden md:block mx-1"></div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                     {/* Theme Toggle */}
-                    <button onClick={toggleTheme} className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 transition-colors">
-                        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-                    </button>
+                    <motion.button 
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={toggleTheme} 
+                        className="p-2.5 rounded-full hover:bg-bg-band dark:hover:bg-bg-dark text-text-secondary dark:text-text-secondary transition-colors focus:outline-none"
+                    >
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div
+                                key={theme}
+                                initial={{ y: -20, opacity: 0, rotate: -90 }}
+                                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                                exit={{ y: 20, opacity: 0, rotate: 90 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                            </motion.div>
+                        </AnimatePresence>
+                    </motion.button>
 
                     {/* Notifications */}
                     <NotificationBell />
 
                     {/* Profile & Account Menu */}
-                    {/* Integrated Account Menu Logic */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-                        <Tooltip title="Account settings">
-                            <IconButton
-                                onClick={handleClick}
-                                size="small"
-                                sx={{ ml: 2 }}
-                                aria-controls={open ? 'account-menu' : undefined}
-                                aria-haspopup="true"
-                                aria-expanded={open ? 'true' : undefined}
-                            >
-                                <div className={`h-8 w-8 rounded-full ${user?.profileImage ? '' : 'bg-primary/10'} flex items-center justify-center text-primary font-bold overflow-hidden border border-gray-200 dark:border-gray-700`}>
-                                    {user?.profileImage ?
-                                        <img src={user.profileImage} alt="User" className='w-full h-full object-cover' />
-                                        : <User size={18} />
-                                    }
+                    <div className="relative" ref={userMenuRef}>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setIsUserMenuOpen(prev => !prev)}
+                            className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full focus:outline-none border-2 border-transparent focus:border-primary transition-all shadow-sm"
+                        >
+                            {user?.profileImage ? (
+                                <img
+                                    className="w-full h-full rounded-full object-cover"
+                                    src={user.profileImage}
+                                    alt="user photo"
+                                    onError={(e) => { e.target.onerror = null; e.target.src = '/default_profile.jpg'; }}
+                                />
+                            ) : (
+                                <div className="w-full h-full rounded-full flex items-center justify-center text-sm font-bold text-text-onDark bg-gradient-to-br from-primary-400 to-primary-600">
+                                    {(user?.fullName?.charAt(0) || user?.name?.charAt(0) || "U").toUpperCase()}
                                 </div>
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                    <Menu
-                        anchorEl={anchorEl}
-                        id="account-menu"
-                        open={open}
-                        onClose={handleClose}
-                        onClick={handleClose}
-                        slotProps={{
-                            paper: {
-                                elevation: 0,
-                                sx: {
-                                    overflow: 'visible',
-                                    filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                                    mt: 1.5,
-                                    bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Dark mode fix
-                                    color: theme === 'dark' ? 'white' : 'inherit',
-                                    '& .MuiAvatar-root': {
-                                        width: 32,
-                                        height: 32,
-                                        ml: -0.5,
-                                        mr: 1,
-                                    },
-                                    '&::before': {
-                                        content: '""',
-                                        display: 'block',
-                                        position: 'absolute',
-                                        top: 0,
-                                        right: 14,
-                                        width: 10,
-                                        height: 10,
-                                        bgcolor: theme === 'dark' ? '#1f2937' : 'background.paper', // Match arrow color
-                                        transform: 'translateY(-50%) rotate(45deg)',
-                                        zIndex: 0,
-                                    },
-                                },
-                            },
-                        }}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    >
-                        <MenuItem onClick={() => { handleClose(); window.location.href = '#'; }}>
-                            <Avatar sx={{ width: 28, height: 28, bgcolor: 'transparent', mr: 1 }} />
-                            {user?.name || "Profile"}
-                        </MenuItem>
-                        <Divider />
-                        <MenuItem onClick={() => { handleClose(); window.location.href = getDashboardPath(); }}>
-                            <ListItemIcon>
-                                <Settings fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
-                            </ListItemIcon>
-                            Dashboard
-                        </MenuItem>
-                        <MenuItem onClick={() => { handleClose(); logout(); }}>
-                            <ListItemIcon>
-                                <Logout fontSize="small" sx={{ color: theme === 'dark' ? 'white' : 'inherit' }} />
-                            </ListItemIcon>
-                            Logout
-                        </MenuItem>
-                    </Menu>
+                            )}
+                        </motion.button>
+
+                        {/* Dropdown Menu */}
+                        <AnimatePresence>
+                            {isUserMenuOpen && (
+                                <motion.div 
+                                    key="user-menu"
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="absolute right-0 mt-3 w-56 bg-bg-surface/95 dark:bg-bg-dark/95 backdrop-blur-xl border border-border dark:border-border rounded-2xl shadow-xl origin-top-right z-50 overflow-hidden"
+                                >
+                                    <div className="px-4 py-3 bg-gradient-to-b from-gray-50 to-white dark:from-secondary-800 dark:to-secondary-800/90 border-b border-border dark:border-border">
+                                        <span className="block text-sm text-text-primary dark:text-text-onDark font-bold truncate">{user?.fullName || user?.name || "Profile"}</span>
+                                        <span className="block text-xs text-text-secondary truncate dark:text-text-secondary mt-1">{user?.email || "user@example.com"}</span>
+                                    </div>
+                                    <div className="py-2">
+                                        <a href={getDashboardPath()} className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark/50 hover:text-primary dark:hover:text-primary transition-colors">
+                                            <LayoutDashboard size={18} className="mr-3 opacity-80" />
+                                            <span className="font-medium">Dashboard</span>
+                                        </a>
+                                        <button className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark/50 hover:text-primary dark:hover:text-primary transition-colors">
+                                            <Settings size={18} className="mr-3 opacity-80" />
+                                            <span className="font-medium">Settings</span>
+                                        </button>
+                                    </div>
+                                    <div className="p-2 border-t border-border dark:border-border bg-bg-page dark:bg-bg-dark/50">
+                                        <button 
+                                            onClick={() => { setIsUserMenuOpen(false); logout(); }} 
+                                            className="flex items-center px-4 py-2.5 text-sm w-full text-status-error dark:text-red-400 hover:bg-red-50 dark:hover:text-status-error/20 rounded-xl transition-colors"
+                                        >
+                                            <LogOut size={18} className="mr-3 opacity-80" />
+                                            <span className="font-medium">Logout</span>
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
         </header>

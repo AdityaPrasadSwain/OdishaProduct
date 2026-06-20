@@ -27,7 +27,7 @@ const ReturnRequestCenter = () => {
     });
 
     if (!order || !orderItem) {
-        return <div className="p-8 text-center text-red-500">Invalid access. Please select an order first.</div>;
+        return <div className="p-8 text-center text-status-error">Invalid access. Please select an order first.</div>;
     }
 
     const nextStep = () => {
@@ -106,33 +106,33 @@ const ReturnRequestCenter = () => {
 
     // Render logic will go here
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-3xl mx-auto">
                 {/* Progress Bar */}
                 <div className="mb-8">
-                    <div className="flex justify-between items-center text-xs font-medium text-gray-500 mb-2">
+                    <div className="flex justify-between items-center text-xs font-medium text-text-secondary mb-2">
                         <span>Type</span>
                         <span>Reason</span>
                         <span>Proof</span>
                         <span>Details</span>
                         <span>Review</span>
                     </div>
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-2 bg-bg-band rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-indigo-600 transition-all duration-300 ease-in-out"
+                            className="h-full bg-primary transition-all duration-300 ease-in-out"
                             style={{ width: `${(currentStep / 5) * 100}%` }}
                         ></div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden min-h-[500px] flex flex-col">
+                <div className="bg-bg-surface dark:bg-bg-dark rounded-2xl shadow-xl overflow-hidden min-h-[500px] flex flex-col">
                     <div className="p-6 md:p-8 flex-1">
                         {/* Title */}
-                        {currentStep === 1 && <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">How can we help?</h2>}
-                        {currentStep === 2 && <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Why are you returning/replacing this?</h2>}
-                        {currentStep === 3 && <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Upload Proof</h2>}
-                        {currentStep === 4 && <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Add Details</h2>}
-                        {currentStep === 5 && <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Review & Submit</h2>}
+                        {currentStep === 1 && <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark mb-6">How can we help?</h2>}
+                        {currentStep === 2 && <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark mb-6">Why are you returning/replacing this?</h2>}
+                        {currentStep === 3 && <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark mb-6">Upload Proof</h2>}
+                        {currentStep === 4 && <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark mb-6">Add Details</h2>}
+                        {currentStep === 5 && <h2 className="text-2xl font-bold text-text-primary dark:text-text-onDark mb-6">Review & Submit</h2>}
 
                         {/* Validated/Active Step Content */}
                         <div className="mt-4">
@@ -145,19 +145,19 @@ const ReturnRequestCenter = () => {
                     </div>
 
                     {/* Footer / Navigation */}
-                    <div className="bg-gray-50 dark:bg-gray-700/50 p-6 flex justify-between items-center border-t border-gray-100 dark:border-gray-700">
+                    <div className="bg-bg-page dark:bg-bg-dark/50 p-6 flex justify-between items-center border-t border-border dark:border-border">
                         {currentStep > 1 ? (
-                            <button onClick={prevStep} className="px-6 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition">
+                            <button onClick={prevStep} className="px-6 py-2.5 rounded-xl border border-border text-text-secondary font-medium hover:bg-bg-page transition">
                                 Back
                             </button>
                         ) : <div></div>}
 
                         {currentStep < 5 ? (
-                            <button onClick={nextStep} className="px-8 py-2.5 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition">
+                            <button onClick={nextStep} className="px-8 py-2.5 rounded-xl bg-primary text-text-onDark font-medium hover:bg-primary-hover shadow-lg shadow-indigo-200 transition">
                                 Next
                             </button>
                         ) : (
-                            <button onClick={handleSubmit} className="px-8 py-2.5 rounded-xl bg-green-600 text-white font-medium hover:bg-green-700 shadow-lg shadow-green-200 transition">
+                            <button onClick={handleSubmit} className="px-8 py-2.5 rounded-xl bg-status-success text-text-onDark font-medium hover:bg-green-700 shadow-lg shadow-green-200 transition">
                                 Submit Request
                             </button>
                         )}

@@ -86,48 +86,48 @@ const Step4Review = ({ onPrev }) => {
     };
 
     const ReviewItem = ({ label, value }) => (
-        <div className="flex justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0">
-            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium">{label}</span>
-            <span className="text-gray-800 dark:text-gray-200 text-sm font-bold text-right">{value || "-"}</span>
+        <div className="flex justify-between py-2 border-b border-border dark:border-border last:border-0">
+            <span className="text-text-secondary dark:text-text-secondary text-sm font-medium">{label}</span>
+            <span className="text-text-primary dark:text-text-secondary text-sm font-bold text-right">{value || "-"}</span>
         </div>
     );
 
     return (
         <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">Review Details</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center text-text-primary dark:text-text-onDark">Review Details</h2>
 
             {/* Business Card Summary */}
-            <div className="bg-orange-50 dark:bg-orange-900/10 p-4 rounded-xl border border-orange-200 dark:border-orange-900/40 flex items-center gap-4">
+            <div className="bg-bg-band dark:bg-primary-hover/10 p-4 rounded-xl border border-primary dark:border-primary/40 flex items-center gap-4">
                 {sellerData.profilePhotoPreview ? (
                     <img
                         src={sellerData.profilePhotoPreview}
                         alt="Profile"
-                        className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-border shadow"
                     />
                 ) : (
                     <img
                         src={defaultUser}
                         alt="Default Profile"
-                        className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-border shadow"
                     />
                 )}
                 <div>
-                    <h3 className="font-bold text-lg text-orange-900 dark:text-orange-400">{sellerData.businessName}</h3>
-                    <p className="text-sm text-orange-700 dark:text-orange-300">{sellerData.fullName}</p>
+                    <h3 className="font-bold text-lg text-primary dark:text-primary">{sellerData.businessName}</h3>
+                    <p className="text-sm text-primary dark:text-primary">{sellerData.fullName}</p>
                 </div>
             </div>
 
             <div className="space-y-6">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 shadow-sm">
-                    <h4 className="font-bold text-gray-700 dark:text-gray-300 mb-2">Business Address</h4>
+                <div className="bg-bg-surface dark:bg-bg-dark p-4 rounded-lg border dark:border-border shadow-sm">
+                    <h4 className="font-bold text-text-secondary dark:text-text-secondary mb-2">Business Address</h4>
                     <ReviewItem label="Type" value={sellerData.businessType} />
                     <ReviewItem label="City" value={sellerData.city} />
                     <ReviewItem label="State" value={sellerData.state} />
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{sellerData.address}, {sellerData.pincode}</p>
+                    <p className="text-xs text-text-secondary dark:text-text-secondary mt-2">{sellerData.address}, {sellerData.pincode}</p>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border dark:border-gray-700 shadow-sm">
-                    <h4 className="font-bold text-gray-700 dark:text-gray-300 mb-2">KYC & Bank</h4>
+                <div className="bg-bg-surface dark:bg-bg-dark p-4 rounded-lg border dark:border-border shadow-sm">
+                    <h4 className="font-bold text-text-secondary dark:text-text-secondary mb-2">KYC & Bank</h4>
                     <ReviewItem label="PAN" value={sellerData.panNumber} />
                     <ReviewItem label="Aadhaar" value={sellerData.aadhaarNumber} />
                     <ReviewItem label="GST" value={sellerData.gstNumber || "N/A"} />
@@ -140,14 +140,14 @@ const Step4Review = ({ onPrev }) => {
                 <button
                     type="button"
                     onClick={onPrev}
-                    className="w-1/2 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg font-bold hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                    className="w-1/2 py-3 bg-bg-band dark:bg-bg-dark text-text-primary dark:text-text-onDark rounded-lg font-bold hover:bg-bg-band dark:hover:bg-bg-dark transition"
                 >
                     Edit
                 </button>
                 <button
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="w-1/2 py-3 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition shadow-lg disabled:opacity-70 flex justify-center items-center"
+                    className="w-1/2 py-3 bg-status-success text-text-onDark rounded-lg font-bold hover:bg-green-700 transition shadow-lg disabled:opacity-70 flex justify-center items-center"
                 >
                     {loading ? (
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

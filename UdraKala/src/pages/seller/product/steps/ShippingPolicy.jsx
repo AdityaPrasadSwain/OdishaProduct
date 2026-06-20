@@ -3,11 +3,11 @@ import Swal from 'sweetalert2';
 import { updatePolicyStep5 } from '../../../../api/productWizardApi';
 
 const Checkbox = ({ label, name, checked, onChange }) => (
-    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-        <span className="font-semibold text-gray-700 dark:text-gray-200">{label}</span>
+    <div className="flex items-center justify-between p-4 bg-bg-page dark:bg-bg-dark rounded-xl border border-border dark:border-border">
+        <span className="font-semibold text-text-secondary dark:text-text-secondary">{label}</span>
         <label className="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" name={name} checked={checked} onChange={onChange} className="sr-only peer" />
-            <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none ring-4 ring-blue-100 dark:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <div className="w-11 h-6 bg-bg-band dark:bg-bg-dark peer-focus:outline-none ring-4 ring-blue-100 dark:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-bg-surface after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
         </label>
     </div>
 );
@@ -57,45 +57,45 @@ const ShippingPolicy = ({ productId, onSubmit, onBack, initialData }) => {
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in-up">
-            <h3 className="text-lg font-bold text-gray-800 dark:text-white border-b dark:border-gray-700 pb-2">Shipping & Returns</h3>
+            <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark border-b dark:border-border pb-2">Shipping & Returns</h3>
 
             <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Dispatch Time (Days)</label>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">Dispatch Time (Days)</label>
                 <input
                     type="number"
                     name="dispatchDays"
                     required
                     value={formData.dispatchDays}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 placeholder-gray-400"
+                    className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary placeholder-gray-400"
                     placeholder="e.g. 2"
                 />
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Number of days to pack and ship the item.</p>
+                <p className="text-xs text-text-secondary dark:text-text-secondary mt-1">Number of days to pack and ship the item.</p>
             </div>
 
             <Checkbox label="Allow Returns?" name="returnAvailable" checked={formData.returnAvailable} onChange={handleChange} />
 
             {formData.returnAvailable && (
-                <div className="pl-4 border-l-2 border-blue-200 dark:border-blue-800 space-y-4">
+                <div className="pl-4 border-l-2 border-primary dark:border-primary space-y-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Return Window (Days)</label>
+                        <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">Return Window (Days)</label>
                         <input
                             type="number"
                             name="returnWindowDays"
                             value={formData.returnWindowDays}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 placeholder-gray-400"
+                            className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary placeholder-gray-400"
                             placeholder="e.g. 7"
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Return Policy Description</label>
+                        <label className="block text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">Return Policy Description</label>
                         <textarea
                             name="returnPolicyDescription"
                             rows="3"
                             value={formData.returnPolicyDescription}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-gray-100 placeholder-gray-400 resize-none"
+                            className="w-full px-4 py-3 border border-border dark:border-border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-bg-page dark:bg-bg-dark focus:bg-bg-surface dark:focus:bg-bg-dark dark:text-text-secondary placeholder-gray-400 resize-none"
                             placeholder="Conditions for return..."
                         />
                     </div>
@@ -108,14 +108,14 @@ const ShippingPolicy = ({ productId, onSubmit, onBack, initialData }) => {
                 <button
                     type="button"
                     onClick={onBack}
-                    className="px-6 py-3 rounded-xl font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="px-6 py-3 rounded-xl font-semibold text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors"
                 >
                     &larr; Back
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`px-10 py-3 rounded-xl font-bold text-white shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}
+                    className={`px-10 py-3 rounded-xl font-bold text-text-onDark shadow-lg shadow-blue-200 dark:shadow-blue-900 transition-all transform hover:-translate-y-1 ${loading ? 'bg-bg-band' : 'bg-status-success hover:bg-green-700'}`}
                 >
                     {loading ? 'Publishing...' : 'Publish Product'}
                 </button>

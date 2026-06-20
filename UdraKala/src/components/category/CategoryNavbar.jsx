@@ -22,12 +22,12 @@ const CategoryNavbar = () => {
     if (loading) {
         // Simple horizontal skeleton or just blank until loaded
         return (
-            <div className="w-full bg-white dark:bg-gray-900 py-4 border-b border-gray-100 dark:border-gray-800">
+            <div className="w-full bg-bg-surface dark:bg-bg-dark py-4 border-b border-border dark:border-border">
                 <div className="max-w-7xl mx-auto px-4 flex gap-6 overflow-x-auto no-scrollbar">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                         <div key={i} className="flex flex-col items-center gap-2 min-w-[80px]">
-                            <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-800 animate-pulse"></div>
-                            <div className="w-12 h-3 bg-gray-200 dark:bg-gray-800 rounded animate-pulse"></div>
+                            <div className="w-16 h-16 rounded-full bg-bg-band dark:bg-bg-dark animate-pulse"></div>
+                            <div className="w-12 h-3 bg-bg-band dark:bg-bg-dark rounded animate-pulse"></div>
                         </div>
                     ))}
                 </div>
@@ -44,12 +44,12 @@ const CategoryNavbar = () => {
     const displayCategories = [allCategory, ...(categories || [])];
 
     return (
-        <div className="w-full bg-white dark:bg-gray-900 py-2 shadow-sm border-b border-gray-100 dark:border-gray-800 mb-2 transition-colors duration-300 relative group">
+        <div className="w-full bg-bg-surface dark:bg-bg-dark py-2 shadow-sm border-b border-border dark:border-border mb-2 transition-colors duration-300 relative group">
             <div className="max-w-7xl mx-auto px-10 relative">
                 {/* Left Arrow */}
                 <button
                     onClick={() => scroll('left')}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-bg-surface/80 dark:bg-bg-dark/80 rounded-full shadow-md hover:bg-bg-surface dark:hover:bg-bg-dark text-text-secondary dark:text-text-secondary transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
                 >
                     <ChevronLeft size={24} />
                 </button>
@@ -72,7 +72,7 @@ const CategoryNavbar = () => {
                 {/* Right Arrow */}
                 <button
                     onClick={() => scroll('right')}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-bg-surface/80 dark:bg-bg-dark/80 rounded-full shadow-md hover:bg-bg-surface dark:hover:bg-bg-dark text-text-secondary dark:text-text-secondary transition-all opacity-0 group-hover:opacity-100"
                 >
                     <ChevronRight size={24} />
                 </button>

@@ -26,4 +26,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
                         @org.springframework.data.repository.query.Param("endDate") java.time.LocalDateTime endDate);
 
         Order findByTrackingId(String trackingId);
+
+        List<Order> findByIdempotencyKey(String idempotencyKey);
+
+        List<Order> findByStatusAndCreatedAtBefore(com.odisha.handloom.entity.OrderStatus status, java.time.LocalDateTime dateTime);
 }

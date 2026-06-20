@@ -1,142 +1,236 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import Hero3D from '../components/hero/Hero3D';
-import FeatureGrid from '../components/FeatureGrid';
-import ScrollReveal from '../components/ui/ScrollReveal';
-import Button from '../components/ui/Button';
-import CategoryNavbar from '../components/category/CategoryNavbar';
+import { Truck, ShieldCheck, Headset, RefreshCcw, Tag, ArrowRight } from 'lucide-react';
+import ProductCard from '../components/shared/ProductCard';
+import SectionHeading from '../components/shared/SectionHeading';
+import { useData } from '../context/DataContext';
+
+const CATEGORIES = [
+    { label: 'Sarees', icon: Tag },
+    { label: 'Textiles', icon: Tag },
+    { label: 'Handicrafts', icon: Tag },
+    { label: 'Apparel', icon: Tag },
+    { label: 'Accessories', icon: Tag },
+];
+
+const TRUST_FEATURES = [
+    { title: 'Free Shipping', desc: 'On orders over ₹500', icon: Truck },
+    { title: 'Secure Payments', desc: '100% protected', icon: ShieldCheck },
+    { title: '24/7 Support', desc: 'Dedicated team', icon: Headset },
+    { title: 'Easy Returns', desc: '7 days return policy', icon: RefreshCcw },
+];
+
+const STORES = [
+    { name: 'Odisha Weaves', followers: '1.2k', images: ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg'] },
+    { name: 'Kalinga Art', followers: '850', images: ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg'] },
+    { name: 'Tribal Craft', followers: '3.4k', images: ['/placeholder.jpg', '/placeholder.jpg', '/placeholder.jpg'] },
+];
 
 const Home = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { products, loading } = useData();
+
+    // Recommended products (just first 8 for demo)
+    const recommendedProducts = products.slice(0, 8);
+
     return (
-        <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-white transition-colors duration-200 overflow-x-hidden">
-            {/* Category Navigation Bar (Flipkart Style) */}
-            <CategoryNavbar />
-
-            {/* Section 1: Hero with 3D Background */}
-            <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-                <Suspense fallback={<div className="absolute inset-0 bg-blue-50 dark:bg-gray-900" />}>
-                    <Hero3D />
-                </Suspense>
-
-                <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                        className="text-5xl md:text-7xl font-bold font-serif mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300"
-                    >
-                        {t('weave_legacy')} <br /> <span className="text-primary">UdraKala</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.8 }}
-                        className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto"
-                    >
-                        {t('discover_elegance')}
-                    </motion.p>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.6 }}
-                        className="flex gap-4 justify-center"
-                    >
-                        <Link to="/products">
-                            <Button size="lg" className="rounded-full px-8">{t('shop_collection')}</Button>
-                        </Link>
-                        <Button variant="outline" size="lg" className="rounded-full px-8 backdrop-blur-sm bg-white/10 border-gray-400 dark:border-gray-600">{t('our_story')}</Button>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Section 2: Cultural Storytelling */}
-            <section className="py-24 px-4 bg-secondary-50 dark:bg-dark">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
-                    <ScrollReveal variant="fadeInLeft" className="flex-1 w-full relative group">
-                        <div className="absolute -inset-4 bg-primary-100 dark:bg-primary-900/20 rounded-xl rotate-2 group-hover:rotate-1 transition-transform duration-500 blur-xl opacity-70"></div>
-                        <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px]">
-                            {/* Placeholder for Artisan Image - using a gradient for now as placeholder */}
-                            <div className="h-full w-full bg-gradient-to-br from-primary-100 to-orange-50 dark:from-secondary-800 dark:to-secondary-900 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
-                                <span className="text-secondary-400 font-serif italic text-2xl">{t('master_weaver')}</span>
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-                                <p className="text-white font-medium">Bargarh, Odisha</p>
-                            </div>
-                        </div>
-                    </ScrollReveal>
-
-                    <ScrollReveal variant="fadeInRight" className="flex-1 space-y-8">
-                        <div>
-                            <span className="text-primary-600 font-bold tracking-widest uppercase text-sm mb-2 block">Our Heritage</span>
-                            <h2 className="text-4xl md:text-5xl font-bold font-serif text-secondary-900 dark:text-white leading-tight">
-                                {t('handcrafted_by_master_weavers')}
-                            </h2>
-                        </div>
-                        <p className="text-xl text-secondary-600 dark:text-gray-300 leading-relaxed">
-                            {t('every_thread_story')}
-                        </p>
-
-                        <div className="grid grid-cols-2 gap-8 pt-4">
-                            <div className="p-4 rounded-xl bg-white dark:bg-secondary-800 shadow-sm border border-secondary-100 dark:border-secondary-700">
-                                <h4 className="text-3xl font-bold text-primary-600 mb-1">500+</h4>
-                                <p className="text-sm text-secondary-500 underline decoration-primary-300 decoration-2 underline-offset-4">{t('artisans_empowered')}</p>
-                            </div>
-                            <div className="p-4 rounded-xl bg-white dark:bg-secondary-800 shadow-sm border border-secondary-100 dark:border-secondary-700">
-                                <h4 className="text-3xl font-bold text-primary-600 mb-1">100%</h4>
-                                <p className="text-sm text-secondary-500 underline decoration-primary-300 decoration-2 underline-offset-4">{t('authentic_handloom')}</p>
-                            </div>
-                        </div>
-
-                        <Button variant="outline" size="lg" className="mt-4 border-secondary-900 text-secondary-900 hover:bg-secondary-900 hover:text-white dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-secondary-900">
-                            {t('read_stories')}
-                        </Button>
-                    </ScrollReveal>
-                </div>
-            </section>
-
-            {/* Section 3: Products Grid */}
-            <section className="py-24 px-4 bg-white dark:bg-secondary-900">
-                <div className="max-w-7xl mx-auto">
-                    <ScrollReveal variant="fadeInUp">
-                        <div className="text-center mb-20">
-                            <span className="text-primary-600 font-bold tracking-widest uppercase text-xs mb-3 block">{t('new_arrivals')}</span>
-                            <h2 className="text-4xl md:text-5xl font-bold mb-6 font-serif text-secondary-900 dark:text-white">{t('curated_masterpieces')}</h2>
-                            <div className="w-24 h-1 bg-primary-500 mx-auto rounded-full mb-6"></div>
-                            <p className="text-secondary-500 text-lg max-w-2xl mx-auto">{t('explore_exclusive')}</p>
-                        </div>
-                    </ScrollReveal>
-
-                    <FeatureGrid />
-                </div>
-            </section>
-
-            {/* Minimalist Trust Section */}
-            <div className="py-20 border-t border-secondary-100 bg-secondary-50 dark:border-secondary-800 dark:bg-dark transition-colors duration-200">
-                <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
-                    {[
-                        { val: '500+', label: 'Artisans Empowered' },
-                        { val: '12k+', label: 'Happy Customers' },
-                        { val: '100%', label: 'Authentic Handloom' },
-                        { val: '24/7', label: 'Premium Support' }
-                    ].map((item, idx) => (
-                        <motion.div
-                            key={idx}
-                            whileHover={{ y: -5 }}
-                            className="bg-white dark:bg-secondary-800 p-8 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-secondary-100 dark:border-secondary-700"
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark overflow-x-hidden">
+            
+            {/* HERO SECTION */}
+            <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                    
+                    {/* Left Column */}
+                    <div className="flex flex-col items-start z-10">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bg-band dark:bg-bg-dark mb-6 border border-border dark:border-border"
                         >
-                            <h3 className="text-4xl font-bold text-primary-600 mb-2">{item.val}</h3>
-                            <p className="text-sm font-medium text-secondary-500 uppercase tracking-wider">{item.label}</p>
+                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            <span className="text-xs font-bold text-primary uppercase tracking-wider">Sale is Live — up to 50% off</span>
                         </motion.div>
+
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="text-5xl sm:text-6xl lg:text-7xl font-bold font-sans tracking-tight leading-[1.1] mb-6 text-text-primary dark:text-text-onDark"
+                        >
+                            Discover Your <br/>
+                            <span className="text-primary">Favorite</span> <br/>
+                            Handloom.
+                        </motion.h1>
+
+                        <motion.p 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-lg text-text-secondary max-w-md mb-8 leading-relaxed"
+                        >
+                            Authentic Odisha weaves and crafts, brought directly from master artisans to your doorstep.
+                        </motion.p>
+
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <button 
+                                onClick={() => navigate('/products')}
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary hover:bg-primary-dark text-text-onDark font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                            >
+                                Shop Now <ArrowRight size={20} />
+                            </button>
+                        </motion.div>
+                    </div>
+
+                    {/* Right Column (Images) */}
+                    <div className="relative h-[500px] w-full hidden sm:block">
+                        <motion.div 
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut" }}
+                            className="absolute right-0 top-0 w-3/4 h-4/5 rounded-2xl overflow-hidden shadow-2xl z-10 border border-white/20 dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+                        >
+                            <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80" alt="Sambalpuri Saree" className="w-full h-full object-cover" />
+                        </motion.div>
+                        <motion.div 
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                            className="absolute left-0 bottom-0 w-2/3 h-2/3 rounded-2xl overflow-hidden shadow-2xl z-20 border border-white/20 dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+                        >
+                            <img src="https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?w=800&q=80" alt="Artisan at work" className="w-full h-full object-cover" />
+                        </motion.div>
+                        
+                        {/* Floating Badge */}
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.8, type: "spring" }}
+                            className="absolute bottom-12 right-12 z-30 bg-bg-dark text-text-onDark px-4 py-3 rounded-2xl shadow-xl flex flex-col items-center rotate-[-5deg]"
+                        >
+                            <span className="text-2xl font-black text-accent-light">25% OFF</span>
+                            <span className="text-xs font-medium text-text-secondary">Summer Restocks</span>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* CATEGORY PILLS ROW */}
+            <section className="bg-bg-band dark:bg-bg-dark py-6 border-y border-border dark:border-border">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex overflow-x-auto gap-4 pb-4 sm:pb-0 hide-scrollbar items-center">
+                        {CATEGORIES.map((cat, idx) => (
+                            <button key={idx} onClick={() => navigate(`/products?category=${cat.label}`)} className="flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-full bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark font-semibold shadow-sm hover:bg-bg-band dark:hover:bg-primary-hover/30 hover:text-primary transition-colors border border-border dark:border-border">
+                                <cat.icon size={18} className="text-text-secondary" />
+                                {cat.label}
+                            </button>
+                        ))}
+                        <button onClick={() => navigate('/products')} className="flex-shrink-0 flex items-center gap-2 px-6 py-3 rounded-full bg-primary text-text-onDark font-semibold shadow-md hover:bg-primary-dark transition-colors">
+                            All Categories
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* RECOMMENDED FOR YOU */}
+            <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeading 
+                    title="Recommended for You" 
+                    subtitle="Tailored based on your recent activity" 
+                    accentWord="Recommended"
+                />
+                
+                {loading ? (
+                    <div className="flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {recommendedProducts.map(product => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {/* TRUST STRIP */}
+            <section className="py-16 bg-bg-surface dark:bg-bg-dark border-y border-border dark:border-border">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {TRUST_FEATURES.map((feature, idx) => (
+                            <div key={idx} className="flex flex-col items-center text-center">
+                                <div className="w-16 h-16 rounded-2xl bg-accent-tealBg-bg dark:bg-accent-tealBg-900/30 flex items-center justify-center text-accent mb-4">
+                                    <feature.icon size={28} />
+                                </div>
+                                <h4 className="text-lg font-bold text-text-primary dark:text-text-onDark mb-1">{feature.title}</h4>
+                                <p className="text-sm text-text-secondary">{feature.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* SHOP BY STORE */}
+            <section className="py-20 bg-bg-band dark:bg-bg-dark max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeading title="Shop by Store" subtitle="Discover curated collections from our top artisans." accentWord="Store" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {STORES.map((store, idx) => (
+                        <div key={idx} className="bg-bg-surface dark:bg-bg-dark rounded-2xl p-6 shadow-sm border border-border dark:border-border">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <h4 className="font-bold text-lg text-text-primary dark:text-text-onDark">{store.name}</h4>
+                                    <p className="text-xs text-text-secondary">{store.followers} followers</p>
+                                </div>
+                                <button className="px-4 py-1.5 rounded-full border border-primary text-primary text-xs font-bold hover:bg-primary hover:text-text-onDark transition-colors">
+                                    Follow
+                                </button>
+                            </div>
+                            <div className="flex gap-2">
+                                {store.images.map((img, i) => (
+                                    <div key={i} className="flex-1 aspect-square rounded-xl bg-bg-band dark:bg-bg-dark overflow-hidden">
+                                        {/* For demo, just showing colored box if placeholder */}
+                                        <div className="w-full h-full bg-gradient-to-br from-secondary-200 to-secondary-300 dark:from-secondary-700 dark:to-secondary-800"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
-            </div>
+            </section>
+
+            {/* NEWSLETTER CTA BAND */}
+            <section className="py-20 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto bg-bg-dark rounded-3xl p-10 md:p-16 flex flex-col items-center text-center overflow-hidden relative shadow-2xl">
+                    {/* Decorative blobs */}
+                    <div className="absolute top-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent-tealBg/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+                    
+                    <div className="relative z-10">
+                        <h2 className="text-3xl md:text-5xl font-bold text-text-onDark mb-4">Join the UdraKala Inner Circle</h2>
+                        <p className="text-lg text-text-secondary mb-8 max-w-lg mx-auto">Be the first to know about exclusive drops, artisan stories, and special offers.</p>
+                        
+                        <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto w-full">
+                            <input 
+                                type="email" 
+                                placeholder="Email address" 
+                                className="flex-1 px-6 py-4 rounded-full bg-bg-surface/10 border border-white/20 text-text-onDark placeholder-secondary-400 focus:outline-none focus:border-primary focus:bg-bg-surface/20 transition-all"
+                            />
+                            <button type="submit" className="px-8 py-4 rounded-full bg-primary hover:bg-primary-dark text-text-onDark font-bold transition-all shadow-lg hover:shadow-xl">
+                                Subscribe
+                            </button>
+                        </form>
+                        <p className="text-xs text-text-secondary mt-4">By subscribing you agree to our Privacy Policy.</p>
+                    </div>
+                </div>
+            </section>
+
         </div>
     );
 };
-
-
 
 export default Home;

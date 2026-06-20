@@ -51,27 +51,27 @@ const MyOrders = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-bg-page dark:bg-bg-dark py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b dark:border-gray-700 pb-4">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Orders</h1>
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b dark:border-border pb-4">
+                    <h1 className="text-3xl font-bold text-text-primary dark:text-text-onDark">My Orders</h1>
 
                     {/* Active Filters Summary */}
                     {(filters.status !== 'ALL' || filters.range !== 'ALL') && (
                         <div className="flex flex-wrap gap-2">
                             {filters.status !== 'ALL' && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-primary dark:bg-primary-hover/30 dark:text-primary">
                                     Status: {filters.status}
                                 </span>
                             )}
                             {filters.range !== 'ALL' && (
-                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-primary-light text-primary dark:bg-primary-hover/30 dark:text-primary">
                                     Range: {filters.range}
                                 </span>
                             )}
                             <button
                                 onClick={clearFilters}
-                                className="text-sm text-gray-500 hover:text-red-500 flex items-center gap-1 transition-colors"
+                                className="text-sm text-text-secondary hover:text-status-error flex items-center gap-1 transition-colors"
                             >
                                 <X size={14} /> Clear
                             </button>
@@ -80,15 +80,15 @@ const MyOrders = () => {
                 </div>
 
                 {/* Filter Bar */}
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6 transition-all">
+                <div className="bg-bg-surface dark:bg-bg-dark p-4 rounded-lg shadow-sm border border-border dark:border-border mb-6 transition-all">
                     <div className="flex flex-wrap items-end gap-4">
                         {/* Status Filter */}
                         <div className="w-full sm:w-auto">
-                            <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Status</label>
+                            <label className="block text-xs font-medium text-text-secondary mb-1 uppercase tracking-wider">Status</label>
                             <select
                                 value={filters.status}
                                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                                className="w-full sm:w-40 p-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 outline-none transition"
+                                className="w-full sm:w-40 p-2 text-sm bg-bg-page dark:bg-bg-dark border border-border dark:border-border rounded-md focus:ring-2 focus:ring-primary outline-none transition"
                             >
                                 <option value="ALL">All Status</option>
                                 <option value="Placed">Placed</option>
@@ -102,11 +102,11 @@ const MyOrders = () => {
 
                         {/* Range Filter */}
                         <div className="w-full sm:w-auto">
-                            <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Time Range</label>
+                            <label className="block text-xs font-medium text-text-secondary mb-1 uppercase tracking-wider">Time Range</label>
                             <select
                                 value={filters.range}
                                 onChange={(e) => handleFilterChange('range', e.target.value)}
-                                className="w-full sm:w-48 p-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 outline-none transition"
+                                className="w-full sm:w-48 p-2 text-sm bg-bg-page dark:bg-bg-dark border border-border dark:border-border rounded-md focus:ring-2 focus:ring-primary outline-none transition"
                             >
                                 <option value="ALL">All Time</option>
                                 <option value="DAY">Today</option>
@@ -120,21 +120,21 @@ const MyOrders = () => {
                         {filters.range === 'CUSTOM' && (
                             <>
                                 <div className="w-1/2 sm:w-auto">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">From</label>
+                                    <label className="block text-xs font-medium text-text-secondary mb-1 uppercase tracking-wider">From</label>
                                     <input
                                         type="date"
                                         value={filters.from}
                                         onChange={(e) => handleFilterChange('from', e.target.value)}
-                                        className="w-full p-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 outline-none"
+                                        className="w-full p-2 text-sm bg-bg-page dark:bg-bg-dark border border-border dark:border-border rounded-md focus:ring-2 focus:ring-primary outline-none"
                                     />
                                 </div>
                                 <div className="w-1/2 sm:w-auto">
-                                    <label className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">To</label>
+                                    <label className="block text-xs font-medium text-text-secondary mb-1 uppercase tracking-wider">To</label>
                                     <input
                                         type="date"
                                         value={filters.to}
                                         onChange={(e) => handleFilterChange('to', e.target.value)}
-                                        className="w-full p-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-orange-500 outline-none"
+                                        className="w-full p-2 text-sm bg-bg-page dark:bg-bg-dark border border-border dark:border-border rounded-md focus:ring-2 focus:ring-primary outline-none"
                                     />
                                 </div>
                             </>
@@ -146,13 +146,13 @@ const MyOrders = () => {
                 {loading ? (
                     <OrderSkeleton />
                 ) : orders.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
-                        <Filter size={48} className="mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                        <h2 className="text-xl font-medium text-gray-900 dark:text-white">No orders found</h2>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2">Try adjusting your filters or search criteria.</p>
+                    <div className="text-center py-20 bg-bg-surface dark:bg-bg-dark rounded-lg border border-dashed border-border dark:border-border">
+                        <Filter size={48} className="mx-auto text-text-secondary dark:text-text-secondary mb-4" />
+                        <h2 className="text-xl font-medium text-text-primary dark:text-text-onDark">No orders found</h2>
+                        <p className="text-text-secondary dark:text-text-secondary mt-2">Try adjusting your filters or search criteria.</p>
                         <button
                             onClick={clearFilters}
-                            className="text-orange-600 hover:text-orange-500 font-medium mt-4 inline-block"
+                            className="text-primary hover:text-primary font-medium mt-4 inline-block"
                         >
                             Reset Filters
                         </button>
@@ -165,42 +165,42 @@ const MyOrders = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
+                                className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow-sm border border-border dark:border-border overflow-hidden hover:shadow-md transition-shadow"
                             >
                                 <div className="p-6">
                                     <div className="flex flex-wrap justify-between items-center mb-4 gap-4">
                                         <div>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">Order ID: <span className="font-mono text-gray-900 dark:text-white select-all">#{String(order.id).substring(0, 8)}</span></p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                                            <p className="text-sm text-text-secondary dark:text-text-secondary">Order ID: <span className="font-mono text-text-primary dark:text-text-onDark select-all">#{String(order.id).substring(0, 8)}</span></p>
+                                            <p className="text-sm text-text-secondary dark:text-text-secondary flex items-center gap-1 mt-1">
                                                 <Clock size={14} /> {new Date(order.createdAt).toLocaleDateString()} at {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             </p>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${order.status === 'DELIVERED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                                                order.status === 'CANCELLED' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
-                                                    order.status === 'SHIPPED' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300' :
-                                                        'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
+                                                order.status === 'CANCELLED' ? 'text-status-error text-status-error dark:text-status-error/30 dark:text-status-error' :
+                                                    order.status === 'SHIPPED' ? 'bg-primary-light text-primary dark:bg-primary-hover/30 dark:text-primary' :
+                                                        'bg-primary-light text-primary dark:bg-primary-hover/30 dark:text-primary'
                                                 }`}>
                                                 {order.status.replace(/_/g, ' ')}
                                             </span>
-                                            <p className="text-lg font-bold text-gray-900 dark:text-white">₹{order.totalAmount}</p>
+                                            <p className="text-lg font-bold text-text-primary dark:text-text-onDark">₹{order.totalAmount}</p>
                                         </div>
                                     </div>
 
                                     {/* Items Preview */}
-                                    <div className="border-t border-gray-100 dark:border-gray-700 pt-4 flex items-center justify-between">
+                                    <div className="border-t border-border dark:border-border pt-4 flex items-center justify-between">
                                         <div className="flex -space-x-3 overflow-hidden pl-1">
                                             {order.orderItems?.slice(0, 4).map((item, idx) => (
                                                 <img
                                                     key={idx}
                                                     src={item.product?.images?.[0]?.imagePath || item.product?.imagePath || '/placeholder.png'}
                                                     alt={item.product?.name}
-                                                    className="inline-block h-10 w-10 rounded-full ring-2 ring-white dark:ring-gray-800 object-cover bg-gray-50"
+                                                    className="inline-block h-10 w-10 rounded-full ring-2 ring-white dark:ring-gray-800 object-cover bg-bg-page"
                                                     title={item.product?.name}
                                                 />
                                             ))}
                                             {order.orderItems?.length > 4 && (
-                                                <div className="h-10 w-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-medium text-gray-500 dark:text-gray-300 ring-2 ring-white dark:ring-gray-800">
+                                                <div className="h-10 w-10 rounded-full bg-bg-band dark:bg-bg-dark flex items-center justify-center text-xs font-medium text-text-secondary dark:text-text-secondary ring-2 ring-white dark:ring-gray-800">
                                                     +{order.orderItems.length - 4}
                                                 </div>
                                             )}
@@ -208,7 +208,7 @@ const MyOrders = () => {
 
                                         <Link
                                             to={`/customer/track-order/${order.id}`}
-                                            className="flex items-center text-orange-600 hover:text-orange-700 font-medium text-sm transition group"
+                                            className="flex items-center text-primary hover:text-primary font-medium text-sm transition group"
                                         >
                                             Track & Details
                                             <ChevronRight size={16} className="ml-0.5 group-hover:translate-x-1 transition-transform" />

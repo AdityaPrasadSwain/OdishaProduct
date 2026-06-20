@@ -11,18 +11,18 @@ const BarcodeScannerModal = ({ isOpen, onClose, onScan, loading }) => {
 
     return (
         <Dialog open={isOpen} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3, overflow: 'hidden' } }}>
-            <Box className="bg-gray-900 text-white p-4 flex justify-between items-center">
+            <Box className="bg-bg-dark text-text-onDark p-4 flex justify-between items-center">
                 <Typography variant="h6" fontWeight="bold">Scan Parcel Label</Typography>
-                <button onClick={onClose} className="text-gray-400 hover:text-white">
+                <button onClick={onClose} className="text-text-secondary hover:text-text-onDark">
                     <X size={24} />
                 </button>
             </Box>
 
-            <DialogContent className="bg-black p-0 relative" sx={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <DialogContent className="bg-bg-dark p-0 relative" sx={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 {loading ? (
                     <Box className="flex flex-col items-center gap-4 py-12">
-                        <CircularProgress sx={{ color: '#ea580c' }} thickness={5} size={60} />
-                        <Typography variant="h6" className="text-white animate-pulse">Verifying...</Typography>
+                        <CircularProgress sx={{ color: '#5747C7' }} thickness={5} size={60} />
+                        <Typography variant="h6" className="text-text-onDark animate-pulse">Verifying...</Typography>
                     </Box>
                 ) : cameraActive ? (
                     <>
@@ -41,22 +41,22 @@ const BarcodeScannerModal = ({ isOpen, onClose, onScan, loading }) => {
                                 }}
                             />
                             {/* Overlay Guidelines */}
-                            <div className="absolute inset-0 border-2 border-orange-500 opacity-50 pointer-events-none" style={{ top: '10%', bottom: '10%', left: '10%', right: '10%' }}></div>
-                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-red-500 opacity-60 pointer-events-none"></div>
+                            <div className="absolute inset-0 border-2 border-primary opacity-50 pointer-events-none" style={{ top: '10%', bottom: '10%', left: '10%', right: '10%' }}></div>
+                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-status-error opacity-60 pointer-events-none"></div>
                         </Box>
-                        <Typography variant="body2" className="text-gray-400 mt-4 mb-4 text-center">
+                        <Typography variant="body2" className="text-text-secondary mt-4 mb-4 text-center">
                             Align the barcode within the frame
                         </Typography>
                     </>
                 ) : (
                     <Box className="flex flex-col items-center gap-4 py-8">
-                        <RefreshCcw className="text-orange-500 animate-spin" size={40} />
-                        <Typography className="text-white">Processing...</Typography>
+                        <RefreshCcw className="text-primary animate-spin" size={40} />
+                        <Typography className="text-text-onDark">Processing...</Typography>
                     </Box>
                 )}
 
                 {error && (
-                    <Box className="p-4 bg-red-900/50 text-red-200 w-full text-center">
+                    <Box className="p-4 text-status-error/50 text-status-error w-full text-center">
                         {error}
                     </Box>
                 )}

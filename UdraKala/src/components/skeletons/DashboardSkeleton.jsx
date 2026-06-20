@@ -6,7 +6,7 @@ export default function DashboardSkeleton() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="p-6 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
+                    <div key={i} className="p-6 bg-bg-surface dark:bg-bg-dark rounded-2xl border border-border dark:border-border">
                         <div className="flex justify-between items-start mb-4">
                             <Skeleton className="w-10 h-10 rounded-lg" />
                             <Skeleton className="w-16 h-6 rounded-full" />
@@ -19,10 +19,10 @@ export default function DashboardSkeleton() {
 
             {/* Chart/Table Area */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-2xl h-[400px]">
+                <div className="lg:col-span-2 bg-bg-surface dark:bg-bg-dark p-6 rounded-2xl h-[400px]">
                     <Skeleton className="w-full h-full rounded-xl" />
                 </div>
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl h-[400px]">
+                <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-2xl h-[400px]">
                     <Skeleton className="w-full h-full rounded-xl" />
                 </div>
             </div>

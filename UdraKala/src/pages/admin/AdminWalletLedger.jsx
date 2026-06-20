@@ -39,7 +39,7 @@ const AdminWalletLedger = () => {
     return (
         <Box className="p-6 space-y-6">
             <div className="flex justify-between items-center">
-                <Typography variant="h4" className="font-bold text-gray-800">
+                <Typography variant="h4" className="font-bold text-text-primary">
                     Wallet Ledger (Audit Trail)
                 </Typography>
                 <Button
@@ -53,7 +53,7 @@ const AdminWalletLedger = () => {
 
             <TableContainer component={Paper} className="shadow-md rounded-lg overflow-hidden">
                 <Table>
-                    <TableHead className="bg-gray-100">
+                    <TableHead className="bg-bg-band">
                         <TableRow>
                             <TableCell>Date</TableCell>
                             <TableCell>Type</TableCell>
@@ -72,23 +72,23 @@ const AdminWalletLedger = () => {
                             </TableRow>
                         ) : transactions.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} align="center" className="py-10 text-gray-500">
+                                <TableCell colSpan={6} align="center" className="py-10 text-text-secondary">
                                     No transactions found
                                 </TableCell>
                             </TableRow>
                         ) : (
                             transactions.map((txn) => (
                                 <TableRow key={txn.id} hover>
-                                    <TableCell className="text-gray-600">
+                                    <TableCell className="text-text-secondary">
                                         {new Date(txn.createdAt).toLocaleString()}
                                     </TableCell>
                                     <TableCell>
-                                        <div className={`flex items-center gap-1 font-bold ${txn.type === 'CREDIT' ? 'text-green-600' : 'text-red-500'}`}>
+                                        <div className={`flex items-center gap-1 font-bold ${txn.type === 'CREDIT' ? 'text-status-success' : 'text-status-error'}`}>
                                             {txn.type === 'CREDIT' ? <ArrowDownLeft size={16} /> : <ArrowUpRight size={16} />}
                                             {txn.type}
                                         </div>
                                     </TableCell>
-                                    <TableCell className={`font-mono font-bold ${txn.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'}`}>
+                                    <TableCell className={`font-mono font-bold ${txn.type === 'CREDIT' ? 'text-status-success' : 'text-status-error'}`}>
                                         {txn.type === 'CREDIT' ? '+' : '-'}₹{txn.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                     </TableCell>
                                     <TableCell>
@@ -99,10 +99,10 @@ const AdminWalletLedger = () => {
                                             variant="outlined"
                                         />
                                     </TableCell>
-                                    <TableCell className="font-mono text-xs text-gray-500">
+                                    <TableCell className="font-mono text-xs text-text-secondary">
                                         {txn.referenceId || '-'}
                                     </TableCell>
-                                    <TableCell className="text-sm text-gray-700">
+                                    <TableCell className="text-sm text-text-secondary">
                                         {txn.description}
                                     </TableCell>
                                 </TableRow>

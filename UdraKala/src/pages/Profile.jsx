@@ -122,18 +122,18 @@ const Profile = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
+                className="bg-bg-surface dark:bg-bg-dark rounded-2xl shadow-xl overflow-hidden"
             >
                 {/* Header Background */}
                 <div className="h-48 bg-gradient-to-r from-orange-400 to-amber-600 relative">
-                    <div className="absolute inset-0 bg-black/20" />
+                    <div className="absolute inset-0 bg-bg-dark/20" />
                 </div>
 
                 <div className="relative px-6 pb-8">
                     {/* Profile Image */}
                     <div className="relative -mt-24 mb-6 flex flex-col md:flex-row items-end md:items-end gap-6">
                         <div className="relative group">
-                            <div className="w-40 h-40 rounded-full border-4 border-white dark:border-gray-800 overflow-hidden shadow-lg bg-gray-100 relative">
+                            <div className="w-40 h-40 rounded-full border-4 border-white dark:border-border overflow-hidden shadow-lg bg-bg-band relative">
                                 <img
                                     src={imagePreview || '/default_profile.jpg'}
                                     alt="Profile"
@@ -142,8 +142,8 @@ const Profile = () => {
                                 />
 
                                 {isEditing && (
-                                    <label className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                                        <Camera className="text-white" size={32} />
+                                    <label className="absolute inset-0 bg-bg-dark/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                        <Camera className="text-text-onDark" size={32} />
                                         <input
                                             type="file"
                                             accept="image/*"
@@ -156,10 +156,10 @@ const Profile = () => {
                         </div>
 
                         <div className="flex-1 text-center md:text-left mb-2">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white capitalize">
+                            <h1 className="text-3xl font-bold text-text-primary dark:text-text-onDark capitalize">
                                 {formData.fullName || 'User Name'}
                             </h1>
-                            <p className="text-gray-500 dark:text-gray-400">
+                            <p className="text-text-secondary dark:text-text-secondary">
                                 {user?.email} • <span className="uppercase">{user?.roles?.[0]?.replace('ROLE_', '')}</span>
                             </p>
                         </div>
@@ -168,7 +168,7 @@ const Profile = () => {
                             {!isEditing ? (
                                 <button
                                     onClick={() => setIsEditing(true)}
-                                    className="px-6 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium shadow-lg hover:shadow-orange-500/30 transition-all flex items-center gap-2"
+                                    className="px-6 py-2.5 bg-primary hover:bg-primary-hover text-text-onDark rounded-lg font-medium shadow-lg hover:shadow-orange-500/30 transition-all flex items-center gap-2"
                                 >
                                     <Edit2 size={18} />
                                     Edit Profile
@@ -181,7 +181,7 @@ const Profile = () => {
                                             setSelectedImage(null);
                                             fetchProfile(); // Reset to original data
                                         }}
-                                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center gap-2"
+                                        className="px-4 py-2 bg-bg-band dark:bg-bg-dark text-text-secondary dark:text-text-secondary rounded-lg hover:bg-bg-band dark:hover:bg-bg-dark transition-colors flex items-center gap-2"
                                         disabled={updating}
                                     >
                                         <X size={18} /> Cancel
@@ -189,7 +189,7 @@ const Profile = () => {
                                     <button
                                         onClick={handleSubmit}
                                         disabled={updating}
-                                        className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-lg hover:shadow-green-500/30 transition-colors flex items-center gap-2"
+                                        className="px-6 py-2 bg-status-success hover:bg-green-700 text-text-onDark rounded-lg shadow-lg hover:shadow-green-500/30 transition-colors flex items-center gap-2"
                                     >
                                         {updating ? (
                                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -209,7 +209,7 @@ const Profile = () => {
                         {/* Left Column */}
                         <div className="space-y-6">
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">
                                     <User size={16} /> Full Name
                                 </label>
                                 <input
@@ -218,12 +218,12 @@ const Profile = () => {
                                     value={formData.fullName}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
 
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">
                                     <Phone size={16} /> Phone Number
                                 </label>
                                 <input
@@ -232,12 +232,12 @@ const Profile = () => {
                                     value={formData.phoneNumber}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
 
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">
                                     <User size={16} /> Gender
                                 </label>
                                 <select
@@ -245,7 +245,7 @@ const Profile = () => {
                                     value={formData.gender}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
@@ -258,7 +258,7 @@ const Profile = () => {
                         {/* Right Column */}
                         <div className="space-y-6">
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">
                                     <MapPin size={16} /> Address
                                 </label>
                                 <textarea
@@ -267,12 +267,12 @@ const Profile = () => {
                                     value={formData.address}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed resize-none"
+                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed resize-none"
                                 />
                             </div>
 
                             <div>
-                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-text-secondary dark:text-text-secondary mb-2">
                                     <FileText size={16} /> Bio
                                 </label>
                                 <textarea
@@ -282,7 +282,7 @@ const Profile = () => {
                                     value={formData.bio}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
                         </div>
