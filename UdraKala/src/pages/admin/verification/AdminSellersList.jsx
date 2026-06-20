@@ -3,6 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import API from '../../../api/api';
 import { Search, Filter, Eye } from 'lucide-react';
 
+import { 
+    GlassTableWrapper, 
+    GlassThead, 
+    GlassTh, 
+    GlassTbody, 
+    GlassTr, 
+    GlassTd, 
+    GlassBadge, 
+    GlassIconButton 
+} from '../../../components/ui/GlassTable';
+
 const AdminSellersList = () => {
     const [sellers, setSellers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,17 +35,17 @@ const AdminSellersList = () => {
         }
     };
 
-    const getStatusColor = (status) => {
+    const getStatusVariant = (status) => {
         switch (status) {
-            case 'PENDING_DOCS': return 'bg-yellow-100 text-yellow-800';
-            case 'PENDING_BANK': return 'bg-primary-light text-primary';
-            case 'COMPLETED': return 'bg-green-100 text-green-800'; // Wait admin
-            case 'APPROVED': return 'bg-status-success text-text-onDark';
-            case 'REJECTED': return 'bg-status-error text-text-onDark';
-            case 'DOCUMENTS_REJECTED': return 'bg-primary-light text-primary';
-            case 'BANK_REJECTED': return 'bg-pink-100 text-pink-800';
-            case 'SUSPENDED': return 'bg-bg-dark text-text-onDark';
-            default: return 'bg-bg-band text-text-primary';
+            case 'PENDING_DOCS': return 'warning';
+            case 'PENDING_BANK': return 'primary';
+            case 'COMPLETED': return 'success';
+            case 'APPROVED': return 'success';
+            case 'REJECTED': return 'danger';
+            case 'DOCUMENTS_REJECTED': return 'danger';
+            case 'BANK_REJECTED': return 'danger';
+            case 'SUSPENDED': return 'default';
+            default: return 'default';
         }
     };
 
@@ -65,64 +76,43 @@ const AdminSellersList = () => {
             </div>
 
             {loading ? <p>Loading...</p> : (
-                <div className="bg-bg-surface dark:bg-bg-dark shadow-sm dark:shadow-[0_4px_6px_rgba(0,0,0,0.4)] rounded-lg border border-border dark:border-transparent overflow-hidden">
-                    <table className="min-w-full leading-normal border-collapse">
-                        <thead>
-                            <tr className="bg-bg-page/50 dark:bg-white/[0.02]">
-                                <th className="px-5 py-4 text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">
-                                    Seller
-                                </th>
-                                <th className="px-5 py-4 text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">
-                                    Business Name
-                                </th>
-                                <th className="px-5 py-4 text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">
-                                    Contact
-                                </th>
-                                <th className="px-5 py-4 text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-5 py-4 text-left text-xs font-semibold text-text-secondary dark:text-text-secondary uppercase tracking-wider">
-                                    Action
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border/50 dark:divide-white/5">
-                            {filteredSellers.map((seller) => (
-                                <tr key={seller.id} className="hover:bg-primary/5 dark:hover:bg-white/[0.03] transition-colors">
-                                    <td className="px-5 py-4 text-sm">
-                                        <div className="flex items-center">
-                                            <div className="ml-3">
-                                                <p className="text-text-primary dark:text-text-onDark whitespace-no-wrap font-medium">
-                                                    {seller.fullName}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-5 py-4 text-sm text-text-secondary dark:text-text-secondary">
-                                        <p className="whitespace-no-wrap">{seller.shopName || '-'}</p>
-                                    </td>
-                                    <td className="px-5 py-4 text-sm">
-                                        <p className="text-text-primary dark:text-text-onDark whitespace-no-wrap">{seller.email}</p>
-                                        <p className="text-text-secondary dark:text-text-secondary whitespace-no-wrap text-xs">{seller.phoneNumber}</p>
-                                    </td>
-                                    <td className="px-5 py-4 text-sm">
-                                        <span className={`relative inline-block px-3 py-1 font-semibold leading-tight rounded-full ${getStatusColor(seller.registrationStatus)}`}>
-                                            <span className="relative text-xs">{seller.registrationStatus?.replace('_', ' ')}</span>
-                                        </span>
-                                    </td>
-                                    <td className="px-5 py-4 text-sm">
-                                        <button
-                                            onClick={() => navigate(`/admin/sellers/${seller.id}`)}
-                                            className="p-1.5 hover:bg-bg-band dark:hover:bg-bg-dark rounded-lg text-text-secondary hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1"
-                                        >
-                                            <Eye size={18} /> <span className="hidden sm:inline">View</span>
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <GlassTableWrapper>
+                    <GlassThead>
+                        <GlassTh>Seller</GlassTh>
+                        <GlassTh>Business Name</GlassTh>
+                        <GlassTh>Contact</GlassTh>
+                        <GlassTh>Status</GlassTh>
+                        <GlassTh>Action</GlassTh>
+                    </GlassThead>
+                    <GlassTbody>
+                        {filteredSellers.map((seller, index) => (
+                            <GlassTr key={seller.id} index={index}>
+                                <GlassTd>
+                                    <p className="font-medium">{seller.fullName}</p>
+                                </GlassTd>
+                                <GlassTd className="text-text-secondary dark:text-white/80">
+                                    {seller.shopName || '-'}
+                                </GlassTd>
+                                <GlassTd>
+                                    <p>{seller.email}</p>
+                                    <p className="text-text-secondary dark:text-white/60 text-xs">{seller.phoneNumber}</p>
+                                </GlassTd>
+                                <GlassTd>
+                                    <GlassBadge variant={getStatusVariant(seller.registrationStatus)}>
+                                        {seller.registrationStatus?.replace('_', ' ')}
+                                    </GlassBadge>
+                                </GlassTd>
+                                <GlassTd>
+                                    <GlassIconButton 
+                                        icon={Eye} 
+                                        onClick={() => navigate(`/admin/sellers/${seller.id}`)}
+                                        colorClass="text-primary hover:text-primary dark:text-white dark:hover:text-primary"
+                                    />
+                                </GlassTd>
+                            </GlassTr>
+                        ))}
+                    </GlassTbody>
+                </GlassTableWrapper>
             )}
         </div>
     );

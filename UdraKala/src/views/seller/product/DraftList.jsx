@@ -3,6 +3,15 @@ import { Typography, Box, Table, TableBody, TableCell, TableHead, TableRow, Chip
 import DashboardCard from '../../../components/shared/DashboardCard';
 import { getDrafts } from '../../../api/productWizardApi';
 import { useNavigate } from 'react-router';
+import { 
+    GlassTableWrapper, 
+    GlassThead, 
+    GlassTh, 
+    GlassTbody, 
+    GlassTr, 
+    GlassTd, 
+    GlassBadge 
+} from '../../../components/ui/GlassTable';
 
 const DraftList = () => {
     const [drafts, setDrafts] = useState([]);
@@ -30,97 +39,54 @@ const DraftList = () => {
 
     return (
         <DashboardCard title="Draft Products">
-            <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
-                <Table
-                    aria-label="simple table"
-                    sx={{
-                        whiteSpace: "nowrap",
-                        mt: 2
-                    }}
-                >
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#94A3B8" sx={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>
-                                    Product Name
-                                </Typography>
-                            </TableCell>
-                            <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#94A3B8" sx={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>
-                                    Price
-                                </Typography>
-                            </TableCell>
-                            <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#94A3B8" sx={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>
-                                    Category
-                                </Typography>
-                            </TableCell>
-                            <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#94A3B8" sx={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>
-                                    Status
-                                </Typography>
-                            </TableCell>
-                            <TableCell align="right" sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                                <Typography variant="subtitle2" fontWeight={700} color="#94A3B8" sx={{ textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '1px' }}>
-                                    Actions
-                                </Typography>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {drafts.map((product) => (
-                            <TableRow key={product.id} sx={{ '&:hover': { backgroundColor: 'rgba(123, 97, 255, 0.05)' }, transition: 'background-color 0.2s ease' }}>
-                                <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                    <Typography variant="subtitle1" fontWeight={600} color="#F8FAFC">
-                                        {product.name}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                    <Typography color="#CBD5E1" variant="subtitle2" fontWeight={600}>
-                                        ₹{product.price}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                    <Typography color="#CBD5E1" variant="subtitle2" fontWeight={400}>
-                                        {product.category ? product.category.name : 'N/A'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                                    <Chip
-                                        sx={{
-                                            bgcolor: 'rgba(245, 158, 11, 0.15)',
-                                            color: '#F59E0B',
-                                            borderRadius: '6px',
-                                            fontWeight: 700,
-                                        }}
-                                        size="small"
-                                        label="DRAFT"
-                                    />
-                                </TableCell>
-                                <TableCell align="right" sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+            <Box sx={{ overflow: 'auto', width: '100%', mt: 2 }}>
+                <GlassTableWrapper>
+                    <GlassThead>
+                        <GlassTh>Product Name</GlassTh>
+                        <GlassTh>Price</GlassTh>
+                        <GlassTh>Category</GlassTh>
+                        <GlassTh>Status</GlassTh>
+                        <GlassTh className="text-right">Actions</GlassTh>
+                    </GlassThead>
+                    <GlassTbody>
+                        {drafts.map((product, index) => (
+                            <GlassTr key={product.id} index={index}>
+                                <GlassTd className="font-medium text-text-primary dark:text-white">
+                                    {product.name}
+                                </GlassTd>
+                                <GlassTd className="font-medium text-text-primary dark:text-white/90">
+                                    ₹{product.price}
+                                </GlassTd>
+                                <GlassTd className="text-text-secondary dark:text-white/80">
+                                    {product.category ? product.category.name : 'N/A'}
+                                </GlassTd>
+                                <GlassTd>
+                                    <GlassBadge variant="warning">
+                                        DRAFT
+                                    </GlassBadge>
+                                </GlassTd>
+                                <GlassTd className="text-right">
                                     <Button
                                         variant="contained"
                                         color="primary"
                                         size="small"
                                         onClick={() => handleEdit(product.id)}
-                                        sx={{ borderRadius: '6px', px: 2 }}
+                                        sx={{ borderRadius: '6px', px: 2, textTransform: 'none' }}
                                     >
                                         Edit
                                     </Button>
-                                </TableCell>
-                            </TableRow>
+                                </GlassTd>
+                            </GlassTr>
                         ))}
                         {drafts.length === 0 && !loading && (
-                            <TableRow>
-                                <TableCell colSpan={5} align="center">
-                                    <Typography variant="body1" sx={{ py: 3 }}>
-                                        No drafts found.
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
+                            <tr>
+                                <td colSpan={5} className="px-6 py-8 text-center text-text-secondary dark:text-white/60">
+                                    No drafts found.
+                                </td>
+                            </tr>
                         )}
-                    </TableBody>
-                </Table>
+                    </GlassTbody>
+                </GlassTableWrapper>
             </Box>
         </DashboardCard>
     );
