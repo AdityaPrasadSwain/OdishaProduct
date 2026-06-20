@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, LogOut, Sun, Moon, User, Heart, Settings, LayoutDashboard, Menu, X, RotateCw, Search } from 'lucide-react';
+import { ShoppingCart, LogOut, Sun, Moon, User, Heart, Settings, LayoutDashboard, Menu, X, RotateCw, Search, Package, Ticket, Coins, Zap, CreditCard, MapPin, Gift, Bell, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 import { languages } from '../config/languages';
@@ -164,15 +164,21 @@ const CustomNavbar = () => {
                                 <div className="relative ml-2" ref={userMenuRef}>
                                     <button
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                        className="flex items-center justify-center w-10 h-10 rounded-full overflow-hidden border-2 border-transparent focus:border-primary transition-colors"
+                                        className="flex items-center justify-center gap-2 px-2 py-1 rounded-full border border-transparent hover:border-border transition-colors"
                                     >
-                                        {user?.profileImage ? (
-                                            <img src={user.profileImage} alt="User" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full bg-primary flex items-center justify-center text-text-onDark font-bold">
-                                                {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                                            </div>
-                                        )}
+                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-border dark:border-border">
+                                            {user?.profileImage ? (
+                                                <img src={user.profileImage} alt="User" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="w-full h-full bg-primary flex items-center justify-center text-text-onDark font-bold">
+                                                    {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <span className="hidden lg:block text-sm font-semibold text-text-primary dark:text-text-onDark uppercase max-w-[120px] truncate">
+                                            {user?.fullName || 'USER'}
+                                        </span>
+                                        <ChevronDown size={16} className={`hidden lg:block text-text-secondary transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                                     </button>
 
                                     {/* User Dropdown */}
@@ -183,19 +189,36 @@ const CustomNavbar = () => {
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                 transition={{ duration: 0.15 }}
-                                                className="absolute right-0 mt-3 w-56 bg-bg-surface dark:bg-bg-dark rounded-2xl shadow-lg border border-border dark:border-border overflow-hidden z-50"
+                                                className="absolute right-0 mt-3 w-64 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-border dark:border-border overflow-hidden z-50"
                                             >
-                                                <div className="px-4 py-3 border-b border-border dark:border-border bg-bg-page dark:bg-bg-dark/50">
-                                                    <p className="text-sm font-medium text-text-primary dark:text-text-onDark truncate">{user.fullName || user.email}</p>
-                                                    <p className="text-xs text-text-secondary truncate mt-0.5">{user.email}</p>
-                                                </div>
                                                 <div className="py-2">
-                                                    {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label={t('admin_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                    {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label={t('seller_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                    {isAgent && <DropdownItem to="/agent/dashboard" icon={LayoutDashboard} label={t('agent_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                    {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label={t('my_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                    <DropdownItem to="/profile" icon={User} label={t('profile')} setIsUserMenuOpen={setIsUserMenuOpen} />
-                                                    <DropdownItem onClick={handleLogout} icon={LogOut} label={t('logout')} isDanger setIsUserMenuOpen={setIsUserMenuOpen} />
+                                                    {(isAdmin || isSeller || isAgent || isCustomer) && (
+                                                        <>
+                                                            <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-text-secondary uppercase tracking-wider">Dashboards</div>
+                                                            {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label={t('admin_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                                            {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label={t('seller_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                                            {isAgent && <DropdownItem to="/agent/dashboard" icon={LayoutDashboard} label={t('agent_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                                            {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label={t('my_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
+                                                            <div className="h-px bg-border dark:bg-border my-1"></div>
+                                                        </>
+                                                    )}
+                                                    
+                                                    <div className="px-4 pt-2 pb-1 text-[13px] font-bold text-text-primary dark:text-text-onDark">Your Account</div>
+                                                    
+                                                    <DropdownItem to="/profile" icon={User} label="My Profile" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/orders" icon={Package} label="Orders" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/coupons" icon={Ticket} label="Coupons" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/supercoin" icon={Coins} label="Supercoin" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/plus-zone" icon={Zap} label="UdraKala Plus Zone" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/wallet" icon={CreditCard} label="Saved Cards & Wallet" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/addresses" icon={MapPin} label="Saved Addresses" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/wishlist" icon={Heart} label="Wishlist" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/gift-cards" icon={Gift} label="Gift Cards" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    <DropdownItem to="/notifications" icon={Bell} label="Notifications" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
+                                                    
+                                                    <div className="h-px bg-border dark:bg-border my-1"></div>
+                                                    
+                                                    <DropdownItem onClick={handleLogout} icon={LogOut} label="Logout" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
                                                 </div>
                                             </motion.div>
                                         )}

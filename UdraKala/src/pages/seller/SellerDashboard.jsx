@@ -5,8 +5,6 @@ import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import { DataGrid } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { getSellerReturns, processReturnRequest } from '../../api/returnApi';
 import {
     Plus,
@@ -283,33 +281,6 @@ const SellerDashboard = () => {
     const [myReturns, setMyReturns] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Create MUI Theme based on current app theme
-    const muiTheme = useMemo(() => createTheme({
-        palette: {
-            mode: theme === 'dark' ? 'dark' : 'light',
-            primary: {
-                main: '#2563eb', // Blue-600
-            },
-            background: {
-                paper: theme === 'dark' ? '#1f2937' : '#ffffff', // Tailwind gray-800
-                default: theme === 'dark' ? '#111827' : '#ffffff',
-            },
-            text: {
-                primary: theme === 'dark' ? '#f3f4f6' : '#111827', // gray-100 vs gray-900
-                secondary: theme === 'dark' ? '#9ca3af' : '#4b5563',
-            },
-        },
-        components: {
-            MuiPaper: {
-                styleOverrides: {
-                    root: {
-                        backgroundImage: 'none', // Remove elevation overlay in dark mode
-                    },
-                },
-            },
-        },
-    }), [theme]);
 
     const [activeTab, setActiveTab] = useState('overview');
 
@@ -872,18 +843,16 @@ const SellerDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <MuiThemeProvider theme={muiTheme}>
-                                        <Paper sx={{ width: '100%', height: 500, boxShadow: 'none' }}>
-                                            <DataGrid
-                                                rows={filteredData}
-                                                columns={productColumns}
-                                                initialState={{ pagination: { paginationModel } }}
-                                                pageSizeOptions={[5, 10]}
-                                                checkboxSelection
-                                                disableRowSelectionOnClick
-                                            />
-                                        </Paper>
-                                    </MuiThemeProvider>
+                                    <div style={{ height: 500, width: '100%' }}>
+                                        <DataGrid
+                                            rows={filteredData}
+                                            columns={productColumns}
+                                            initialState={{ pagination: { paginationModel } }}
+                                            pageSizeOptions={[5, 10]}
+                                            checkboxSelection
+                                            disableRowSelectionOnClick
+                                        />
+                                    </div>
                                 </Card>
                             )}
 
@@ -928,18 +897,16 @@ const SellerDashboard = () => {
                                     </div>
 
 
-                                    <MuiThemeProvider theme={muiTheme}>
-                                        <Paper sx={{ width: '100%', height: 500, boxShadow: 'none' }}>
-                                            <DataGrid
-                                                rows={filteredData}
-                                                columns={returnColumns}
-                                                initialState={{ pagination: { paginationModel } }}
-                                                pageSizeOptions={[5, 10]}
-                                                checkboxSelection
-                                                disableRowSelectionOnClick
-                                            />
-                                        </Paper>
-                                    </MuiThemeProvider>
+                                    <div style={{ height: 500, width: '100%' }}>
+                                        <DataGrid
+                                            rows={filteredData}
+                                            columns={returnColumns}
+                                            initialState={{ pagination: { paginationModel } }}
+                                            pageSizeOptions={[5, 10]}
+                                            checkboxSelection
+                                            disableRowSelectionOnClick
+                                        />
+                                    </div>
                                 </Card>
                             )}
 

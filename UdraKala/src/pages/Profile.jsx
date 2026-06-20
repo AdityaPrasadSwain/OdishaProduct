@@ -125,15 +125,15 @@ const Profile = () => {
                 className="bg-bg-surface dark:bg-bg-dark rounded-2xl shadow-xl overflow-hidden"
             >
                 {/* Header Background */}
-                <div className="h-48 bg-gradient-to-r from-orange-400 to-amber-600 relative">
-                    <div className="absolute inset-0 bg-bg-dark/20" />
+                <div className="h-48 bg-gradient-to-r from-primary to-indigo-600 dark:from-primary/60 dark:to-indigo-900/60 relative">
+                    <div className="absolute inset-0 bg-black/10 dark:bg-black/30 backdrop-blur-[2px]" />
                 </div>
 
                 <div className="relative px-6 pb-8">
                     {/* Profile Image */}
                     <div className="relative -mt-24 mb-6 flex flex-col md:flex-row items-end md:items-end gap-6">
                         <div className="relative group">
-                            <div className="w-40 h-40 rounded-full border-4 border-white dark:border-border overflow-hidden shadow-lg bg-bg-band relative">
+                            <div className="w-40 h-40 rounded-full overflow-hidden shadow-xl shadow-black/20 dark:shadow-2xl dark:shadow-black/60 bg-bg-band relative">
                                 <img
                                     src={imagePreview || '/default_profile.jpg'}
                                     alt="Profile"
@@ -218,7 +218,7 @@ const Profile = () => {
                                     value={formData.fullName}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border-none bg-bg-page dark:bg-white/5 shadow-inner dark:shadow-black/40 text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
 
@@ -232,7 +232,7 @@ const Profile = () => {
                                     value={formData.phoneNumber}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border-none bg-bg-page dark:bg-white/5 shadow-inner dark:shadow-black/40 text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
 
@@ -245,7 +245,7 @@ const Profile = () => {
                                     value={formData.gender}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border-none bg-bg-page dark:bg-white/5 shadow-inner dark:shadow-black/40 text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
@@ -267,7 +267,7 @@ const Profile = () => {
                                     value={formData.address}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed resize-none"
+                                    className="w-full px-4 py-3 rounded-lg border-none bg-bg-page dark:bg-white/5 shadow-inner dark:shadow-black/40 text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed resize-none"
                                 />
                             </div>
 
@@ -282,7 +282,7 @@ const Profile = () => {
                                     value={formData.bio}
                                     onChange={handleInputChange}
                                     disabled={!isEditing}
-                                    className="w-full px-4 py-3 rounded-lg border border-border dark:border-border bg-bg-page dark:bg-bg-dark text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-3 rounded-lg border-none bg-bg-page dark:bg-white/5 shadow-inner dark:shadow-black/40 text-text-primary dark:text-text-onDark focus:ring-2 focus:ring-primary outline-none transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                                 />
                             </div>
                         </div>

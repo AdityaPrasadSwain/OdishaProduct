@@ -10,7 +10,12 @@ import {
     Users,
     Package,
     Layers,
-    Ticket
+    Ticket,
+    LogOut,
+    ChevronDown,
+    User,
+    Settings,
+    LayoutDashboard
 } from 'lucide-react';
 import AdminCouponList from './coupons/AdminCouponList'; // New Import
 import API from '../../api/api';
@@ -29,14 +34,15 @@ import AdminCategories from './AdminCategories';
 import AdminReturnManagement from './AdminReturnManagement';
 import { useTheme } from '../../context/ThemeContext';
 import { DataGrid } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import { useAuth } from '../../context/AuthContext';
 
 const AdminDashboard = () => {
     // Local state for admin data
     const [products, setProducts] = useState([]);
     const [sellers, setSellers] = useState([]);
     const [coupons, setCoupons] = useState([]); // New state for coupon stats
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const { user, logout } = useAuth();
 
     // Categories now handled by AdminCategories component
 
@@ -128,23 +134,6 @@ const AdminDashboard = () => {
 
     // --- Theme Setup ---
     const { theme, toggleTheme } = useTheme();
-    const muiTheme = useMemo(() => createTheme({
-        palette: {
-            mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#5747C7' },
-            background: {
-                paper: theme === 'dark' ? '#1f2937' : '#ffffff',
-                default: theme === 'dark' ? '#111827' : '#ffffff',
-            },
-            text: {
-                primary: theme === 'dark' ? '#f3f4f6' : '#111827',
-                secondary: theme === 'dark' ? '#9ca3af' : '#4b5563',
-            },
-        },
-        components: {
-            MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-        },
-    }), [theme]);
 
     // --- Table Configurations ---
     const sellerColumns = [
@@ -264,14 +253,88 @@ const AdminDashboard = () => {
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                         </button>
                         {/* Profile */}
-                        <div className="flex items-center gap-3 pl-2 border-l border-border dark:border-white/10">
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
-                                S
-                            </div>
-                            <div className="hidden md:block text-sm">
-                                <p className="font-semibold text-text-primary dark:text-text-onDark leading-none">Surendra Sahu</p>
-                                <p className="text-[11px] text-text-secondary mt-0.5 leading-none">Super Admin</p>
-                            </div>
+                        <div className="relative border-l border-border dark:border-white/10 pl-2">
+                            <button 
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center gap-3 p-1 rounded-lg hover:bg-bg-page dark:hover:bg-white/5 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+                                    {user?.name?.charAt(0) || 'S'}
+                                </div>
+                                <div className="hidden md:flex items-center gap-2">
+                                    <div className="text-left">
+                                        <p className="font-semibold text-text-primary dark:text-text-onDark leading-none">{user?.name || 'Surendra Sahu'}</p>
+                                        <p className="text-[11px] text-text-secondary mt-0.5 leading-none">Super Admin</p>
+                                    </div>
+                                    <ChevronDown size={16} className={`text-text-secondary transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+                                </div>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            <AnimatePresence>
+                                {isProfileOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: 10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute right-0 mt-2 w-48 bg-bg-surface dark:bg-bg-dark border border-border dark:border-white/10 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden z-50"
+                                    >
+                                        <div className="p-2 flex flex-col gap-1">
+                                            <div className="px-3 py-2 border-b border-border dark:border-white/10 mb-1">
+                                                <p className="text-sm font-semibold text-text-primary dark:text-text-onDark">{user?.name || 'Surendra Sahu'}</p>
+                                                <p className="text-xs text-text-secondary mt-0.5">{user?.email || 'admin@example.com'}</p>
+                                            </div>
+                                            
+                                            <button 
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    navigate('/profile');
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors"
+                                            >
+                                                <User size={16} className="text-text-secondary" />
+                                                <span>My Profile</span>
+                                            </button>
+
+                                            <button 
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    setActiveTab('overview');
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors"
+                                            >
+                                                <LayoutDashboard size={16} className="text-text-secondary" />
+                                                <span>Dashboard</span>
+                                            </button>
+
+                                            <button 
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    navigate('/settings');
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors mb-1"
+                                            >
+                                                <Settings size={16} className="text-text-secondary" />
+                                                <span>Settings</span>
+                                            </button>
+
+                                            <div className="h-px bg-border dark:bg-white/10 w-full my-1"></div>
+
+                                            <button 
+                                                onClick={() => {
+                                                    setIsProfileOpen(false);
+                                                    logout();
+                                                }}
+                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-status-error hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                            >
+                                                <LogOut size={16} />
+                                                <span>Log Out</span>
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </div>
                 </header>
@@ -308,18 +371,16 @@ const AdminDashboard = () => {
                 {activeTab === 'sellers' && (
                     <motion.div key="sellers" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Sellers Management">
-                            <MuiThemeProvider theme={muiTheme}>
-                                <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>
-                                    <DataGrid
-                                        rows={sellers}
-                                        columns={sellerColumns}
-                                        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
-                                        pageSizeOptions={[5, 10]}
-                                        checkboxSelection
-                                        disableRowSelectionOnClick
-                                    />
-                                </Paper>
-                            </MuiThemeProvider>
+                            <div style={{ height: 600, width: '100%' }}>
+                                <DataGrid
+                                    rows={sellers}
+                                    columns={sellerColumns}
+                                    initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
+                                    pageSizeOptions={[5, 10]}
+                                    checkboxSelection
+                                    disableRowSelectionOnClick
+                                />
+                            </div>
                         </Card>
                     </motion.div>
                 )}
@@ -327,18 +388,16 @@ const AdminDashboard = () => {
                 {activeTab === 'products' && (
                     <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Product Management">
-                            <MuiThemeProvider theme={muiTheme}>
-                                <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>
-                                    <DataGrid
-                                        rows={products}
-                                        columns={productColumns}
-                                        initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
-                                        pageSizeOptions={[5, 10]}
-                                        checkboxSelection
-                                        disableRowSelectionOnClick
-                                    />
-                                </Paper>
-                            </MuiThemeProvider>
+                            <div style={{ height: 600, width: '100%' }}>
+                                <DataGrid
+                                    rows={products}
+                                    columns={productColumns}
+                                    initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
+                                    pageSizeOptions={[5, 10]}
+                                    checkboxSelection
+                                    disableRowSelectionOnClick
+                                />
+                            </div>
                         </Card>
                     </motion.div>
                 )}
@@ -372,10 +431,14 @@ const AdminDashboard = () => {
                                 <Card title="Add Feature">
                                     <form onSubmit={handleAddFeature} className="space-y-4">
                                         <Input label="Name" value={featName} onChange={(e) => setFeatName(e.target.value)} placeholder="e.g. Handwoven" required />
-                                        <div className="space-y-1">
-                                            <label className="text-sm font-medium text-dark dark:text-text-onDark">Description</label>
-                                            <textarea value={featDesc} onChange={(e) => setFeatDesc(e.target.value)} className="w-full px-4 py-2 bg-bg-surface dark:bg-dark border border-border dark:border-muted rounded-md text-dark dark:text-text-onDark focus:outline-none focus:ring-2 focus:ring-primary/50" rows="4" placeholder="Description..." />
-                                        </div>
+                                        <Input 
+                                            label="Description" 
+                                            multiline 
+                                            rows="4" 
+                                            value={featDesc} 
+                                            onChange={(e) => setFeatDesc(e.target.value)} 
+                                            placeholder="Description..." 
+                                        />
                                         <Button type="submit" className="w-full">Add Feature</Button>
                                     </form>
                                 </Card>

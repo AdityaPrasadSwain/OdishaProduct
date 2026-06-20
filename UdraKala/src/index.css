@@ -80,3 +80,61 @@
 button, a {
   @apply outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-bg-dark;
 }
+
+/* SweetAlert2 Global Theme Overrides */
+.swal2-popup {
+  @apply !bg-bg-surface !text-text-primary !rounded-2xl !shadow-glass border !border-border;
+}
+.swal2-title {
+  @apply !text-text-primary;
+}
+.swal2-html-container {
+  @apply !text-text-secondary;
+}
+.swal2-confirm {
+  @apply !bg-primary hover:!bg-primary-hover !rounded-xl !shadow-lg;
+}
+.swal2-cancel {
+  @apply !bg-bg-band hover:!bg-bg-page !text-text-primary !rounded-xl;
+}
+.swal2-validation-message {
+  @apply !bg-bg-band !text-status-error !rounded-lg;
+}
+.swal2-input, .swal2-textarea {
+  @apply !bg-bg-page !text-text-primary !border-border focus:!ring-primary !rounded-lg;
+}
+
+.dark .swal2-popup {
+  @apply !bg-bg-dark !text-text-onDark !border-white/10 !shadow-2xl !shadow-black/60;
+}
+.dark .swal2-title {
+  @apply !text-text-onDark;
+}
+.dark .swal2-html-container {
+  @apply !text-text-secondary;
+}
+.dark .swal2-cancel {
+  @apply !bg-white/10 hover:!bg-white/20 !text-text-onDark;
+}
+.dark .swal2-validation-message {
+  @apply !bg-bg-dark !text-status-error !border-white/10;
+}
+.dark .swal2-input, .dark .swal2-textarea {
+  @apply !bg-bg-dark !text-text-onDark !border-white/10 focus:!border-primary;
+}
+/* Fix icons in dark mode */
+.dark .swal2-icon.swal2-success {
+  @apply !border-status-success;
+}
+.dark .swal2-icon.swal2-success [class^='swal2-success-line'] {
+  @apply !bg-status-success;
+}
+.dark .swal2-icon.swal2-success .swal2-success-ring {
+  @apply !border-status-success/30;
+}
+.dark .swal2-icon.swal2-error {
+  @apply !border-status-error;
+}
+.dark .swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  @apply !bg-status-error;
+}
