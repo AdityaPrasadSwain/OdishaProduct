@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, LogOut, Sun, Moon, User, Heart, Settings, LayoutDashboard, Menu, X, RotateCw, Search, Package, Ticket, Coins, Zap, CreditCard, MapPin, Gift, Bell, ChevronDown } from 'lucide-react';
+import { ShoppingCart, LogOut, Sun, Moon, User, Heart, Settings, LayoutDashboard, Menu, X, RotateCw, Search, Package, Ticket, Coins, Zap, CreditCard, MapPin, Gift, Bell, ChevronDown, Shirt, Smartphone, MonitorPlay, Home, Armchair, Smile, Sparkles } from 'lucide-react';
+import AccountDropdown from './AccountDropdown';
+import CategoryNavBar from './CategoryNavBar';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'motion/react';
 import { languages } from '../config/languages';
@@ -109,7 +111,51 @@ const CustomNavbar = () => {
     const isAgent = user?.roles?.includes('ROLE_DELIVERY_AGENT');
     const isGuest = !user;
 
+    const CATEGORY_ITEMS = [
+        { id: 'fashion', label: "Fashion", icon: Shirt, href: "/products?category=Fashion" },
+        { id: 'mobiles', label: "Mobiles", icon: Smartphone, href: "/products?category=Mobiles" },
+        { id: 'electronics', label: "Electronics", icon: MonitorPlay, href: "/products?category=Electronics" },
+        { id: 'home', label: "Home", icon: Home, href: "/products?category=Home" },
+        { id: 'furniture', label: "Furniture", icon: Armchair, href: "/products?category=Furniture" },
+        { id: 'toys', label: "Toys", icon: Smile, href: "/products?category=Toys" },
+        { id: 'beauty', label: "Beauty", icon: Sparkles, href: "/products?category=Beauty" },
+    ];
+
+    const accountMenuItems = [];
+    const dashboards = [];
+    if (isAdmin) dashboards.push({ label: t('admin_dashboard'), icon: LayoutDashboard, to: "/admin/dashboard" });
+    if (isSeller) dashboards.push({ label: t('seller_dashboard'), icon: LayoutDashboard, to: "/seller/dashboard" });
+    if (isAgent) dashboards.push({ label: t('agent_dashboard'), icon: LayoutDashboard, to: "/agent/dashboard" });
+    if (isCustomer) dashboards.push({ label: t('my_dashboard'), icon: LayoutDashboard, to: "/customer/dashboard" });
+    
+    if (dashboards.length > 0) {
+        accountMenuItems.push({ title: 'Dashboards', items: dashboards });
+    }
+
+    accountMenuItems.push({
+        title: 'Your Account',
+        items: [
+            { label: "My Profile", icon: User, to: "/profile" },
+            { label: "Orders", icon: Package, to: "/orders" },
+            { label: "Coupons", icon: Ticket, to: "/coupons" },
+            { label: "Supercoin", icon: Coins, to: "/supercoin" },
+            { label: "UdraKala Plus Zone", icon: Zap, to: "/plus-zone" },
+            { label: "Saved Cards & Wallet", icon: CreditCard, to: "/wallet" },
+            { label: "Saved Addresses", icon: MapPin, to: "/addresses" },
+            { label: "Wishlist", icon: Heart, to: "/wishlist" },
+            { label: "Gift Cards", icon: Gift, to: "/gift-cards" },
+            { label: "Notifications", icon: Bell, to: "/notifications" },
+        ]
+    });
+
+    accountMenuItems.push({
+        items: [
+            { label: "Logout", icon: LogOut, onClick: handleLogout, isDanger: true }
+        ]
+    });
+
     return (
+        <>
         <nav className={`fixed w-full z-50 top-0 transition-all duration-300 ${scrolled ? 'bg-bg-surface/90 dark:bg-bg-dark/90 backdrop-blur-md border-b border-border dark:border-border shadow-sm' : 'bg-transparent'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
@@ -161,69 +207,7 @@ const CustomNavbar = () => {
                                     </>
                                 )}
 
-                                <div className="relative ml-2" ref={userMenuRef}>
-                                    <button
-                                        onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                        className="flex items-center justify-center gap-2 px-2 py-1 rounded-full border border-transparent hover:border-border transition-colors"
-                                    >
-                                        <div className="w-8 h-8 rounded-full overflow-hidden border border-border dark:border-border">
-                                            {user?.profileImage ? (
-                                                <img src={user.profileImage} alt="User" className="w-full h-full object-cover" />
-                                            ) : (
-                                                <div className="w-full h-full bg-primary flex items-center justify-center text-text-onDark font-bold">
-                                                    {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <span className="hidden lg:block text-sm font-semibold text-text-primary dark:text-text-onDark uppercase max-w-[120px] truncate">
-                                            {user?.fullName || 'USER'}
-                                        </span>
-                                        <ChevronDown size={16} className={`hidden lg:block text-text-secondary transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} />
-                                    </button>
-
-                                    {/* User Dropdown */}
-                                    <AnimatePresence>
-                                        {isUserMenuOpen && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                transition={{ duration: 0.15 }}
-                                                className="absolute right-0 mt-3 w-64 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-border dark:border-border overflow-hidden z-50"
-                                            >
-                                                <div className="py-2">
-                                                    {(isAdmin || isSeller || isAgent || isCustomer) && (
-                                                        <>
-                                                            <div className="px-4 pt-2 pb-1 text-[11px] font-bold text-text-secondary uppercase tracking-wider">Dashboards</div>
-                                                            {isAdmin && <DropdownItem to="/admin/dashboard" icon={LayoutDashboard} label={t('admin_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                            {isSeller && <DropdownItem to="/seller/dashboard" icon={LayoutDashboard} label={t('seller_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                            {isAgent && <DropdownItem to="/agent/dashboard" icon={LayoutDashboard} label={t('agent_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                            {isCustomer && <DropdownItem to="/customer/dashboard" icon={LayoutDashboard} label={t('my_dashboard')} setIsUserMenuOpen={setIsUserMenuOpen} />}
-                                                            <div className="h-px bg-border dark:bg-border my-1"></div>
-                                                        </>
-                                                    )}
-                                                    
-                                                    <div className="px-4 pt-2 pb-1 text-[13px] font-bold text-text-primary dark:text-text-onDark">Your Account</div>
-                                                    
-                                                    <DropdownItem to="/profile" icon={User} label="My Profile" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/orders" icon={Package} label="Orders" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/coupons" icon={Ticket} label="Coupons" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/supercoin" icon={Coins} label="Supercoin" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/plus-zone" icon={Zap} label="UdraKala Plus Zone" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/wallet" icon={CreditCard} label="Saved Cards & Wallet" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/addresses" icon={MapPin} label="Saved Addresses" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/wishlist" icon={Heart} label="Wishlist" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/gift-cards" icon={Gift} label="Gift Cards" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    <DropdownItem to="/notifications" icon={Bell} label="Notifications" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                    
-                                                    <div className="h-px bg-border dark:bg-border my-1"></div>
-                                                    
-                                                    <DropdownItem onClick={handleLogout} icon={LogOut} label="Logout" setIsUserMenuOpen={setIsUserMenuOpen} className="!py-2" />
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
+                                <AccountDropdown user={user} menuItems={accountMenuItems} />
                             </>
                         )}
 
@@ -285,6 +269,12 @@ const CustomNavbar = () => {
                 )}
             </AnimatePresence>
         </nav>
+        
+        {/* Render category bar below the fixed nav (height 20 = 5rem = 80px) */}
+        <div className="pt-20">
+            <CategoryNavBar categories={CATEGORY_ITEMS} />
+        </div>
+        </>
     );
 };
 
