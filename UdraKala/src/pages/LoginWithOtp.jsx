@@ -34,13 +34,13 @@ const LoginWithOtp = () => {
         let identifier;
         if (loginType === 'EMAIL') {
             if (!email.trim()) {
-                Swal.fire({ text: 'Please enter your email', icon: 'warning', confirmButtonColor: '#5747C7' });
+                Swal.fire({ text: 'Please enter your email', icon: 'warning', confirmButtonColor: '#B91C1C' });
                 return;
             }
             identifier = email;
         } else {
             if (!mobile.trim() || mobile.length < 10) {
-                Swal.fire({ text: 'Please enter a valid mobile number', icon: 'warning', confirmButtonColor: '#5747C7' });
+                Swal.fire({ text: 'Please enter a valid mobile number', icon: 'warning', confirmButtonColor: '#B91C1C' });
                 return;
             }
             identifier = mobile;
@@ -58,13 +58,13 @@ const LoginWithOtp = () => {
             Swal.fire({
                 text: `OTP sent to your ${loginType === 'EMAIL' ? 'email' : 'mobile number'}`,
                 icon: 'success',
-                confirmButtonColor: '#5747C7',
+                confirmButtonColor: '#B91C1C',
                 timer: 1500
             });
         } catch (err) {
             const msg = err.response?.data?.message || 'Failed to send OTP';
             // Check for cooldown message to update timer if needed, though server checks it too
-            Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#5747C7' });
+            Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#B91C1C' });
         } finally {
             setLoading(false);
         }
@@ -73,7 +73,7 @@ const LoginWithOtp = () => {
     const handleVerifyOtp = async (e) => {
         e.preventDefault();
         if (!otp.trim() || otp.length !== 6) {
-            Swal.fire({ text: 'Invalid OTP', icon: 'warning', confirmButtonColor: '#5747C7' });
+            Swal.fire({ text: 'Invalid OTP', icon: 'warning', confirmButtonColor: '#B91C1C' });
             return;
         }
 
@@ -105,7 +105,7 @@ const LoginWithOtp = () => {
 
         } catch (err) {
             const msg = err.response?.data?.message || 'Invalid OTP';
-            Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#5747C7' });
+            Swal.fire({ text: msg, icon: 'error', confirmButtonColor: '#B91C1C' });
             if (msg.includes('exceeded')) {
                 setStep(1);
                 setOtp('');
@@ -188,7 +188,7 @@ const LoginWithOtp = () => {
                             <button
                                 type="submit"
                                 disabled={loading || cooldown > 0}
-                                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-text-onDark font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-text-onPrimary font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                                 {loading ? 'Sending...' : cooldown > 0 ? `Resend OTP in ${cooldown}s` : 'Send OTP'}
                             </button>
@@ -215,7 +215,7 @@ const LoginWithOtp = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-text-onDark font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 transition-all"
+                                className="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-text-onPrimary font-bold py-3 rounded-xl shadow-lg disabled:opacity-50 transition-all"
                             >
                                 {loading ? 'Verifying...' : 'Verify & Login'}
                             </button>

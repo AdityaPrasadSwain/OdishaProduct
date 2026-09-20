@@ -69,7 +69,7 @@ const ProductCard = ({ product }) => {
                     {product.stockQuantity > 0 && (
                         <button 
                             onClick={handleAddToCart}
-                            className="w-10 h-10 rounded-full bg-bg-band dark:bg-bg-dark flex items-center justify-center shadow-md text-primary hover:bg-primary hover:text-text-onDark transition-colors"
+                            className="w-10 h-10 rounded-full bg-bg-band dark:bg-bg-dark flex items-center justify-center shadow-md text-primary hover:bg-primary hover:text-text-onPrimary transition-colors"
                             aria-label="Add to cart"
                         >
                             <ShoppingBag size={18} />

@@ -43,7 +43,7 @@ const sendEmailWrapper = async (templateId, params, recipientEmail = null) => {
             icon: 'warning',
             title: 'No Internet',
             text: 'No internet connection. Please check your network.',
-            confirmButtonColor: '#5747C7',
+            confirmButtonColor: '#B91C1C',
             showCancelButton: true,
             confirmButtonText: 'Retry',
             cancelButtonText: 'Close'
@@ -74,7 +74,7 @@ const sendEmailWrapper = async (templateId, params, recipientEmail = null) => {
             icon: 'error',
             title: 'Invalid Email',
             text: 'Email address does not exist or is invalid. Please check and try again.',
-            confirmButtonColor: '#5747C7'
+            confirmButtonColor: '#B91C1C'
         });
         return { success: false, error: 'INVALID_EMAIL' };
     }
@@ -113,7 +113,7 @@ const sendEmailWrapper = async (templateId, params, recipientEmail = null) => {
             icon: 'error',
             title: 'Email Failed',
             text: uiMessage,
-            confirmButtonColor: '#5747C7'
+            confirmButtonColor: '#B91C1C'
         };
 
         // Allow Retry for non-config errors

@@ -18,7 +18,7 @@ const PublicLayout = () => {
             {/* Background Gradient Orbs */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 dark:bg-primary/5 blur-[120px] animate-float"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-accent-tealBg-500/10 dark:bg-accent-tealBg-500/5 blur-[120px] animate-float" style={{ animationDelay: '2s' }}></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/10 dark:bg-secondary/5 blur-[120px] animate-float" style={{ animationDelay: '2s' }}></div>
             </div>
 
             <Navbar />

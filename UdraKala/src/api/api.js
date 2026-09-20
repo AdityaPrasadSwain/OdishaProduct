@@ -39,7 +39,7 @@ API.interceptors.response.use(
   (response) => response,
   async (error) => {
     let normalizedError = {
-      errorCode: "INTERNAL_ERROR",
+      error: "INTERNAL_ERROR",
       message: "Something went wrong on our end. Please try again in a few moments.",
       fieldErrors: null
     };
@@ -48,12 +48,12 @@ API.interceptors.response.use(
       console.error(`[API Error] ${error.response.status} - ${error.config?.url}`, error.response.data);
 
       // Extract standardized error format if available
-      if (error.response.data && error.response.data.errorCode) {
+      if (error.response.data && error.response.data.error) {
         normalizedError = { ...error.response.data };
       } else if (error.response.data && error.response.data.message) {
         // Fallback for any lingering legacy errors
         normalizedError.message = error.response.data.message;
-        if (error.response.status === 401 || error.response.status === 403) normalizedError.errorCode = "ACCESS_DENIED";
+        if (error.response.status === 401 || error.response.status === 403) normalizedError.error = "ACCESS_DENIED";
       }
 
       // Global 401/403 Handler (only redirect if it's not an auth flow like login/register)
@@ -64,7 +64,7 @@ API.interceptors.response.use(
     } else {
       console.error(`[Network Error]`, error.message);
       normalizedError = {
-        errorCode: "NETWORK_ERROR",
+        error: "NETWORK_ERROR",
         message: "Couldn't connect. Check your internet connection and try again.",
         fieldErrors: null
       };

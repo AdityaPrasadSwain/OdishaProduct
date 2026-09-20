@@ -75,7 +75,7 @@ public class CustomerController {
             response.put("status", "SUCCESS");
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -85,11 +85,10 @@ public class CustomerController {
     @GetMapping("/sellers/{id}/profile")
     public ResponseEntity<?> getSellerProfile(@PathVariable UUID id) {
         User seller = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Seller not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
 
         if (seller.getRole() != Role.SELLER) {
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("User is not a seller. Actual Role: " + seller.getRole()));
+            throw new com.odisha.handloom.exception.InvalidRequestException("User is not a seller. Actual Role: " + seller.getRole());
         }
 
         // 1. Fetch Reels

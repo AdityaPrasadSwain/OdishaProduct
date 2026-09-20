@@ -8,12 +8,13 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: { DEFAULT: '#6C5CE7', hover: '#5747C7', light: '#ECEAFB' },
-                accent: { teal: '#14B8A6', tealBg: '#DFF5F1' },
-                status: { success: '#14B8A6', warning: '#F5A623', error: '#E0455A', info: '#6C5CE7' },
-                bg: { page: '#F8F7FC', band: '#ECEAFB', surface: '#FFFFFF', dark: '#1B1A3A' },
-                text: { primary: '#14141F', secondary: '#6B7280', onDark: '#F4F3FB', onPrimary: '#FFFFFF' },
-                border: { DEFAULT: 'var(--color-border)' },
+                primary: { DEFAULT: '#B91C1C', hover: '#991B1B', light: '#FEE2E2' }, // Sambalpuri Red/Terracotta
+                secondary: { DEFAULT: '#0369A1', hover: '#0284C7', light: '#E0F2FE' }, // Deep Blue/Ikat
+                accent: { DEFAULT: '#D97706', hover: '#B45309', light: '#FEF3C7' }, // Golden/Brass
+                status: { success: '#16A34A', warning: '#F59E0B', error: '#DC2626', info: '#2563EB' },
+                bg: { page: '#FAFAFA', surface: '#FFFFFF', dark: '#111827', muted: '#F3F4F6', band: '#F3F4F6' },
+                text: { primary: '#111827', secondary: '#4B5563', muted: '#9CA3AF', onPrimary: '#FFFFFF', onDark: '#F9FAFB' },
+                border: { DEFAULT: '#E5E7EB', focus: '#B91C1C' },
             },
             fontFamily: {
                 sans: ['"Outfit"', '"Inter"', 'sans-serif'],

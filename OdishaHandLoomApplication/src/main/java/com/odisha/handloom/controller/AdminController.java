@@ -120,7 +120,7 @@ public class AdminController {
 
     @PutMapping("/sellers/{id}/approve")
     public ResponseEntity<?> approveSeller(@PathVariable UUID id) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        User seller = userRepository.findById(id).orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
         seller.setApproved(true);
         userRepository.save(seller);
 
@@ -137,7 +137,7 @@ public class AdminController {
 
     @PutMapping("/sellers/{id}/block")
     public ResponseEntity<?> blockSeller(@PathVariable UUID id) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        User seller = userRepository.findById(id).orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
         seller.setBlocked(true);
         userRepository.save(seller);
         return ResponseEntity.ok(new MessageResponse("Seller blocked successfully!"));
@@ -145,7 +145,7 @@ public class AdminController {
 
     @PutMapping("/sellers/{id}/unblock")
     public ResponseEntity<?> unblockSeller(@PathVariable UUID id) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        User seller = userRepository.findById(id).orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
         seller.setBlocked(false);
         userRepository.save(seller);
         return ResponseEntity.ok(new MessageResponse("Seller unblocked successfully!"));
@@ -153,7 +153,7 @@ public class AdminController {
 
     @PutMapping("/sellers/{id}/reject")
     public ResponseEntity<?> rejectSeller(@PathVariable UUID id, @RequestParam(required = false) String reason) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        User seller = userRepository.findById(id).orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
         seller.setApproved(false);
         userRepository.save(seller);
 
@@ -166,7 +166,7 @@ public class AdminController {
     @PutMapping("/products/{id}/approve")
     public ResponseEntity<?> approveProduct(@PathVariable UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: Product not found."));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Product", "id", id));
         product.setApproved(true);
         productRepository.save(product);
         return ResponseEntity.ok(new MessageResponse("Product approved successfully!"));
@@ -175,7 +175,7 @@ public class AdminController {
     @PutMapping("/products/{id}/unapprove")
     public ResponseEntity<?> unapproveProduct(@PathVariable UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: Product not found."));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Product", "id", id));
         product.setApproved(false);
         productRepository.save(product);
         return ResponseEntity.ok(new MessageResponse("Product unapproved successfully!"));
@@ -187,11 +187,10 @@ public class AdminController {
     @DeleteMapping("/products/{id}/reject")
     public ResponseEntity<?> rejectProduct(@PathVariable UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Error: Product not found."));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Product", "id", id));
 
         if (orderItemRepository.existsByProduct_Id(id)) {
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Cannot delete product. It is part of existing orders."));
+            throw new com.odisha.handloom.exception.ResourceInUseException("Product", "It is part of existing orders.");
         }
 
         productRepository.delete(product);
@@ -209,7 +208,7 @@ public class AdminController {
     @DeleteMapping("/sellers/{id}")
     @Transactional
     public ResponseEntity<?> deleteSeller(@PathVariable UUID id) {
-        User seller = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Error: Seller not found."));
+        User seller = userRepository.findById(id).orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Seller", "id", id));
 
         // Soft Delete Logic (Per User Request: "delete from frontend only not delete
         // permanently")
@@ -258,12 +257,11 @@ public class AdminController {
                             "<h1>Admin Report Test</h1><p>If you see this, the email service is working.</p>");
                     break;
                 default:
-                    return ResponseEntity.badRequest().body(new MessageResponse(
-                            "Invalid email type. Options: welcome, order, seller-return, admin-report"));
+                    throw new com.odisha.handloom.exception.InvalidRequestException("Invalid email type. Options: welcome, order, seller-return, admin-report");
             }
             return ResponseEntity.ok(new MessageResponse("Test email sent for type: " + type));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Failed to send email: " + e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Failed to send email: " + e.getMessage());
         }
     }
 }

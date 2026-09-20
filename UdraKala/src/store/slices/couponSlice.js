@@ -12,7 +12,7 @@ export const applyCoupon = createAsyncThunk(
             }
             return response;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to apply coupon');
+            return rejectWithValue(error);
         }
     }
 );
@@ -23,7 +23,7 @@ export const fetchAllCoupons = createAsyncThunk(
         try {
             return await couponApi.getAllCoupons();
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to fetch coupons');
+            return rejectWithValue(error);
         }
     }
 );
@@ -34,7 +34,7 @@ export const createCoupon = createAsyncThunk(
         try {
             return await couponApi.createCoupon(data);
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to create coupon');
+            return rejectWithValue(error);
         }
     }
 );
@@ -45,7 +45,7 @@ export const updateCoupon = createAsyncThunk(
         try {
             return await couponApi.updateCoupon(id, data);
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to update coupon');
+            return rejectWithValue(error);
         }
     }
 );
@@ -56,7 +56,7 @@ export const toggleCouponStatus = createAsyncThunk(
         try {
             return await couponApi.toggleStatus(id);
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to toggle status');
+            return rejectWithValue(error);
         }
     }
 );
@@ -68,7 +68,7 @@ export const deleteCoupon = createAsyncThunk(
             await couponApi.deleteCoupon(id);
             return id;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || 'Failed to delete coupon');
+            return rejectWithValue(error);
         }
     }
 );

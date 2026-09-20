@@ -12,7 +12,7 @@ import java.util.Map;
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private int status;
-    private String errorCode;
+    private String error;
     private String message;
     private String path;
     private List<Map<String, String>> fieldErrors;

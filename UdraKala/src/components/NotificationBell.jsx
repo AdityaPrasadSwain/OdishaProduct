@@ -127,14 +127,14 @@ const NotificationBell = () => {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden border border-border dark:border-border origin-top-right transform transition-all">
+                <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-bg-surface/90 dark:bg-bg-dark/90 backdrop-blur-xl rounded-2xl shadow-glass dark:shadow-glass-dark z-50 overflow-hidden border border-white/20 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5 origin-top-right transform transition-all">
                     {/* Header */}
-                    <div className="px-4 py-3 border-b dark:border-border bg-bg-page dark:bg-bg-dark flex justify-between items-center sticky top-0 z-10">
-                        <h3 className="text-sm font-bold text-text-primary dark:text-text-secondary">Notifications</h3>
+                    <div className="px-5 py-4 border-b border-border/50 dark:border-white/10 bg-bg-surface/50 dark:bg-bg-dark/50 flex justify-between items-center sticky top-0 z-10 backdrop-blur-md">
+                        <h3 className="text-[15px] font-bold text-text-primary dark:text-text-onDark tracking-tight">Notifications</h3>
                         {unreadCount > 0 && (
                             <button
                                 onClick={markAllAsRead}
-                                className="text-xs flex items-center gap-1 text-primary hover:text-primary font-semibold px-2 py-1 rounded hover:bg-bg-band dark:hover:bg-bg-dark transition-colors"
+                                className="text-[13px] flex items-center gap-1.5 text-primary hover:text-primary-dark font-bold px-3 py-1.5 rounded-full hover:bg-bg-band dark:hover:bg-primary/10 transition-colors"
                             >
                                 <CheckCheck size={14} />
                                 Mark all read
@@ -145,13 +145,13 @@ const NotificationBell = () => {
                     {/* List */}
                     <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                         {notifications.length > 0 ? (
-                            <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+                            <ul className="divide-y divide-border/30 dark:divide-white/5">
                                 {notifications.map((notification) => (
                                     <li
                                         key={notification.id}
                                         onClick={() => markAsRead(notification)}
-                                        className={`px-4 py-3 hover:bg-bg-page dark:hover:bg-gray-750 cursor-pointer transition-colors border-l-4 ${!notification.isRead
-                                            ? 'border-primary bg-bg-band/30 dark:bg-primary-hover/10'
+                                        className={`px-5 py-4 hover:bg-bg-band/50 dark:hover:bg-white/5 cursor-pointer transition-colors border-l-4 ${!notification.isRead
+                                            ? 'border-primary bg-bg-band/20 dark:bg-primary/5'
                                             : 'border-transparent'
                                             }`}
                                     >

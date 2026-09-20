@@ -85,25 +85,25 @@ const CustomerDashboard = () => {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col gap-6 border-b border-border dark:border-border pb-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-dark dark:text-text-onDark">Welcome back, {user?.fullName}</h2>
-                    <p className="text-muted text-sm">Manage your orders and preferences</p>
+                    <h2 className="text-3xl font-serif font-bold text-text-primary dark:text-text-onDark">Welcome back, {user?.fullName}</h2>
+                    <p className="text-muted text-sm mt-1">Manage your orders, wishlist, and profile preferences</p>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex bg-bg-surface dark:bg-bg-dark p-1 rounded-lg border border-border dark:border-border shadow-sm overflow-x-auto w-fit">
+                {/* Modern Tabs */}
+                <div className="flex gap-6 overflow-x-auto no-scrollbar">
                     {tabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 whitespace-nowrap
+                            className={`pb-2 text-sm font-semibold transition-all flex items-center gap-2 whitespace-nowrap border-b-2
                                 ${activeTab === tab.id
-                                    ? 'bg-primary text-text-onDark shadow-md'
-                                    : 'text-text-secondary hover:text-text-primary dark:text-text-secondary dark:hover:text-text-onDark hover:bg-bg-band dark:hover:bg-bg-dark'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-text-secondary hover:text-text-primary dark:hover:text-text-onDark'
                                 }`}
                         >
-                            <tab.icon size={16} /> {tab.label}
+                            <tab.icon size={18} className={activeTab === tab.id ? 'text-primary' : 'text-text-muted'} /> {tab.label}
                         </button>
                     ))}
                 </div>
@@ -122,15 +122,15 @@ const CustomerDashboard = () => {
                     {activeTab === 'orders' && (
                         <Motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                             {myOrders.length === 0 ? (
-                                <Card className="text-center py-12">
-                                    <div className="flex flex-col items-center">
-                                        <div className="h-16 w-16 bg-bg-band dark:bg-bg-dark rounded-full flex items-center justify-center mb-4">
-                                            <Package className="h-8 w-8 text-text-secondary ml-4" />
+                                <Card className="text-center py-20 border-dashed border-2 border-border/60">
+                                    <div className="flex flex-col items-center max-w-sm mx-auto">
+                                        <div className="h-24 w-24 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                                            <Package className="h-12 w-12 text-primary" />
                                         </div>
-                                        <h3 className="text-lg font-semibold text-text-primary dark:text-text-onDark">No orders yet</h3>
-                                        <p className="text-text-secondary dark:text-text-secondary mt-1 mb-6">Start shopping to see your orders here.</p>
+                                        <h3 className="text-2xl font-bold text-text-primary dark:text-text-onDark">No orders yet</h3>
+                                        <p className="text-text-secondary mt-3 mb-8 leading-relaxed">Looks like you haven't made your first purchase yet. Explore our handcrafted collection and find something special!</p>
                                         <Link to="/products">
-                                            <Button>Browse Products</Button>
+                                            <Button className="w-full sm:w-auto shadow-glow-primary">Start Shopping</Button>
                                         </Link>
                                     </div>
                                 </Card>
@@ -235,7 +235,7 @@ const CustomerDashboard = () => {
                                         <div className="h-20 w-20 bg-red-50 dark:bg-status-error/10 rounded-full flex items-center justify-center mb-6">
                                             <Heart size={32} className="text-danger" />
                                         </div>
-                                        <h3 className="text-xl font-bold text-dark dark:text-text-onDark">Your wishlist is empty</h3>
+                                        <h3 className="text-xl font-bold text-text-primary dark:text-text-onDark">Your wishlist is empty</h3>
                                         <p className="text-muted mt-2 mb-8 max-w-md mx-auto">Heart items you love to save them for later!</p>
                                         <Link to="/products">
                                             <Button>Explore Products</Button>
@@ -255,33 +255,40 @@ const CustomerDashboard = () => {
 
                 {/* Right Sidebar: Recommendations */}
                 <div className="lg:col-span-1 space-y-6">
-                    <Card title="Recommended" className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-dark-light dark:to-dark border-primary dark:border-dark-light">
+                    <Card title="Recommended for You" className="bg-bg-surface dark:bg-bg-dark border border-border shadow-sm">
                         <div className="space-y-4">
                             {recommendedProducts.map((p, i) => (
                                 <Link to={`/product/${p.id}`} key={p.id} className="block group">
-                                    <div className="flex gap-3 items-center p-2 rounded-lg hover:bg-bg-surface/60 dark:hover:bg-dark/60 transition-colors">
-                                        <div className="h-12 w-12 rounded-md bg-bg-surface overflow-hidden shadow-sm flex-shrink-0">
-                                            <img src={p.images?.[0]?.imagePath || '/placeholder.png'} className="h-full w-full object-cover" />
+                                    <div className="flex gap-4 items-center p-2 rounded-xl hover:bg-bg-muted dark:hover:bg-white/5 transition-colors">
+                                        <div className="h-16 w-16 rounded-lg bg-bg-muted overflow-hidden shadow-sm flex-shrink-0 border border-border">
+                                            <img src={p.images?.[0]?.imagePath || '/placeholder.png'} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="font-medium text-sm text-dark dark:text-text-onDark truncate group-hover:text-primary transition-colors">{p.name}</p>
-                                            <p className="text-xs text-primary font-bold">₹{p.price}</p>
+                                            <p className="font-semibold text-sm text-text-primary dark:text-text-onDark truncate group-hover:text-primary transition-colors">{p.name}</p>
+                                            <p className="text-sm font-bold text-primary mt-1">₹{p.price}</p>
                                         </div>
                                     </div>
-                                    {i < recommendedProducts.length - 1 && <div className="h-px bg-bg-dark/5 dark:bg-bg-surface/5 my-2" />}
                                 </Link>
                             ))}
                             {recommendedProducts.length === 0 && <p className="text-sm text-muted">No recommendations available.</p>}
                         </div>
                     </Card>
 
-                    <Card className="bg-primary/5 border-primary/10">
-                        <div className="text-center p-4">
-                            <Sparkles className="h-8 w-8 text-primary mx-auto mb-2" />
-                            <h4 className="font-bold text-dark dark:text-text-onDark">Become a Seller!</h4>
-                            <p className="text-xs text-muted mt-1 mb-3">Sell your own products on UdraKala and reach millions.</p>
+                    <Card className="bg-gradient-to-br from-primary to-primary-hover text-text-onPrimary border-none shadow-glow-primary overflow-hidden relative">
+                        {/* Decorative circles */}
+                        <div className="absolute -top-12 -right-12 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                        <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-black/10 rounded-full blur-2xl"></div>
+                        
+                        <div className="relative z-10 text-center py-4">
+                            <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-white/20 mb-4 backdrop-blur-md">
+                                <Sparkles className="h-6 w-6 text-white" />
+                            </div>
+                            <h4 className="font-bold text-xl mb-2">Become a Seller!</h4>
+                            <p className="text-sm text-white/80 mb-6 px-2">Join UdraKala and showcase your traditional products to millions of buyers worldwide.</p>
                             <Link to="/register?role=seller">
-                                <Button size="sm" variant="outline" className="w-full bg-bg-surface dark:bg-dark hover:bg-bg-page">Register as Seller</Button>
+                                <Button size="sm" className="w-full bg-white text-primary hover:bg-white/90 shadow-lg">
+                                    Register as Seller
+                                </Button>
                             </Link>
                         </div>
                     </Card>

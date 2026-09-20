@@ -113,7 +113,7 @@ const Register = () => {
                 text: validationError,
                 icon: 'error',
                 confirmButtonText: 'Fix Now',
-                confirmButtonColor: '#5747C7' // Orange-600 to match theme
+                confirmButtonColor: '#B91C1C' // Sambalpuri Red to match theme
             });
             return;
         }
@@ -168,7 +168,7 @@ const Register = () => {
                     text: err.message || "Something went wrong. Please try again later.",
                     icon: 'error',
                     confirmButtonText: 'Try Again',
-                    confirmButtonColor: '#5747C7'
+                    confirmButtonColor: '#B91C1C'
                 });
             }
         } finally {
@@ -215,7 +215,7 @@ const Register = () => {
                                         )}
                                     </div>
                                     <div className="absolute inset-0 rounded-full bg-bg-dark/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <span className="text-text-onDark text-xs font-bold">Change</span>
+                                        <span className="text-text-onPrimary text-xs font-bold">Change</span>
                                     </div>
                                 </label>
                                 <input
@@ -291,7 +291,7 @@ const Register = () => {
 
                         {/* Seller Details removed - moved to separate flow */}
 
-                        <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-hover text-text-onDark font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
+                        <button type="submit" disabled={loading} className="w-full bg-primary hover:bg-primary-hover text-text-onPrimary font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed text-lg">
                             {loading ? 'Creating Account...' : 'Create Account'}
                         </button>
 

@@ -6,6 +6,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import udraKalaLogo from '../../assets/logo.jpg';
 import NotificationBell from '../../components/common/NotificationBell';
+import AccountDropdown from '../../components/AccountDropdown';
+import { useAccountMenuItems } from '../../hooks/useAccountMenuItems';
 
 const Header = () => {
     const { theme, toggleTheme } = useTheme();
@@ -13,17 +15,6 @@ const Header = () => {
     const { cart } = useData();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const userMenuRef = useRef(null);
-
-    // Close user menu when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-                setIsUserMenuOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
 
     // Determine dashboard path based on role
     const getDashboardPath = () => {
@@ -36,6 +27,8 @@ const Header = () => {
         if (user?.roles?.includes('ROLE_ADMIN')) return '/admin/analytics';
         return '/admin/analytics';
     };
+
+    const headerMenuItems = useAccountMenuItems(logout);
 
     return (
         <header className="sticky top-0 z-40 bg-bg-surface/80 dark:bg-bg-dark/80 backdrop-blur-xl border-b border-border/50 dark:border-transparent dark:shadow-xl dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] px-4 md:px-8 h-16 flex items-center justify-between transition-all duration-300 shadow-sm">
@@ -100,65 +93,7 @@ const Header = () => {
                     <NotificationBell />
 
                     {/* Profile & Account Menu */}
-                    <div className="relative" ref={userMenuRef}>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setIsUserMenuOpen(prev => !prev)}
-                            className="flex items-center justify-center h-9 w-9 sm:h-10 sm:w-10 rounded-full focus:outline-none border-2 border-transparent focus:border-primary transition-all shadow-sm"
-                        >
-                            {user?.profileImage ? (
-                                <img
-                                    className="w-full h-full rounded-full object-cover"
-                                    src={user.profileImage}
-                                    alt="user photo"
-                                    onError={(e) => { e.target.onerror = null; e.target.src = '/default_profile.jpg'; }}
-                                />
-                            ) : (
-                                <div className="w-full h-full rounded-full flex items-center justify-center text-sm font-bold text-text-onDark bg-gradient-to-br from-primary-400 to-primary-600">
-                                    {(user?.fullName?.charAt(0) || user?.name?.charAt(0) || "U").toUpperCase()}
-                                </div>
-                            )}
-                        </motion.button>
-
-                        {/* Dropdown Menu */}
-                        <AnimatePresence>
-                            {isUserMenuOpen && (
-                                <motion.div 
-                                    key="user-menu"
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute right-0 mt-3 w-56 bg-bg-surface/95 dark:bg-bg-dark/95 backdrop-blur-xl border border-border dark:border-border rounded-2xl shadow-xl origin-top-right z-50 overflow-hidden"
-                                >
-                                    <div className="px-4 py-3 bg-gradient-to-b from-gray-50 to-white dark:from-secondary-800 dark:to-secondary-800/90 border-b border-border dark:border-border">
-                                        <span className="block text-sm text-text-primary dark:text-text-onDark font-bold truncate">{user?.fullName || user?.name || "Profile"}</span>
-                                        <span className="block text-xs text-text-secondary truncate dark:text-text-secondary mt-1">{user?.email || "user@example.com"}</span>
-                                    </div>
-                                    <div className="py-2">
-                                        <a href={getDashboardPath()} className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark/50 hover:text-primary dark:hover:text-primary transition-colors">
-                                            <LayoutDashboard size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">Dashboard</span>
-                                        </a>
-                                        <button className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark/50 hover:text-primary dark:hover:text-primary transition-colors">
-                                            <Settings size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">Settings</span>
-                                        </button>
-                                    </div>
-                                    <div className="p-2 border-t border-border dark:border-border bg-bg-page dark:bg-bg-dark/50">
-                                        <button 
-                                            onClick={() => { setIsUserMenuOpen(false); logout(); }} 
-                                            className="flex items-center px-4 py-2.5 text-sm w-full text-status-error dark:text-red-400 hover:bg-red-50 dark:hover:text-status-error/20 rounded-xl transition-colors"
-                                        >
-                                            <LogOut size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">Logout</span>
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <AccountDropdown user={user} menuItems={headerMenuItems} />
                 </div>
             </div>
         </header>

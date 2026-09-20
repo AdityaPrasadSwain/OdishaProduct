@@ -38,7 +38,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public CouponDto createCoupon(CouponDto couponDto) {
         if (couponRepository.existsByCode(couponDto.getCode())) {
-            throw new RuntimeException("Coupon code already exists");
+            throw new com.odisha.handloom.exception.DuplicateResourceException("Coupon", "code", couponDto.getCode());
         }
 
         Coupon coupon = Coupon.builder()
@@ -64,7 +64,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public CouponDto updateCoupon(UUID id, CouponDto couponDto) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "id", id));
 
         if (couponDto.getDescription() != null)
             coupon.setDescription(couponDto.getDescription());
@@ -99,7 +99,7 @@ public class CouponServiceImpl implements CouponService {
     public CouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
                 .map(this::mapToDto)
-                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "id", id));
     }
 
     @Override
@@ -113,7 +113,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public CouponDto toggleCouponStatus(UUID id) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "id", id));
         coupon.setIsActive(!coupon.getIsActive());
         return mapToDto(couponRepository.save(coupon));
     }
@@ -121,7 +121,7 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public Map<String, Object> getCouponStats(UUID id) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "id", id));
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsage", coupon.getGlobalUsageCount());
         stats.put("remainingUsage", coupon.getGlobalUsageLimit() - coupon.getGlobalUsageCount());
@@ -132,7 +132,7 @@ public class CouponServiceImpl implements CouponService {
     public CouponValidationResponse applyCoupon(ApplyCouponRequest request, UUID userId) {
         try {
             Coupon coupon = couponRepository.findByCode(request.getCouponCode().toUpperCase())
-                    .orElseThrow(() -> new RuntimeException("Invalid coupon code"));
+                    .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "code", request.getCouponCode()));
 
             validateCouponRules(coupon, request.getOrderAmount(), userId);
 
@@ -150,6 +150,14 @@ public class CouponServiceImpl implements CouponService {
                     .finalAmount(finalAmount)
                     .build();
 
+        } catch (com.odisha.handloom.exception.ApiException e) {
+            return CouponValidationResponse.builder()
+                    .valid(false)
+                    .message(e.getMessage())
+                    .discountAmount(BigDecimal.ZERO)
+                    .originalAmount(request.getOrderAmount())
+                    .finalAmount(request.getOrderAmount())
+                    .build();
         } catch (RuntimeException e) {
             return CouponValidationResponse.builder()
                     .valid(false)
@@ -165,7 +173,7 @@ public class CouponServiceImpl implements CouponService {
     @Transactional
     public void recordCouponUsage(String code, Order order, User user) {
         Coupon coupon = couponRepository.findByCode(code)
-                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "code", code));
 
         coupon.setGlobalUsageCount(coupon.getGlobalUsageCount() + 1);
 
@@ -193,9 +201,9 @@ public class CouponServiceImpl implements CouponService {
     public boolean isCouponValidForUser(String code, UUID userId) {
         try {
             Coupon coupon = couponRepository.findByCode(code)
-                    .orElseThrow(() -> new RuntimeException("Invalid code"));
+                    .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Coupon", "code", code));
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("User", "id", userId));
 
             checkUsageLimits(coupon, user);
             return true;
@@ -207,19 +215,19 @@ public class CouponServiceImpl implements CouponService {
     // Helpers
     private void validateCouponRules(Coupon coupon, BigDecimal orderAmount, UUID userId) {
         if (!coupon.getIsActive())
-            throw new RuntimeException("Coupon is inactive");
+            throw new com.odisha.handloom.exception.InvalidRequestException("Coupon is inactive");
         if (LocalDateTime.now().isBefore(coupon.getStartDate()))
-            throw new RuntimeException("Coupon is not yet active");
+            throw new com.odisha.handloom.exception.InvalidRequestException("Coupon is not yet active");
         if (LocalDateTime.now().isAfter(coupon.getExpiryDate()))
-            throw new RuntimeException("Coupon has expired");
+            throw new com.odisha.handloom.exception.InvalidRequestException("Coupon has expired");
         if (coupon.getGlobalUsageCount() >= coupon.getGlobalUsageLimit())
-            throw new RuntimeException("Coupon usage limit reached");
+            throw new com.odisha.handloom.exception.InvalidRequestException("Coupon usage limit reached");
         if (orderAmount.compareTo(coupon.getMinOrderAmount()) < 0)
-            throw new RuntimeException("Minimum order amount not reached. Min: " + coupon.getMinOrderAmount());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Minimum order amount not reached. Min: " + coupon.getMinOrderAmount());
 
         if (userId != null) {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+                    .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("User", "id", userId));
             checkUsageLimits(coupon, user);
         }
     }
@@ -227,7 +235,7 @@ public class CouponServiceImpl implements CouponService {
     private void checkUsageLimits(Coupon coupon, User user) {
         long userUsage = couponUsageRepository.countByCouponAndUser(coupon, user);
         if (userUsage >= coupon.getUsageLimitPerUser()) {
-            throw new RuntimeException("You have reached the usage limit for this coupon");
+            throw new com.odisha.handloom.exception.InvalidRequestException("You have reached the usage limit for this coupon");
         }
     }
 

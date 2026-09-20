@@ -46,9 +46,9 @@ public class OrderController {
             response.put("status", "SUCCESS");
             return ResponseEntity.ok(response);
         } catch (org.springframework.orm.ObjectOptimisticLockingFailureException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("One or more items in your cart just went out of stock! Please refresh."));
+            throw new com.odisha.handloom.exception.InvalidRequestException("One or more items in your cart just went out of stock! Please refresh.");
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class OrderController {
             orderService.cancelOrder(id, customer.getId());
             return ResponseEntity.ok(new MessageResponse("Order cancelled successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -76,7 +76,7 @@ public class OrderController {
             orderService.cancelOrderItems(id, customer.getId(), itemIds);
             return ResponseEntity.ok(new MessageResponse("Selected items cancelled successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -138,7 +138,7 @@ public class OrderController {
             orderService.requestReturn(id, customer.getId());
             return ResponseEntity.ok(new MessageResponse("Return requested successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -152,7 +152,7 @@ public class OrderController {
             orderService.requestReplacement(id, customer.getId());
             return ResponseEntity.ok(new MessageResponse("Replacement requested successfully"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException(e.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class OrderController {
         boolean isSeller = order.getSeller().getId().equals(currentUser.getId());
 
         if (!isOwner && !isSeller) {
-            return ResponseEntity.status(403).build();
+            throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("download invoice", "User does not have permission");
         }
 
         byte[] pdfBytes = invoiceService.generateInvoice(order);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { LayoutDashboard, Users, Package, Grid, Ticket, RotateCcw, Settings, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Users, Package, Grid, Ticket, RotateCcw, Settings, ShieldCheck, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AdminSidebar = ({ activeTab, setActiveTab }) => {

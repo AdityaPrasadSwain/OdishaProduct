@@ -11,8 +11,8 @@ const Card = ({ children, title, className = "", action }) => {
             className={`bg-bg-surface dark:bg-bg-dark p-6 rounded-2xl shadow-sm dark:shadow-lg dark:shadow-black/50 hover:shadow-xl hover:dark:shadow-2xl hover:dark:shadow-black/60 border border-border dark:border-transparent transition-all duration-300 ${className}`}
         >
             {(title || action) && (
-                <div className="flex justify-between items-center mb-4">
-                    {title && <h3 className="text-lg font-semibold text-dark dark:text-text-onDark">{title}</h3>}
+                <div className="flex justify-between items-center mb-4 relative z-10">
+                    {title && <h3 className="text-lg font-bold text-text-primary dark:text-text-onDark tracking-tight">{title}</h3>}
                     {action && <div>{action}</div>}
                 </div>
             )}

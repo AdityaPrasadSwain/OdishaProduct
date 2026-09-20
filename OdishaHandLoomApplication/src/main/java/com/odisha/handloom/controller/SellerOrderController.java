@@ -55,7 +55,7 @@ public class SellerOrderController {
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
             if (!order.getSeller().getId().equals(seller.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized");
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Download Label", "Unauthorized");
             }
 
             // Generate Label
@@ -67,8 +67,7 @@ public class SellerOrderController {
                     .body(labelPdf);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error generating label: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error generating label: " + e.getMessage());
         }
     }
 
@@ -84,12 +83,12 @@ public class SellerOrderController {
 
             // Validation: Ensure seller owns the order
             if (!order.getSeller().getId().equals(seller.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to manage this order.");
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Send Invoice", "You are not authorized to manage this order.");
             }
 
             // Validation: Check if already sent
             if (order.isInvoiceSent()) {
-                return ResponseEntity.badRequest().body("Invoice already sent for this order.");
+                throw new com.odisha.handloom.exception.InvalidRequestException("Invoice already sent for this order.");
             }
 
             // Generate Invoice
@@ -119,8 +118,7 @@ public class SellerOrderController {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error sending invoice: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error sending invoice: " + e.getMessage());
         }
     }
 
@@ -135,11 +133,11 @@ public class SellerOrderController {
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
             if (!order.getSeller().getId().equals(seller.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized");
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Accept Order", "Unauthorized");
             }
 
             if (order.getStatus() != OrderStatus.PENDING) {
-                return ResponseEntity.badRequest().body("Order is not in PENDING state.");
+                throw new com.odisha.handloom.exception.InvalidRequestException("Order is not in PENDING state.");
             }
 
             // Update Status
@@ -163,8 +161,7 @@ public class SellerOrderController {
 
             return ResponseEntity.ok("Order accepted successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error accepting order: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error accepting order: " + e.getMessage());
         }
     }
 
@@ -179,11 +176,11 @@ public class SellerOrderController {
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
             if (!order.getSeller().getId().equals(seller.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized");
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Reject Order", "Unauthorized");
             }
 
             if (order.getStatus() != OrderStatus.PENDING) {
-                return ResponseEntity.badRequest().body("Order can only be rejected if PENDING.");
+                throw new com.odisha.handloom.exception.InvalidRequestException("Order can only be rejected if PENDING.");
             }
 
             // Restore Stock
@@ -201,8 +198,7 @@ public class SellerOrderController {
 
             return ResponseEntity.ok("Order rejected.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error rejecting order: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error rejecting order: " + e.getMessage());
         }
     }
 
@@ -218,18 +214,17 @@ public class SellerOrderController {
                     .orElseThrow(() -> new RuntimeException("Order not found"));
 
             if (!order.getSeller().getId().equals(seller.getId())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized");
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Pack Order", "Unauthorized");
             }
 
             if (order.getStatus() != OrderStatus.SELLER_CONFIRMED &&
                     order.getStatus() != OrderStatus.INVOICE_SENT &&
                     order.getStatus() != OrderStatus.CONFIRMED) {
-                return ResponseEntity.badRequest()
-                        .body("Order must be CONFIRMED, SELLER_CONFIRMED or INVOICE_SENT before packing.");
+                throw new com.odisha.handloom.exception.InvalidRequestException("Order must be CONFIRMED, SELLER_CONFIRMED or INVOICE_SENT before packing.");
             }
 
             if (!order.isInvoiceSent()) {
-                return ResponseEntity.badRequest().body("Please send invoice before packing.");
+                throw new com.odisha.handloom.exception.InvalidRequestException("Please send invoice before packing.");
             }
 
             order.setStatus(OrderStatus.PACKED);
@@ -239,8 +234,7 @@ public class SellerOrderController {
 
             return ResponseEntity.ok("Order marked as PACKED.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error marking as packed: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error marking as packed: " + e.getMessage());
         }
     }
 
@@ -255,14 +249,13 @@ public class SellerOrderController {
             java.util.List<Order> orders = orderRepository.findAllById(orderIds);
 
             if (orders.isEmpty()) {
-                return ResponseEntity.badRequest().body("No valid orders found.");
+                throw new com.odisha.handloom.exception.ResourceNotFoundException("Orders", "ids", orderIds.toString());
             }
 
             // Security: Ensure all orders belong to this seller
             for (Order o : orders) {
                 if (!o.getSeller().getId().equals(seller.getId())) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                            .body("Unauthorized access to one or more orders.");
+                    throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("Bulk Labels", "Unauthorized access to one or more orders.");
                 }
             }
 
@@ -276,8 +269,7 @@ public class SellerOrderController {
                     .body(bulkPdf);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error generating bulk labels: " + e.getMessage());
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error generating bulk labels: " + e.getMessage());
         }
     }
 }

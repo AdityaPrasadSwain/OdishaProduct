@@ -59,7 +59,7 @@ public class AuthController {
     @GetMapping("/login/otp-status")
     public ResponseEntity<?> getOtpStatus(@RequestParam String email) {
         if (email == null || email.isEmpty()) {
-            return ResponseEntity.badRequest().body(java.util.Map.of("message", "Email required"));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Email required");
         }
         return ResponseEntity.ok(otpService.getOtpStatus(email));
     }
@@ -73,8 +73,7 @@ public class AuthController {
         String identifier = "MOBILE".equals(loginType) ? mobile : email;
 
         if (identifier == null || identifier.isEmpty()) {
-            return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("success", false, "message", "Identifier required"));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Identifier required");
         }
 
         // 1. Check if user exists
@@ -99,10 +98,7 @@ public class AuthController {
             String msg = otpService.generateAndSendOtp(identifier, loginType);
             return ResponseEntity.ok(java.util.Map.of("success", true, "message", msg));
         } catch (Exception e) {
-            // "OTP service temporarily unavailable" for failure
-            // Catching generic Exception to prevent any JVM crash from propagating
-            return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("success", false, "message", "OTP service temporarily unavailable"));
+            throw new com.odisha.handloom.exception.InvalidRequestException("OTP service temporarily unavailable");
         }
     }
 
@@ -113,14 +109,13 @@ public class AuthController {
         String otpCode = request.getOtp();
 
         if (identifier == null || otpCode == null) {
-            return ResponseEntity.badRequest().body(java.util.Map.of("success", false, "message", "Missing fields"));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Missing fields");
         }
 
         String validationResult = otpService.validateOtp(identifier, loginType, otpCode);
 
         if (!"Success".equals(validationResult)) {
-            return ResponseEntity.badRequest()
-                    .body(java.util.Map.of("success", false, "message", validationResult));
+            throw new com.odisha.handloom.exception.InvalidRequestException(validationResult);
         }
 
         // Generate JWT
@@ -129,7 +124,7 @@ public class AuthController {
                 : userRepository.findByEmail(identifier).orElseThrow();
 
         if (user.isBlocked()) {
-            return ResponseEntity.status(401).body(new MessageResponse("Account blocked"));
+            throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("login", "Account blocked");
         }
 
         org.springframework.security.core.userdetails.UserDetails userDetails = org.springframework.security.core.userdetails.User
@@ -165,7 +160,7 @@ public class AuthController {
             // Check if user exists (Email or Phone)
             String identifier = loginRequest.getIdentifier();
             if (!userRepository.existsByEmail(identifier) && !userRepository.existsByPhoneNumber(identifier)) {
-                return ResponseEntity.badRequest().body(new MessageResponse("This User not Exist"));
+                throw new com.odisha.handloom.exception.InvalidRequestException("This User not Exist");
             }
 
             Authentication authentication = authenticationManager.authenticate(
@@ -186,8 +181,7 @@ public class AuthController {
 
             // Check if user is blocked
             if (user.isBlocked()) {
-                return ResponseEntity.status(401)
-                        .body(new MessageResponse("Your account has been blocked. Please contact support."));
+                throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("login", "Your account has been blocked. Please contact support.");
             }
 
             return ResponseEntity.ok(new JwtResponse(jwt,
@@ -213,10 +207,7 @@ public class AuthController {
             }
 
             if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "phoneNumber",
-                        "message", "This phone number is already registered."));
+                throw new com.odisha.handloom.exception.DuplicateResourceException("User", "phoneNumber", signUpRequest.getPhoneNumber());
             }
 
             // 2. Validate Account Type
@@ -224,10 +215,7 @@ public class AuthController {
             Role role;
 
             if (strRole == null) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "role",
-                        "message", "Please select an account type."));
+                throw new com.odisha.handloom.exception.InvalidRequestException("Please select an account type.");
             }
 
             try {
@@ -242,43 +230,25 @@ public class AuthController {
                 else
                     throw new IllegalArgumentException();
             } catch (Exception e) {
-                return ResponseEntity.badRequest().body(java.util.Map.of(
-                        "status", 400,
-                        "field", "role",
-                        "message", "Invalid account type selected."));
+                throw new com.odisha.handloom.exception.InvalidRequestException("Invalid account type selected.");
             }
 
             // 3. Conditional Seller Validation
             if (role == Role.SELLER) {
                 if (signUpRequest.getShopName() == null || signUpRequest.getShopName().isBlank()) {
-                    return ResponseEntity.badRequest().body(java.util.Map.of(
-                            "status", 400,
-                            "field", "shopName",
-                            "message", "Shop Name is required for seller accounts."));
+                    throw new com.odisha.handloom.exception.InvalidRequestException("Shop Name is required for seller accounts.");
                 }
                 if (signUpRequest.getGstNumber() == null || signUpRequest.getGstNumber().isBlank()) {
-                    return ResponseEntity.badRequest().body(java.util.Map.of(
-                            "status", 400,
-                            "field", "gstNumber",
-                            "message", "GST Number is required for seller accounts."));
+                    throw new com.odisha.handloom.exception.InvalidRequestException("GST Number is required for seller accounts.");
                 }
                 if (signUpRequest.getShopName().length() < 3) {
-                    return ResponseEntity.badRequest().body(java.util.Map.of(
-                            "status", 400,
-                            "field", "shopName",
-                            "message", "Shop Name must be at least 3 characters long."));
+                    throw new com.odisha.handloom.exception.InvalidRequestException("Shop Name must be at least 3 characters long.");
                 }
                 if (signUpRequest.getGstNumber().length() != 15) {
-                    return ResponseEntity.badRequest().body(java.util.Map.of(
-                            "status", 400,
-                            "field", "gstNumber",
-                            "message", "Please enter a valid GST Number."));
+                    throw new com.odisha.handloom.exception.InvalidRequestException("Please enter a valid GST Number.");
                 }
                 if (userRepository.existsByGstNumber(signUpRequest.getGstNumber())) {
-                    return ResponseEntity.badRequest().body(java.util.Map.of(
-                            "status", 400,
-                            "field", "gstNumber",
-                            "message", "This GST Number is already registered."));
+                    throw new com.odisha.handloom.exception.DuplicateResourceException("User", "gstNumber", signUpRequest.getGstNumber());
                 }
             }
 
@@ -332,21 +302,21 @@ public class AuthController {
             throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Registration failed", e);
+            throw new com.odisha.handloom.exception.InvalidRequestException("Registration failed: " + e.getMessage());
         }
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(401).body(new MessageResponse("User not authenticated"));
+            throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("authenticate", "User not authenticated");
         }
 
         org.springframework.security.core.userdetails.User userDetails = (org.springframework.security.core.userdetails.User) authentication
                 .getPrincipal();
 
         User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("Error: User not found."));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("User", "email", userDetails.getUsername()));
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import usePersistedState from '../hooks/usePersistedState';
 import API from '../api/api';
 import Swal from 'sweetalert2';
 
@@ -9,7 +10,7 @@ export const DataContext = createContext(null);
 export const DataProvider = ({ children }) => {
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState([]);
+    const [cart, setCart, clearCartStorage] = usePersistedState('cart', [], 'local', 7 * 24 * 60 * 60 * 1000);
     const [loading, setLoading] = useState(true);
 
     // Fetch categories on mount
@@ -45,23 +46,6 @@ export const DataProvider = ({ children }) => {
 
     // --- Cart Logic ---
 
-    // Load cart from localStorage on mount
-    useEffect(() => {
-        const savedCart = localStorage.getItem('cart');
-        if (savedCart) {
-            try {
-                setCart(JSON.parse(savedCart));
-            } catch (e) {
-                console.error("Failed to parse cart", e);
-            }
-        }
-    }, []);
-
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        localStorage.setItem('cart', JSON.stringify(cart));
-    }, [cart]);
-
     // Handle login merge cart
     useEffect(() => {
         const handleLogin = async () => {
@@ -69,7 +53,8 @@ export const DataProvider = ({ children }) => {
             let guestItems = [];
             if (savedCart) {
                 try {
-                    const guestCart = JSON.parse(savedCart);
+                    const parsedCart = JSON.parse(savedCart);
+                    const guestCart = parsedCart.value || [];
                     guestItems = guestCart.map(item => ({ productId: item.id, quantity: item.quantity }));
                 } catch (e) {}
             }
@@ -96,22 +81,6 @@ export const DataProvider = ({ children }) => {
 
         window.addEventListener('auth:login', handleLogin);
         return () => window.removeEventListener('auth:login', handleLogin);
-    }, []);
-
-    // Listen for storage changes (Multi-tab persistence)
-    useEffect(() => {
-        const handleStorageChange = (e) => {
-            if (e.key === 'cart') {
-                try {
-                    setCart(JSON.parse(e.newValue) || []);
-                } catch (err) {
-                    console.error("Failed to sync cart from storage", err);
-                }
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
     const addToCart = (product) => {
@@ -196,7 +165,7 @@ export const DataProvider = ({ children }) => {
     };
 
     const clearCart = () => {
-        setCart([]);
+        clearCartStorage();
     };
 
     // --- Seller Logic ---

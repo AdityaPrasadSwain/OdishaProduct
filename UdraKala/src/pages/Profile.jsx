@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import API from '../api/api';
+import usePersistedState from '../hooks/usePersistedState';
 import Swal from 'sweetalert2';
 import { Camera, User, Phone, MapPin, FileText, Save, Edit2, X } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -13,13 +14,20 @@ const Profile = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     // Form State
-    const [formData, setFormData] = useState({
+    const [formData, setFormData, clearFormData, isRestored] = usePersistedState('form_draft_profile', {
         fullName: '',
         phoneNumber: '',
         address: '',
         bio: '',
         gender: ''
-    });
+    }, 'session', 24 * 60 * 60 * 1000);
+
+    // If there is restored data, automatically open editing mode
+    useEffect(() => {
+        if (isRestored) {
+            setIsEditing(true);
+        }
+    }, [isRestored]);
 
     // Image State
     const [selectedImage, setSelectedImage] = useState(null);
@@ -29,18 +37,20 @@ const Profile = () => {
         fetchProfile();
     }, []);
 
-    const fetchProfile = async () => {
+    const fetchProfile = async (force = false) => {
         try {
             setLoading(true);
             const res = await API.get('/user/profile');
             const data = res.data;
-            setFormData({
-                fullName: data.fullName || '',
-                phoneNumber: data.phoneNumber || '',
-                address: data.address || '',
-                bio: data.bio || '',
-                gender: data.gender || ''
-            });
+            if (!isRestored || force) {
+                setFormData({
+                    fullName: data.fullName || '',
+                    phoneNumber: data.phoneNumber || '',
+                    address: data.address || '',
+                    bio: data.bio || '',
+                    gender: data.gender || ''
+                });
+            }
             setImagePreview(data.profilePictureUrl);
         } catch (error) {
             console.error("Failed to fetch profile", error);
@@ -98,6 +108,7 @@ const Profile = () => {
             // Refresh global auth user state to reflect changes elsewhere
             await refreshUser();
 
+            clearFormData();
             setIsEditing(false);
             setSelectedImage(null); // Clear selected file
             // Update preview with returned url just in case
@@ -179,7 +190,8 @@ const Profile = () => {
                                         onClick={() => {
                                             setIsEditing(false);
                                             setSelectedImage(null);
-                                            fetchProfile(); // Reset to original data
+                                            clearFormData();
+                                            fetchProfile(true); // Reset to original data
                                         }}
                                         className="px-4 py-2 bg-bg-band dark:bg-bg-dark text-text-secondary dark:text-text-secondary rounded-lg hover:bg-bg-band dark:hover:bg-bg-dark transition-colors flex items-center gap-2"
                                         disabled={updating}
@@ -205,6 +217,14 @@ const Profile = () => {
 
 
                     {/* Form Fields */}
+                    {isRestored && (
+                        <div className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 p-3 mt-4 rounded-lg text-sm flex justify-between items-center border border-yellow-200 dark:border-yellow-800 mb-4">
+                            <span>We restored your unsaved changes.</span>
+                            <button type="button" onClick={() => { clearFormData(); fetchProfile(true); }} className="text-yellow-900 dark:text-yellow-100 font-bold hover:underline">
+                                Discard
+                            </button>
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
                         {/* Left Column */}
                         <div className="space-y-6">

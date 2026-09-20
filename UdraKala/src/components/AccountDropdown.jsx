@@ -109,9 +109,10 @@ const AccountDropdown = ({ user, menuItems }) => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 mt-2 w-64 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] overflow-hidden"
+                        className="absolute right-0 top-full pt-2 w-64 z-50"
                         role="menu"
                     >
+                        <div className="bg-bg-surface/90 dark:bg-bg-dark/90 backdrop-blur-xl rounded-2xl shadow-glass dark:shadow-glass-dark border border-white/20 dark:border-white/10 overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
                         <div className="py-2 flex flex-col">
                             {menuItems.map((group, groupIdx) => (
                                 <div key={groupIdx}>
@@ -124,10 +125,10 @@ const AccountDropdown = ({ user, menuItems }) => {
                                     {group.items.map((item, itemIdx) => {
                                         const Icon = item.icon;
                                         const isDanger = item.isDanger;
-                                        const baseClasses = `flex items-center px-5 py-3 w-full text-sm transition-colors focus-visible:bg-bg-page dark:focus-visible:bg-bg-dark focus-visible:outline-none focus-visible:text-primary cursor-pointer ${
+                                        const baseClasses = `flex items-center px-5 py-3 w-full text-sm font-medium transition-all duration-200 focus-visible:bg-bg-page dark:focus-visible:bg-bg-dark focus-visible:outline-none focus-visible:text-primary cursor-pointer ${
                                             isDanger 
-                                                ? 'text-status-error hover:bg-red-50 dark:hover:bg-red-900/10' 
-                                                : 'text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary'
+                                                ? 'text-status-error hover:bg-status-error/10 hover:text-status-error dark:hover:bg-status-error/15' 
+                                                : 'text-text-primary dark:text-text-onDark hover:bg-bg-band/60 dark:hover:bg-white/5 hover:text-primary dark:hover:text-primary hover:translate-x-1'
                                         }`;
 
                                         const content = (
@@ -168,10 +169,11 @@ const AccountDropdown = ({ user, menuItems }) => {
                                     
                                     {/* Separator if not the last group */}
                                     {groupIdx < menuItems.length - 1 && (
-                                        <div className="h-px bg-border dark:bg-white/5 my-2 mx-5"></div>
+                                        <div className="h-px bg-border/50 dark:bg-white/10 my-2 mx-5"></div>
                                     )}
                                 </div>
                             ))}
+                        </div>
                         </div>
                     </motion.div>
                 )}

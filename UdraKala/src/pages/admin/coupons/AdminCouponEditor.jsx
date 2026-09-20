@@ -24,6 +24,7 @@ const AdminCouponEditor = () => {
         globalUsageLimit: 100,
         isActive: true
     });
+    const [fieldErrors, setFieldErrors] = useState({});
 
     useEffect(() => {
         if (isEdit) {
@@ -46,6 +47,7 @@ const AdminCouponEditor = () => {
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+        if (fieldErrors[name]) setFieldErrors({ ...fieldErrors, [name]: null });
     };
 
     const handleSubmit = async (e) => {
@@ -60,7 +62,12 @@ const AdminCouponEditor = () => {
             }
             navigate('/admin/coupons');
         } catch (err) {
-            Swal.fire('Error', err, 'error');
+            if (err.fieldErrors) {
+                const errMap = {};
+                err.fieldErrors.forEach(e => errMap[e.field] = e.message);
+                setFieldErrors(errMap);
+            }
+            Swal.fire('Error', err.message || 'Failed to save coupon', 'error');
         }
     };
 
@@ -80,6 +87,8 @@ const AdminCouponEditor = () => {
                                 required
                                 disabled={isEdit}
                                 inputProps={{ style: { textTransform: 'uppercase' } }}
+                                error={!!fieldErrors.code}
+                                helperText={fieldErrors.code}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -105,6 +114,8 @@ const AdminCouponEditor = () => {
                                 value={formData.discountValue}
                                 onChange={handleChange}
                                 required
+                                error={!!fieldErrors.discountValue}
+                                helperText={fieldErrors.discountValue}
                             />
                         </Grid>
                         <Grid item xs={12} sm={6}>
@@ -115,6 +126,8 @@ const AdminCouponEditor = () => {
                                 name="minOrderAmount"
                                 value={formData.minOrderAmount}
                                 onChange={handleChange}
+                                error={!!fieldErrors.minOrderAmount}
+                                helperText={fieldErrors.minOrderAmount}
                             />
                         </Grid>
 
@@ -127,7 +140,8 @@ const AdminCouponEditor = () => {
                                     name="maxDiscountAmount"
                                     value={formData.maxDiscountAmount}
                                     onChange={handleChange}
-                                    helperText="Cap for percentage discount"
+                                    error={!!fieldErrors.maxDiscountAmount}
+                                    helperText={fieldErrors.maxDiscountAmount || "Cap for percentage discount"}
                                 />
                             </Grid>
                         )}
@@ -141,6 +155,8 @@ const AdminCouponEditor = () => {
                                 value={formData.usageLimitPerUser}
                                 onChange={handleChange}
                                 required
+                                error={!!fieldErrors.usageLimitPerUser}
+                                helperText={fieldErrors.usageLimitPerUser}
                             />
                         </Grid>
 
@@ -153,6 +169,8 @@ const AdminCouponEditor = () => {
                                 value={formData.globalUsageLimit}
                                 onChange={handleChange}
                                 required
+                                error={!!fieldErrors.globalUsageLimit}
+                                helperText={fieldErrors.globalUsageLimit}
                             />
                         </Grid>
 

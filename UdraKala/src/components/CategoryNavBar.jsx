@@ -1,16 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { getActiveCategories } from '../api/categoryApi';
+import { Icon } from '@arkn/react-icon-picker';
 
-const CategoryNavBar = ({ categories }) => {
+const CategoryNavBar = () => {
     const location = useLocation();
     const scrollContainerRef = useRef(null);
     const [activeTabRect, setActiveTabRect] = useState(null);
     const activeItemRef = useRef(null);
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const data = await getActiveCategories();
+                setCategories(data);
+            } catch (error) {
+                console.error("Failed to fetch categories", error);
+            }
+        };
+        fetchCategories();
+    }, []);
 
     // Identify active category based on current pathname
-    const activeCategoryId = categories.find(c => location.pathname.includes(c.href) && c.href !== '/')?.id 
-                           || (location.pathname === '/' ? categories.find(c => c.href === '/')?.id : null)
+    const activeCategoryId = categories.find(c => location.pathname.includes(`/category/${c.slug}`))?.id 
+                           || (location.pathname === '/' ? categories.find(c => c.slug === 'home')?.id : null)
                            || categories[0]?.id; // Fallback to first
 
     useEffect(() => {
@@ -32,7 +47,7 @@ const CategoryNavBar = ({ categories }) => {
     }, [activeCategoryId, categories, location.pathname]);
 
     return (
-        <div className="w-full bg-bg-surface dark:bg-bg-dark border-b border-border dark:border-border relative">
+        <div className="w-full bg-bg-surface dark:bg-bg-dark relative">
             <div className="max-w-[1400px] mx-auto px-2 relative">
                 {/* Horizontal Scroll Container */}
                 <div 
@@ -42,14 +57,14 @@ const CategoryNavBar = ({ categories }) => {
                 >
                     {categories.map((category) => {
                         const isActive = activeCategoryId === category.id;
-                        const Icon = category.icon;
+                        const href = category.slug === 'home' ? '/' : `/category/${category.slug}`;
 
                         return (
                             <Link
                                 key={category.id}
-                                to={category.href}
+                                to={href}
                                 ref={isActive ? activeItemRef : null}
-                                title={category.label} // Tooltip for full name
+                                title={category.name} // Tooltip for full name
                                 className={`flex flex-col items-center justify-center gap-1.5 md:gap-2 px-2 md:px-4 shrink-0 transition-colors duration-200 group ${
                                     isActive 
                                         ? 'text-primary dark:text-primary' 
@@ -57,10 +72,10 @@ const CategoryNavBar = ({ categories }) => {
                                 }`}
                             >
                                 <div className={`transition-transform duration-200 group-hover:-translate-y-0.5 ${isActive ? 'scale-110' : ''}`}>
-                                    {Icon && <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />}
+                                    {category.iconName ? <Icon data={category.iconName} size={22} /> : <div className="w-5 h-5 bg-gray-200 rounded-full" />}
                                 </div>
                                 <span className={`text-[11px] md:text-xs tracking-wide max-w-[70px] md:max-w-[80px] truncate text-center ${isActive ? 'font-bold' : 'font-medium'}`}>
-                                    {category.label}
+                                    {category.name}
                                 </span>
                             </Link>
                         );

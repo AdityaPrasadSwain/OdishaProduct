@@ -1,17 +1,109 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import { createCategory, getAllCategories, deleteCategory } from '../../api/categoryApi';
-import { Trash2, Plus, Upload, X } from 'lucide-react';
+import { createCategory, updateCategory, getAllCategories, deleteCategory, reorderCategories } from '../../api/categoryApi';
+import { Trash2, Plus, Edit2, Save, X, GripVertical } from 'lucide-react';
+import IconPicker from '../../components/admin/IconPicker';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Icon } from '@arkn/react-icon-picker';
+
+const SortableCategoryRow = ({ category, onEdit, onDelete }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: category.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <tr ref={setNodeRef} style={style} className="border-b border-border dark:border-white/10 hover:bg-bg-band dark:hover:bg-white/5 bg-bg-surface dark:bg-bg-dark">
+            <td className="px-4 py-3 whitespace-nowrap w-10">
+                <div {...attributes} {...listeners} className="cursor-grab text-text-secondary hover:text-primary">
+                    <GripVertical size={20} />
+                </div>
+            </td>
+            <td className="px-4 py-3 whitespace-nowrap">
+                <div className="flex items-center gap-3">
+                    {category.iconName ? (
+                        <div className="p-2 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+                            <Icon data={category.iconName} size={20} />
+                        </div>
+                    ) : (
+                        <div className="w-9 h-9 rounded-md bg-bg-band dark:bg-white/10" />
+                    )}
+                    <div>
+                        <div className="font-medium text-text-primary dark:text-text-onDark">{category.name}</div>
+                        <div className="text-xs text-text-secondary">{category.slug}</div>
+                    </div>
+                </div>
+            </td>
+            <td className="px-4 py-3 text-sm text-text-secondary max-w-xs truncate">
+                {category.description}
+            </td>
+            <td className="px-4 py-3 whitespace-nowrap">
+                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${category.active ? 'bg-status-success/10 text-status-success' : 'bg-status-error/10 text-status-error'}`}>
+                    {category.active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                <button
+                    onClick={() => onEdit(category)}
+                    className="text-primary hover:text-primary-hover mr-3"
+                >
+                    <Edit2 size={18} />
+                </button>
+                <button
+                    onClick={() => onDelete(category.id)}
+                    className="text-status-error hover:text-red-400"
+                >
+                    <Trash2 size={18} />
+                </button>
+            </td>
+        </tr>
+    );
+};
 
 const AdminCategories = () => {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [newCategory, setNewCategory] = useState({
+    
+    // Modal states
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+    const [formData, setFormData] = useState({
         name: '',
         description: '',
-        image: null,
-        imagePreview: null,
+        iconName: '',
+        active: true
     });
+    const [fieldErrors, setFieldErrors] = useState({});
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     useEffect(() => {
         fetchCategories();
@@ -21,7 +113,9 @@ const AdminCategories = () => {
         try {
             setLoading(true);
             const data = await getAllCategories();
-            setCategories(data);
+            // Sort them by displayOrder client side just in case
+            const sorted = data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+            setCategories(sorted);
         } catch (error) {
             console.error('Error fetching categories:', error);
         } finally {
@@ -29,59 +123,97 @@ const AdminCategories = () => {
         }
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewCategory({ ...newCategory, [name]: value });
-    };
+    const handleDragEnd = async (event) => {
+        const { active, over } = event;
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            // Validate file type
-            if (!file.type.startsWith('image/')) {
-                Swal.fire('Error', 'Please upload an image file.', 'error');
-                return;
-            }
-            // Validate file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                Swal.fire('Error', 'Image size should be less than 5MB.', 'error');
-                return;
-            }
+        if (active.id !== over.id) {
+            const oldIndex = categories.findIndex((c) => c.id === active.id);
+            const newIndex = categories.findIndex((c) => c.id === over.id);
 
-            setNewCategory({
-                ...newCategory,
-                image: file,
-                imagePreview: URL.createObjectURL(file),
-            });
+            const newArr = arrayMove(categories, oldIndex, newIndex);
+            setCategories(newArr);
+
+            // Save new order to backend
+            const orderRequests = newArr.map((cat, index) => ({
+                id: cat.id,
+                displayOrder: index
+            }));
+
+            try {
+                await reorderCategories(orderRequests);
+            } catch (error) {
+                Swal.fire('Error', 'Failed to save new order', 'error');
+            }
         }
     };
 
-    const removeImage = () => {
-        setNewCategory({ ...newCategory, image: null, imagePreview: null });
+    const openModal = (category = null) => {
+        if (category) {
+            setEditingId(category.id);
+            setFormData({
+                name: category.name,
+                description: category.description || '',
+                iconName: category.iconName || '',
+                active: category.active
+            });
+        } else {
+            setEditingId(null);
+            setFormData({
+                name: '',
+                description: '',
+                iconName: '',
+                active: true
+            });
+        }
+        setFieldErrors({});
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setEditingId(null);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+        if (fieldErrors[name]) {
+            setFieldErrors({ ...fieldErrors, [name]: null });
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!newCategory.name || !newCategory.image) {
-            Swal.fire('Error', 'Please provide both name and image.', 'error');
+        if (!formData.name || !formData.iconName) {
+            Swal.fire('Error', 'Please provide both name and an icon.', 'error');
             return;
         }
 
         try {
             setLoading(true);
-            const formData = new FormData();
-            formData.append('name', newCategory.name);
-            formData.append('description', newCategory.description);
-            formData.append('image', newCategory.image);
+            const payload = {
+                ...formData,
+                displayOrder: editingId ? categories.find(c => c.id === editingId).displayOrder : categories.length
+            };
 
-            await createCategory(formData);
-
-            Swal.fire('Success', 'Category created successfully!', 'success');
-            setNewCategory({ name: '', description: '', image: null, imagePreview: null });
+            if (editingId) {
+                await updateCategory(editingId, payload);
+                Swal.fire('Success', 'Category updated successfully!', 'success');
+            } else {
+                await createCategory(payload);
+                Swal.fire('Success', 'Category created successfully!', 'success');
+            }
+            
+            closeModal();
             fetchCategories();
         } catch (error) {
-            Swal.fire('Error', error.message || 'Failed to create category', 'error');
+            if (error.fieldErrors) {
+                const errMap = {};
+                error.fieldErrors.forEach(err => errMap[err.field] = err.message);
+                setFieldErrors(errMap);
+            }
+            Swal.fire('Error', error.message || 'Failed to save category', 'error');
         } finally {
             setLoading(false);
         }
@@ -90,7 +222,7 @@ const AdminCategories = () => {
     const handleDelete = async (id) => {
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "This will soft-delete the category. Active products linked to it might prevent deletion.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
@@ -111,109 +243,144 @@ const AdminCategories = () => {
 
     return (
         <div className="p-6 text-text-primary dark:text-text-onDark">
-            <h2 className="text-2xl font-bold mb-6">Manage Categories</h2>
-
-            {/* Add New Category Form */}
-            <div className="bg-bg-surface dark:bg-bg-dark p-6 rounded-lg shadow-sm dark:shadow-md dark:shadow-black/40 mb-8 border border-border dark:border-transparent">
-                <h3 className="text-lg font-semibold mb-4">Add New Category</h3>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary">Category Name</label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={newCategory.name}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full rounded-md border-border dark:border-white/10 bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="e.g. Sarees"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary">Description</label>
-                            <input
-                                type="text"
-                                name="description"
-                                value={newCategory.description}
-                                onChange={handleInputChange}
-                                className="mt-1 block w-full rounded-md border-border dark:border-white/10 bg-bg-surface dark:bg-bg-dark text-text-primary dark:text-text-onDark shadow-sm focus:border-primary focus:ring-primary sm:text-sm p-2 border"
-                                placeholder="Short description"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-text-secondary dark:text-text-secondary mb-2">Category Image</label>
-                        {!newCategory.imagePreview ? (
-                            <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-border dark:border-white/10 border-dashed rounded-md cursor-pointer hover:border-primary dark:hover:border-primary transition-colors bg-bg-page dark:bg-bg-dark/30">
-                                <div className="space-y-1 text-center">
-                                    <Upload className="mx-auto h-12 w-12 text-text-secondary dark:text-text-secondary" />
-                                    <div className="flex text-sm text-text-secondary dark:text-text-secondary justify-center">
-                                        <label htmlFor="file-upload" className="relative cursor-pointer bg-transparent rounded-md font-medium text-primary dark:text-primary hover:text-primary dark:hover:text-primary focus-within:outline-none">
-                                            <span>Upload a file</span>
-                                            <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleImageChange} accept="image/*" />
-                                        </label>
-                                        <p className="pl-1">or drag and drop</p>
-                                    </div>
-                                    <p className="text-xs text-text-secondary dark:text-text-secondary">PNG, JPG, GIF up to 5MB</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="relative inline-block">
-                                <img src={newCategory.imagePreview} alt="Preview" className="h-40 w-40 object-cover rounded-md border dark:border-transparent" />
-                                <button
-                                    type="button"
-                                    onClick={removeImage}
-                                    className="absolute -top-2 -right-2 bg-status-error text-text-onDark rounded-full p-1 hover:bg-status-error shadow-md"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-text-onDark bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    >
-                        {loading ? 'Saving...' : <><Plus size={16} className="mr-2" /> Add Category</>}
-                    </button>
-                </form>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold">Manage Categories</h2>
+                <button
+                    onClick={() => openModal()}
+                    className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-md shadow-sm transition-colors"
+                >
+                    <Plus size={20} />
+                    <span>Add Category</span>
+                </button>
             </div>
 
-            {/* Categories List */}
-            <h3 className="text-lg font-semibold mb-4">Existing Categories</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {categories.map((cat) => (
-                    <div key={cat.id} className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow-sm dark:shadow-md dark:shadow-black/40 border border-border dark:border-transparent p-4 flex flex-col hover:shadow-md transition-shadow">
-                        <div className="h-40 w-full mb-4 bg-bg-band dark:bg-bg-dark rounded-md overflow-hidden relative">
-                            {cat.imageUrl ? (
-                                <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-text-secondary dark:text-text-secondary">No Image</div>
-                            )}
-                        </div>
-                        <div className="flex justify-between items-start">
-                            <div className="flex-1 min-w-0 pr-2">
-                                <h4 className="font-bold text-lg text-text-primary dark:text-text-onDark truncate">{cat.name}</h4>
-                                <p className="text-text-secondary dark:text-text-secondary text-sm line-clamp-2">{cat.description}</p>
-                            </div>
-                            <button
-                                onClick={() => handleDelete(cat.id)}
-                                className="text-status-error hover:text-status-error dark:hover:text-red-400 p-1"
-                                title="Delete Category"
+            {/* Categories Table */}
+            <div className="bg-bg-surface dark:bg-bg-dark rounded-lg shadow-sm border border-border dark:border-white/10 overflow-hidden">
+                <table className="min-w-full divide-y divide-border dark:divide-white/10">
+                    <thead className="bg-bg-page dark:bg-black/30">
+                        <tr>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Drag</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Category</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Description</th>
+                            <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                            <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border dark:divide-white/10 bg-bg-surface dark:bg-bg-dark">
+                        <DndContext 
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext 
+                                items={categories.map(c => c.id)}
+                                strategy={verticalListSortingStrategy}
                             >
-                                <Trash2 size={20} />
+                                {categories.map((category) => (
+                                    <SortableCategoryRow
+                                        key={category.id}
+                                        category={category}
+                                        onEdit={openModal}
+                                        onDelete={handleDelete}
+                                    />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                        {categories.length === 0 && !loading && (
+                            <tr>
+                                <td colSpan="5" className="px-4 py-8 text-center text-text-secondary">
+                                    No categories found. Click "Add Category" to create one.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+            </div>
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-bg-surface dark:bg-bg-dark w-full max-w-md rounded-lg shadow-xl border border-border dark:border-white/10 overflow-hidden">
+                        <div className="flex justify-between items-center p-4 border-b border-border dark:border-white/10">
+                            <h3 className="text-lg font-semibold">{editingId ? 'Edit Category' : 'Add New Category'}</h3>
+                            <button onClick={closeModal} className="text-text-secondary hover:text-text-primary p-1">
+                                <X size={20} />
                             </button>
                         </div>
+                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Category Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    className="w-full rounded-md border border-border dark:border-white/10 bg-bg-page dark:bg-black/50 text-text-primary dark:text-text-onDark p-2 focus:ring-1 focus:ring-primary focus:border-primary"
+                                    placeholder="e.g. Sarees"
+                                    required
+                                />
+                                {fieldErrors.name && <p className="text-red-500 text-xs mt-1">{fieldErrors.name}</p>}
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
+                                <textarea
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    className="w-full rounded-md border border-border dark:border-white/10 bg-bg-page dark:bg-black/50 text-text-primary dark:text-text-onDark p-2 focus:ring-1 focus:ring-primary focus:border-primary"
+                                    placeholder="Short description"
+                                    rows="3"
+                                />
+                                {fieldErrors.description && <p className="text-red-500 text-xs mt-1">{fieldErrors.description}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-text-secondary mb-1">Category Icon</label>
+                                <IconPicker 
+                                    selectedIcon={formData.iconName}
+                                    onSelectIcon={(iconName) => {
+                                        setFormData(prev => ({...prev, iconName}));
+                                        if (fieldErrors.iconName) setFieldErrors({...fieldErrors, iconName: null});
+                                    }} 
+                                />
+                                {fieldErrors.iconName && <p className="text-red-500 text-xs mt-1">{fieldErrors.iconName}</p>}
+                            </div>
+
+                            <div className="flex items-center mt-4">
+                                <input
+                                    type="checkbox"
+                                    id="active"
+                                    name="active"
+                                    checked={formData.active}
+                                    onChange={handleInputChange}
+                                    className="h-4 w-4 text-primary focus:ring-primary border-border dark:border-white/10 rounded"
+                                />
+                                <label htmlFor="active" className="ml-2 block text-sm text-text-primary dark:text-text-onDark">
+                                    Is Active
+                                </label>
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3 border-t border-border dark:border-white/10">
+                                <button
+                                    type="button"
+                                    onClick={closeModal}
+                                    className="px-4 py-2 rounded-md border border-border dark:border-white/10 text-text-secondary hover:bg-bg-page dark:hover:bg-white/5"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="flex items-center gap-2 px-4 py-2 rounded-md bg-primary hover:bg-primary-hover text-white disabled:opacity-50"
+                                >
+                                    {loading ? 'Saving...' : <><Save size={16} /> Save</>}
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                ))}
-                {categories.length === 0 && !loading && (
-                    <div className="col-span-full text-center text-text-secondary dark:text-text-secondary py-10">No categories found. Add one above!</div>
-                )}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -2,10 +2,16 @@ package com.odisha.handloom.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "categories")
+@EntityListeners(AuditingEntityListener.class)
 @Data
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Category {
@@ -26,6 +32,28 @@ public class Category {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    @Column(unique = true)
+    private String slug;
+
+    @Column(name = "icon_name")
+    private String iconName;
+
+    @Column(name = "display_order")
+    private Integer displayOrder = 0;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_category_id")
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Category parentCategory;
+
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     public Category() {
     }

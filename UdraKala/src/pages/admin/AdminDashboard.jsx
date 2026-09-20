@@ -17,7 +17,9 @@ import {
     Settings,
     LayoutDashboard
 } from 'lucide-react';
-import AdminCouponList from './coupons/AdminCouponList'; // New Import
+import AdminCouponList from './coupons/AdminCouponList';
+import AccountDropdown from '../../components/AccountDropdown';
+import { useAccountMenuItems } from '../../hooks/useAccountMenuItems';
 import API from '../../api/api';
 import Swal from 'sweetalert2';
 import { sendSellerApprovalEmail } from '../../utils/emailService';
@@ -33,7 +35,7 @@ import { getUnreadNotificationCount } from '../../api/adminNotificationApi';
 import AdminCategories from './AdminCategories';
 import AdminReturnManagement from './AdminReturnManagement';
 import { useTheme } from '../../context/ThemeContext';
-import { DataGrid } from '@mui/x-data-grid';
+import DataTable from '../../components/ui/DataTable';
 import { useAuth } from '../../context/AuthContext';
 
 const AdminDashboard = () => {
@@ -49,6 +51,8 @@ const AdminDashboard = () => {
     const [features, setFeatures] = useState([]);
     const [activeTab, setActiveTab] = useState('overview');
     const navigate = useNavigate();
+
+    const adminMenuItems = useAccountMenuItems(logout);
 
     // Check for alerts on mount
     // Check for alerts on mount - Removed to prevent duplicate alerts (handled by Bell)
@@ -253,89 +257,7 @@ const AdminDashboard = () => {
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                         </button>
                         {/* Profile */}
-                        <div className="relative border-l border-border dark:border-white/10 pl-2">
-                            <button 
-                                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                                className="flex items-center gap-3 p-1 rounded-lg hover:bg-bg-page dark:hover:bg-white/5 transition-colors"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
-                                    {user?.name?.charAt(0) || 'S'}
-                                </div>
-                                <div className="hidden md:flex items-center gap-2">
-                                    <div className="text-left">
-                                        <p className="font-semibold text-text-primary dark:text-text-onDark leading-none">{user?.name || 'Surendra Sahu'}</p>
-                                        <p className="text-[11px] text-text-secondary mt-0.5 leading-none">Super Admin</p>
-                                    </div>
-                                    <ChevronDown size={16} className={`text-text-secondary transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
-                                </div>
-                            </button>
-
-                            {/* Dropdown Menu */}
-                            <AnimatePresence>
-                                {isProfileOpen && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: 10 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="absolute right-0 mt-2 w-48 bg-bg-surface dark:bg-bg-dark border border-border dark:border-white/10 rounded-xl shadow-lg dark:shadow-2xl overflow-hidden z-50"
-                                    >
-                                        <div className="p-2 flex flex-col gap-1">
-                                            <div className="px-3 py-2 border-b border-border dark:border-white/10 mb-1">
-                                                <p className="text-sm font-semibold text-text-primary dark:text-text-onDark">{user?.name || 'Surendra Sahu'}</p>
-                                                <p className="text-xs text-text-secondary mt-0.5">{user?.email || 'admin@example.com'}</p>
-                                            </div>
-                                            
-                                            <button 
-                                                onClick={() => {
-                                                    setIsProfileOpen(false);
-                                                    navigate('/profile');
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors"
-                                            >
-                                                <User size={16} className="text-text-secondary" />
-                                                <span>My Profile</span>
-                                            </button>
-
-                                            <button 
-                                                onClick={() => {
-                                                    setIsProfileOpen(false);
-                                                    setActiveTab('overview');
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors"
-                                            >
-                                                <LayoutDashboard size={16} className="text-text-secondary" />
-                                                <span>Dashboard</span>
-                                            </button>
-
-                                            <button 
-                                                onClick={() => {
-                                                    setIsProfileOpen(false);
-                                                    navigate('/settings');
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-text-primary dark:text-text-onDark hover:bg-bg-page dark:hover:bg-white/5 rounded-lg transition-colors mb-1"
-                                            >
-                                                <Settings size={16} className="text-text-secondary" />
-                                                <span>Settings</span>
-                                            </button>
-
-                                            <div className="h-px bg-border dark:bg-white/10 w-full my-1"></div>
-
-                                            <button 
-                                                onClick={() => {
-                                                    setIsProfileOpen(false);
-                                                    logout();
-                                                }}
-                                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-status-error hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                                            >
-                                                <LogOut size={16} />
-                                                <span>Log Out</span>
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                        <AccountDropdown user={user} menuItems={adminMenuItems} />
                     </div>
                 </header>
 
@@ -372,13 +294,10 @@ const AdminDashboard = () => {
                     <motion.div key="sellers" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Sellers Management">
                             <div style={{ height: 600, width: '100%' }}>
-                                <DataGrid
+                                <DataTable
                                     rows={sellers}
                                     columns={sellerColumns}
-                                    initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
-                                    pageSizeOptions={[5, 10]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
+                                    pageSize={5}
                                 />
                             </div>
                         </Card>
@@ -389,13 +308,10 @@ const AdminDashboard = () => {
                     <motion.div key="products" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
                         <Card title="Product Management">
                             <div style={{ height: 600, width: '100%' }}>
-                                <DataGrid
+                                <DataTable
                                     rows={products}
                                     columns={productColumns}
-                                    initialState={{ pagination: { paginationModel: { page: 0, pageSize: 5 } } }}
-                                    pageSizeOptions={[5, 10]}
-                                    checkboxSelection
-                                    disableRowSelectionOnClick
+                                    pageSize={5}
                                 />
                             </div>
                         </Card>

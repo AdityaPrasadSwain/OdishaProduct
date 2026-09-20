@@ -79,7 +79,7 @@ const ProductDetails = () => {
                 icon: 'error',
                 title: 'Product Not Found',
                 text: 'The product you are looking for does not exist or has been removed.',
-                confirmButtonColor: '#5747C7'
+                confirmButtonColor: '#B91C1C'
             });
         } finally {
             setLoading(false);
@@ -177,7 +177,7 @@ const ProductDetails = () => {
                   <p class="mt-2 text-sm text-text-secondary">We truly appreciate your patience and your choice to shop with us.</p>
                 `,
                 icon: 'success',
-                confirmButtonColor: '#5747C7'
+                confirmButtonColor: '#B91C1C'
             });
         } catch (error) {
             Swal.fire({

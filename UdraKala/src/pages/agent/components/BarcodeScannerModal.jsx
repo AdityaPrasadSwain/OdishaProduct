@@ -21,7 +21,7 @@ const BarcodeScannerModal = ({ isOpen, onClose, onScan, loading }) => {
             <DialogContent className="bg-bg-dark p-0 relative" sx={{ minHeight: '300px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 {loading ? (
                     <Box className="flex flex-col items-center gap-4 py-12">
-                        <CircularProgress sx={{ color: '#5747C7' }} thickness={5} size={60} />
+                        <CircularProgress sx={{ color: '#B91C1C' }} thickness={5} size={60} />
                         <Typography variant="h6" className="text-text-onDark animate-pulse">Verifying...</Typography>
                     </Box>
                 ) : cameraActive ? (

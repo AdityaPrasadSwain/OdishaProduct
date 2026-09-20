@@ -59,8 +59,7 @@ const Cart = () => {
                 <Motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}>
                     <ShoppingBag size={64} className="mx-auto text-text-secondary dark:text-text-secondary mb-6" />
                     <h2 className="text-3xl font-bold text-text-primary dark:text-text-onDark mb-4">Your cart is empty</h2>
-                    <p className="text-text-secondary dark:text-text-secondary mb-8">Looks like you haven't added any unique handlooms yet.</p>
-                    <Link to="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-text-onDark bg-primary hover:bg-primary-hover transition">
+                    <Link to="/products" className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-text-onPrimary bg-primary hover:bg-primary-hover transition">
                         Start Shopping <ArrowRight className="ml-2" size={20} />
                     </Link>
                 </Motion.div>
@@ -196,7 +195,7 @@ const Cart = () => {
                             </div>
                             <button
                                 onClick={handleCheckout}
-                                className="w-full md:w-auto px-8 py-4 bg-primary text-text-onDark font-bold rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary-200 dark:shadow-none flex items-center justify-center gap-2 transform active:scale-95 duration-200"
+                                className="w-full md:w-auto px-8 py-4 bg-primary text-text-onPrimary font-bold rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 dark:shadow-none flex items-center justify-center gap-2 transform active:scale-95 duration-200"
                             >
                                 Checkout Securely <ArrowRight size={20} />
                             </button>

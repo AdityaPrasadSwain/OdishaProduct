@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux'; // Import useSelector
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import usePersistedState from '../hooks/usePersistedState';
 import { createOrder } from '../api/orderApi';
 import { initiatePayment, verifyPayment } from '../api/paymentApi';
 import { getUserAddresses } from '../api/addressApi';
@@ -21,38 +22,16 @@ const Checkout = () => {
 
     // Address State
     const [addresses, setAddresses] = useState([]);
-    const [selectedAddressId, setSelectedAddressId] = useState(null);
+    const [selectedAddressId, setSelectedAddressId, clearAddressState, isAddressRestored] = usePersistedState('form_draft_checkout_address', null, 'session');
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [isAddressLoading, setIsAddressLoading] = useState(true);
 
-    const [paymentMethod, setPaymentMethod] = useState('COD');
+    const [paymentMethod, setPaymentMethod, clearMethodState] = usePersistedState('form_draft_checkout_method', 'COD', 'session');
 
     const subTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const totalAmount = subTotal - (discount || 0);
 
     const isFormValid = selectedAddressId != null;
-
-    // Load persisted checkout data
-    useEffect(() => {
-        const savedData = localStorage.getItem('checkoutData');
-        if (savedData) {
-            try {
-                const { addressId, method } = JSON.parse(savedData);
-                if (addressId) setSelectedAddressId(addressId);
-                if (method) setPaymentMethod(method);
-            } catch (e) {
-                console.error("Failed to parse checkoutData", e);
-            }
-        }
-    }, []);
-
-    // Save checkout data on change
-    useEffect(() => {
-        localStorage.setItem('checkoutData', JSON.stringify({
-            addressId: selectedAddressId,
-            method: paymentMethod
-        }));
-    }, [selectedAddressId, paymentMethod]);
 
     useEffect(() => {
         if (!user) {
@@ -72,10 +51,12 @@ const Checkout = () => {
 
             if (data.length > 0) {
                 const defaultAddr = data.find(a => a.default);
-                if (defaultAddr) {
-                    setSelectedAddressId(defaultAddr.id);
-                } else {
-                    setSelectedAddressId(data[0].id);
+                if (!selectedAddressId) {
+                    if (defaultAddr) {
+                        setSelectedAddressId(defaultAddr.id);
+                    } else {
+                        setSelectedAddressId(data[0].id);
+                    }
                 }
             }
         } catch (error) {
@@ -173,7 +154,7 @@ const Checkout = () => {
                     title: 'Stock Issue',
                     text: error.message,
                     confirmButtonText: 'Review Cart',
-                    confirmButtonColor: '#5747C7'
+                    confirmButtonColor: '#B91C1C'
                 }).then(() => navigate('/cart'));
             } else if (error.errorCode === 'PAYMENT_FAILED') {
                 Swal.fire({
@@ -181,14 +162,14 @@ const Checkout = () => {
                     title: 'Payment Failed',
                     text: error.message,
                     confirmButtonText: 'Try Another Method',
-                    confirmButtonColor: '#5747C7'
+                    confirmButtonColor: '#B91C1C'
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Order Failed',
                     text: error.message || 'Something went wrong processing your order.',
-                    confirmButtonColor: '#5747C7'
+                    confirmButtonColor: '#B91C1C'
                 });
             }
         } finally {
@@ -208,13 +189,14 @@ const Checkout = () => {
         const orderIds = orders.map(o => "#" + o.id.substring(0, 8)).join(", ");
 
         clearCart();
-        localStorage.removeItem('checkoutData');
+        clearAddressState();
+        clearMethodState();
 
         Swal.fire({
             icon: 'success',
             title: method === 'COD' ? 'Order Placed!' : 'Payment Successful!',
             text: `Your orders (${orderIds}) have been confirmed.`,
-            confirmButtonColor: '#5747C7'
+            confirmButtonColor: '#B91C1C'
         }).then(() => {
             navigate('/customer/orders');
         });
@@ -282,7 +264,7 @@ const Checkout = () => {
                                     <p className="text-text-secondary dark:text-text-secondary mb-4 font-medium">No saved addresses found.</p>
                                     <button
                                         onClick={() => setIsAddressModalOpen(true)}
-                                        className="px-6 py-2.5 bg-primary text-text-onDark font-bold rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary-200 dark:shadow-none"
+                                        className="px-6 py-2.5 bg-primary text-text-onPrimary font-bold rounded-xl hover:bg-primary-hover transition shadow-lg shadow-primary/20 dark:shadow-none"
                                     >
                                         Add Delivery Address
                                     </button>
@@ -374,7 +356,7 @@ const Checkout = () => {
                             <button
                                 onClick={handlePlaceOrder}
                                 disabled={loading || !isFormValid}
-                                className="w-full mt-8 py-4 px-6 bg-primary hover:bg-primary-hover text-text-onDark font-bold rounded-xl shadow-lg shadow-primary-200 dark:shadow-none transform transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 uppercase tracking-wide text-sm"
+                                className="w-full mt-8 py-4 px-6 bg-primary hover:bg-primary-hover text-text-onPrimary font-bold rounded-xl shadow-lg shadow-primary/20 dark:shadow-none transform transition active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 uppercase tracking-wide text-sm"
                             >
                                 {loading ? (
                                     <>

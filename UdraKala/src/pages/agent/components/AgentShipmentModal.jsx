@@ -236,7 +236,7 @@ const AgentShipmentModal = ({ isOpen, onClose, shipment }) => {
                                 onClick={() => setIsScannerOpen(true)}
                                 startIcon={<ScanLine />}
                                 sx={{
-                                    bgcolor: '#5747C7',
+                                    bgcolor: '#B91C1C',
                                     '&:hover': { bgcolor: '#c2410c' },
                                     borderRadius: '12px',
                                     py: 1.5,

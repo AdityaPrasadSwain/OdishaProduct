@@ -25,14 +25,14 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
         if (userDetails == null) {
-            return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+            throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("fetch profile", "Unauthorized");
         }
 
         try {
             User user = userService.getUserByEmail(userDetails.getUsername());
             return ResponseEntity.ok(user);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error fetching profile: " + e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error fetching profile: " + e.getMessage());
         }
     }
 
@@ -43,7 +43,7 @@ public class UserController {
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImage) {
 
         if (userDetails == null) {
-            return ResponseEntity.status(401).body(new MessageResponse("Unauthorized"));
+            throw new com.odisha.handloom.exception.UnauthorizedAdminActionException("update profile", "Unauthorized");
         }
 
         try {
@@ -54,7 +54,7 @@ public class UserController {
             return ResponseEntity.internalServerError()
                     .body(new MessageResponse("Error uploading image: " + e.getMessage()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error updating profile: " + e.getMessage()));
+            throw new com.odisha.handloom.exception.InvalidRequestException("Error updating profile: " + e.getMessage());
         }
     }
 }

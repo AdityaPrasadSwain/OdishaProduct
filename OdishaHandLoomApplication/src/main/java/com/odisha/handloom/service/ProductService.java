@@ -20,7 +20,7 @@ public class ProductService {
 
     public Product getProductDetails(UUID id) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new com.odisha.handloom.exception.ResourceNotFoundException("Product", "id", id));
 
         // Calculate ratings on the fly for detail view to ensure accuracy
         Double avgRating = reviewRepository.getAverageRatingByProductId(id);

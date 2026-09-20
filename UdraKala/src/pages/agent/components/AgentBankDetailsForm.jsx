@@ -141,7 +141,7 @@ const AgentBankDetailsForm = () => {
                                 disabled={loading}
                                 startIcon={<Save />}
                                 sx={{
-                                    bgcolor: '#5747C7',
+                                    bgcolor: '#B91C1C',
                                     '&:hover': { bgcolor: '#c2410c' },
                                     px: 5,
                                     borderRadius: 2

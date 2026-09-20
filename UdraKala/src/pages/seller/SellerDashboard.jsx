@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useTheme } from '../../context/ThemeContext';
 import { motion as Motion, AnimatePresence } from 'motion/react';
-import { DataGrid } from '@mui/x-data-grid';
+import DataTable from '../../components/ui/DataTable';
 import { getSellerReturns, processReturnRequest } from '../../api/returnApi';
 import {
     Plus,
@@ -41,10 +41,10 @@ import {
     Copy,
     Archive
 } from 'lucide-react';
+import AccountDropdown from '../../components/AccountDropdown';
+import { useAccountMenuItems } from '../../hooks/useAccountMenuItems';
 import udraKalaLogo from '../../assets/logo.jpg';
-import MuiMenu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import IconButton from '@mui/material/IconButton';
+
 import {
     AreaChart,
     Area,
@@ -92,6 +92,8 @@ const SellerHeader = ({ user, theme, toggleTheme, logout }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    const sellerMenuItems = useAccountMenuItems(logout);
+
     return (
         <header className="sticky top-0 z-40 flex w-full bg-bg-surface dark:bg-bg-dark shadow-sm">
             <div className="flex flex-grow items-center justify-between px-4 py-4 md:px-6 2xl:px-11">
@@ -133,66 +135,7 @@ const SellerHeader = ({ user, theme, toggleTheme, logout }) => {
                     </ul>
 
                     {/* User Area */}
-                    <div className="relative group" ref={userMenuRef}>
-                        <button 
-                            className="flex items-center gap-4 focus:outline-none"
-                            onClick={() => setIsUserMenuOpen(prev => !prev)}
-                        >
-                            <span className="hidden text-right lg:block">
-                                <span className="block text-sm font-medium text-black dark:text-text-onDark">
-                                    {user?.name || user?.fullName || 'Seller'}
-                                </span>
-                                <span className="block text-xs font-medium text-text-secondary">Seller</span>
-                            </span>
-                            <span className="h-10 w-10 rounded-full border border-border dark:border-border overflow-hidden">
-                                {user?.profileImage ? (
-                                    <img src={user.profileImage} alt="User" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full bg-primary text-text-onDark flex items-center justify-center font-bold">
-                                        {(user?.name || user?.fullName || 'S').charAt(0)}
-                                    </div>
-                                )}
-                            </span>
-                            <ChevronDown className={`hidden sm:block text-text-secondary dark:text-text-secondary transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`} size={16} />
-                        </button>
-
-                        <AnimatePresence>
-                            {isUserMenuOpen && (
-                                <Motion.div 
-                                    key="seller-user-menu"
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute right-0 mt-3 w-56 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-xl shadow-xl origin-top-right z-50 overflow-hidden"
-                                >
-                                    <div className="px-4 py-3 border-b border-border dark:border-border bg-bg-page dark:bg-bg-dark/50">
-                                        <span className="block text-sm text-text-primary dark:text-text-onDark font-bold truncate">{user?.fullName || user?.name || "Profile"}</span>
-                                        <span className="block text-xs text-text-secondary truncate dark:text-text-secondary mt-1">{user?.email || "seller@example.com"}</span>
-                                    </div>
-                                    <div className="py-2">
-                                        <button onClick={() => { setIsUserMenuOpen(false); navigate('/seller/profile'); }} className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors">
-                                            <User size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">My Profile</span>
-                                        </button>
-                                        <button onClick={() => { setIsUserMenuOpen(false); navigate('/seller/settings'); }} className="flex items-center px-4 py-2.5 text-sm w-full text-text-secondary dark:text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors">
-                                            <Settings size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">Settings</span>
-                                        </button>
-                                    </div>
-                                    <div className="p-2 border-t border-border dark:border-border">
-                                        <button 
-                                            onClick={() => { setIsUserMenuOpen(false); logout(); }} 
-                                            className="flex items-center px-4 py-2.5 text-sm w-full text-status-error dark:text-red-400 hover:bg-red-50 dark:hover:text-status-error/20 rounded-lg transition-colors"
-                                        >
-                                            <LogOut size={18} className="mr-3 opacity-80" />
-                                            <span className="font-medium">Logout</span>
-                                        </button>
-                                    </div>
-                                </Motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+                    <AccountDropdown user={user} menuItems={sellerMenuItems} />
                 </div>
             </div>
         </header>
@@ -200,57 +143,50 @@ const SellerHeader = ({ user, theme, toggleTheme, logout }) => {
 };
 
 const ProductActionMenu = ({ product, handleEdit, handleDelete }) => {
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
-    
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const [isOpen, setIsOpen] = useState(false);
+    const menuRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) setIsOpen(false);
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     return (
-        <>
-            <IconButton onClick={handleClick} size="small" className="text-text-secondary hover:text-text-secondary">
+        <div className="relative" ref={menuRef}>
+            <button onClick={() => setIsOpen(!isOpen)} className="p-1 rounded hover:bg-bg-band dark:hover:bg-bg-dark transition text-text-secondary">
                 <MoreVertical size={20} />
-            </IconButton>
-            <MuiMenu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                PaperProps={{
-                    elevation: 3,
-                    sx: { minWidth: 200, borderRadius: '12px', mt: 0.5, p: 1, boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)' }
-                }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-                <MenuItem onClick={() => { handleClose(); }} sx={{ py: 1.5, borderRadius: '8px', mb: 0.5 }}>
-                    <Eye size={18} className="mr-3 text-primary" />
-                    <span className="text-sm font-medium text-text-secondary">View Live Page</span>
-                </MenuItem>
-                <MenuItem onClick={() => { handleClose(); handleEdit(product); }} sx={{ py: 1.5, borderRadius: '8px', mb: 0.5 }}>
-                    <Pencil size={18} className="mr-3 text-primary" />
-                    <span className="text-sm font-medium text-text-secondary">Edit Details</span>
-                </MenuItem>
-                <MenuItem onClick={() => { handleClose(); }} sx={{ py: 1.5, borderRadius: '8px', mb: 0.5 }}>
-                    <Copy size={18} className="mr-3 text-primary" />
-                    <span className="text-sm font-medium text-text-secondary">Duplicate</span>
-                </MenuItem>
-                
-                <div className="h-px bg-bg-band my-2 mx-2"></div>
-                
-                <MenuItem onClick={() => { handleClose(); }} sx={{ py: 1.5, borderRadius: '8px', mb: 0.5 }}>
-                    <Archive size={18} className="mr-3 text-status-warning" />
-                    <span className="text-sm font-medium text-status-warning">Archive Product</span>
-                </MenuItem>
-                <MenuItem onClick={() => { handleClose(); handleDelete(product.id); }} sx={{ py: 1.5, borderRadius: '8px' }}>
-                    <Trash2 size={18} className="mr-3 text-status-error" />
-                    <span className="text-sm font-medium text-status-error">Delete Product</span>
-                </MenuItem>
-            </MuiMenu>
-        </>
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <Motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                        className="absolute right-0 bottom-full mb-2 w-48 bg-bg-surface dark:bg-bg-dark rounded-xl shadow-xl border border-border dark:border-border overflow-hidden z-50"
+                    >
+                        <button className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-bg-page dark:hover:bg-bg-page transition text-text-secondary">
+                            <Eye size={16} className="text-primary" /> View Live Page
+                        </button>
+                        <button onClick={() => { setIsOpen(false); handleEdit(product); }} className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-bg-page dark:hover:bg-bg-page transition text-text-secondary">
+                            <Pencil size={16} className="text-primary" /> Edit Details
+                        </button>
+                        <button className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-bg-page dark:hover:bg-bg-page transition text-text-secondary">
+                            <Copy size={16} className="text-primary" /> Duplicate
+                        </button>
+                        <div className="h-px bg-border dark:bg-border my-1 mx-2"></div>
+                        <button className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-bg-page dark:hover:bg-bg-page transition text-status-warning font-medium">
+                            <Archive size={16} /> Archive Product
+                        </button>
+                        <button onClick={() => { setIsOpen(false); handleDelete(product.id); }} className="w-full text-left px-4 py-3 text-sm flex items-center gap-3 hover:bg-red-50 dark:hover:bg-red-900/20 transition text-status-error font-medium">
+                            <Trash2 size={16} /> Delete Product
+                        </button>
+                    </Motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 };
 
@@ -843,14 +779,11 @@ const SellerDashboard = () => {
                                         </div>
                                     </div>
 
-                                    <div style={{ height: 500, width: '100%' }}>
-                                        <DataGrid
+                                    <div className="w-full">
+                                        <DataTable
                                             rows={filteredData}
                                             columns={productColumns}
-                                            initialState={{ pagination: { paginationModel } }}
-                                            pageSizeOptions={[5, 10]}
-                                            checkboxSelection
-                                            disableRowSelectionOnClick
+                                            pageSize={5}
                                         />
                                     </div>
                                 </Card>
@@ -897,14 +830,11 @@ const SellerDashboard = () => {
                                     </div>
 
 
-                                    <div style={{ height: 500, width: '100%' }}>
-                                        <DataGrid
+                                    <div className="w-full">
+                                        <DataTable
                                             rows={filteredData}
                                             columns={returnColumns}
-                                            initialState={{ pagination: { paginationModel } }}
-                                            pageSizeOptions={[5, 10]}
-                                            checkboxSelection
-                                            disableRowSelectionOnClick
+                                            pageSize={5}
                                         />
                                     </div>
                                 </Card>

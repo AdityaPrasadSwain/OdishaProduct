@@ -12,6 +12,7 @@ import udraKalaLogo from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import { useTheme } from '../context/ThemeContext';
+import { useAccountMenuItems } from '../hooks/useAccountMenuItems';
 
 const ThemeToggleBtn = () => {
     const { theme, toggleTheme } = useTheme();
@@ -121,38 +122,8 @@ const CustomNavbar = () => {
         { id: 'beauty', label: "Beauty", icon: Sparkles, href: "/products?category=Beauty" },
     ];
 
-    const accountMenuItems = [];
-    const dashboards = [];
-    if (isAdmin) dashboards.push({ label: t('admin_dashboard'), icon: LayoutDashboard, to: "/admin/dashboard" });
-    if (isSeller) dashboards.push({ label: t('seller_dashboard'), icon: LayoutDashboard, to: "/seller/dashboard" });
-    if (isAgent) dashboards.push({ label: t('agent_dashboard'), icon: LayoutDashboard, to: "/agent/dashboard" });
-    if (isCustomer) dashboards.push({ label: t('my_dashboard'), icon: LayoutDashboard, to: "/customer/dashboard" });
-    
-    if (dashboards.length > 0) {
-        accountMenuItems.push({ title: 'Dashboards', items: dashboards });
-    }
 
-    accountMenuItems.push({
-        title: 'Your Account',
-        items: [
-            { label: "My Profile", icon: User, to: "/profile" },
-            { label: "Orders", icon: Package, to: "/orders" },
-            { label: "Coupons", icon: Ticket, to: "/coupons" },
-            { label: "Supercoin", icon: Coins, to: "/supercoin" },
-            { label: "UdraKala Plus Zone", icon: Zap, to: "/plus-zone" },
-            { label: "Saved Cards & Wallet", icon: CreditCard, to: "/wallet" },
-            { label: "Saved Addresses", icon: MapPin, to: "/addresses" },
-            { label: "Wishlist", icon: Heart, to: "/wishlist" },
-            { label: "Gift Cards", icon: Gift, to: "/gift-cards" },
-            { label: "Notifications", icon: Bell, to: "/notifications" },
-        ]
-    });
-
-    accountMenuItems.push({
-        items: [
-            { label: "Logout", icon: LogOut, onClick: handleLogout, isDanger: true }
-        ]
-    });
+    const accountMenuItems = useAccountMenuItems(handleLogout);
 
     return (
         <>
@@ -199,7 +170,7 @@ const CustomNavbar = () => {
                                         <Link to="/cart" className="relative w-10 h-10 rounded-full flex items-center justify-center text-text-secondary hover:bg-bg-band dark:hover:bg-bg-dark transition-colors">
                                             <ShoppingCart size={20} />
                                             {cart.length > 0 && (
-                                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-text-onDark bg-primary rounded-full translate-x-1/4 -translate-y-1/4">
+                                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-text-onPrimary bg-primary rounded-full translate-x-1/4 -translate-y-1/4">
                                                     {cart.reduce((t, i) => t + i.quantity, 0)}
                                                 </span>
                                             )}
@@ -216,7 +187,7 @@ const CustomNavbar = () => {
                                 <Link to="/login" className="px-4 py-2 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
                                     Log In
                                 </Link>
-                                <Link to="/register" className="px-6 py-2.5 text-sm font-bold text-text-onDark bg-primary rounded-full hover:bg-primary-dark transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                <Link to="/register" className="px-6 py-2.5 text-sm font-bold text-text-onPrimary bg-primary rounded-full hover:bg-primary-hover transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                     Sign Up
                                 </Link>
                             </div>
@@ -239,7 +210,7 @@ const CustomNavbar = () => {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        className="md:hidden bg-bg-surface dark:bg-bg-dark border-b border-border dark:border-border"
+                        className="md:hidden bg-bg-surface/95 dark:bg-bg-dark/95 backdrop-blur-xl border-b border-white/20 dark:border-white/10 shadow-glass dark:shadow-glass-dark"
                     >
                         <div className="px-4 py-4 space-y-4">
                             <form onSubmit={(e) => { handleSearch(e); setIsMenuOpen(false); }} className="relative">
@@ -255,11 +226,11 @@ const CustomNavbar = () => {
                                 />
                             </form>
                             {isGuest && (
-                                <div className="flex flex-col gap-2 pt-2 border-t border-border dark:border-border">
-                                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full px-4 py-2.5 text-center text-sm font-medium text-text-secondary bg-bg-band dark:bg-bg-dark rounded-full">
+                                <div className="flex flex-col gap-3 pt-4 border-t border-border/50 dark:border-white/10">
+                                    <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full px-4 py-3 text-center text-sm font-bold text-text-primary dark:text-text-onDark bg-bg-band/50 dark:bg-white/5 rounded-full hover:bg-bg-band dark:hover:bg-white/10 transition-colors">
                                         Log In
                                     </Link>
-                                    <Link to="/register" onClick={() => setIsMenuOpen(false)} className="w-full px-4 py-2.5 text-center text-sm font-bold text-text-onDark bg-primary rounded-full">
+                                    <Link to="/register" onClick={() => setIsMenuOpen(false)} className="w-full px-4 py-2.5 text-center text-sm font-bold text-text-onPrimary bg-primary rounded-full">
                                         Sign Up
                                     </Link>
                                 </div>

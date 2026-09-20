@@ -22,7 +22,7 @@ const FollowButton = (props) => {
                 icon: 'warning',
                 title: 'Login Required',
                 text: 'Please login to follow sellers',
-                confirmButtonColor: '#5747C7'
+                confirmButtonColor: '#B91C1C'
             });
             return;
         }

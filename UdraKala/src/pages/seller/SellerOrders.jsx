@@ -200,7 +200,7 @@ const SellerOrders = () => {
                 icon: 'warning',
                 title: 'Invoice Not Sent',
                 text: 'You must send the invoice to the customer before marking as Out for Delivery.',
-                confirmButtonColor: '#5747C7'
+                confirmButtonColor: '#B91C1C'
             });
             return;
         }
@@ -250,7 +250,7 @@ const SellerOrders = () => {
             text: "Invoice with thank you message will be sent to customer's registered email.",
             icon: 'info',
             showCancelButton: true,
-            confirmButtonColor: '#5747C7',
+            confirmButtonColor: '#B91C1C',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, send it!'
         });

@@ -60,6 +60,17 @@ import AdminShipmentManager from './pages/admin/shipment/AdminShipmentManager';
 import AdminCouponList from './pages/admin/coupons/AdminCouponList';
 import AdminCouponEditor from './pages/admin/coupons/AdminCouponEditor';
 import AdminCouponDashboard from './pages/admin/coupons/AdminCouponDashboard';
+import AdminErrorBoundary from './components/admin/AdminErrorBoundary';
+// Account Pages
+import Coupons from './pages/customer/Coupons';
+import Supercoin from './pages/customer/Supercoin';
+import PlusZone from './pages/customer/PlusZone';
+import Wallet from './pages/customer/Wallet';
+import Addresses from './pages/customer/Addresses';
+import GiftCards from './pages/customer/GiftCards';
+import Notifications from './pages/customer/Notifications';
+
+import { Outlet } from 'react-router-dom';
 // ... imports
 
 
@@ -95,7 +106,8 @@ function App() {
       {/* ========== Dashboard Layout Routes ========== */}
       <Route element={<DashboardLayout />}>
         {/* Admin Routes */}
-        <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+        <Route element={<AdminErrorBoundary><Outlet/></AdminErrorBoundary>}>
+          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/notifications" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminNotifications /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminUserManagement /></ProtectedRoute>} />
         <Route path="/admin/sellers" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminSellersList /></ProtectedRoute>} />
@@ -121,6 +133,7 @@ function App() {
         <Route path="/admin/wallet/ledger" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminWalletLedger /></ProtectedRoute>} />
 
         <Route path="/admin/accounting" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminAccountingLayout /></ProtectedRoute>} />
+        </Route>
 
         {/* Seller Routes */}
         <Route path="/seller/dashboard" element={<ProtectedRoute allowedRoles={['SELLER']}><SellerDashboard /></ProtectedRoute>} />
@@ -147,6 +160,15 @@ function App() {
 
         {/* Shared Routes */}
         <Route path="/profile" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Profile /></ProtectedRoute>} />
+        
+        {/* Placeholder Routes for Account Menu */}
+        <Route path="/coupons" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Coupons /></ProtectedRoute>} />
+        <Route path="/supercoin" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Supercoin /></ProtectedRoute>} />
+        <Route path="/plus-zone" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><PlusZone /></ProtectedRoute>} />
+        <Route path="/wallet" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Wallet /></ProtectedRoute>} />
+        <Route path="/addresses" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Addresses /></ProtectedRoute>} />
+        <Route path="/gift-cards" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><GiftCards /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute allowedRoles={['ADMIN', 'SELLER', 'CUSTOMER']}><Notifications /></ProtectedRoute>} />
       </Route>
 
       {/* ========== Fallback Route ========== */}

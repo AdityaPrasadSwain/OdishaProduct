@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { motion as Motion, AnimatePresence } from 'motion/react';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { useData } from '../context/DataContext';
+import usePersistedState from '../hooks/usePersistedState';
 import ProductCard from '../components/shared/ProductCard';
 import ProductCardSkeleton from '../components/skeletons/ProductCardSkeleton';
 
@@ -11,12 +12,12 @@ const ProductList = () => {
     const [searchParams] = useSearchParams();
     
     // Initial states from URL params
-    const initialCategory = searchParams.get('category') || 'All';
-    const initialSearch = searchParams.get('search') || '';
+    const initialCategory = searchParams.get('category');
+    const initialSearch = searchParams.get('search');
 
-    const [searchTerm, setSearchTerm] = useState(initialSearch);
-    const [categoryFilter, setCategoryFilter] = useState(initialCategory);
-    const [maxPrice, setMaxPrice] = useState(10000); // Default max
+    const [searchTerm, setSearchTerm] = usePersistedState('filters_products_search', '', 'session');
+    const [categoryFilter, setCategoryFilter] = usePersistedState('filters_products_category', 'All', 'session');
+    const [maxPrice, setMaxPrice] = usePersistedState('filters_products_maxPrice', 10000, 'session');
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     // Update filter if URL param changes
@@ -111,7 +112,7 @@ const ProductList = () => {
                     
                     {/* Desktop Sidebar */}
                     <div className="hidden lg:block w-72 flex-shrink-0">
-                        <div className="sticky top-32 bg-bg-surface dark:bg-bg-dark border border-border dark:border-border rounded-3xl p-6 shadow-sm">
+                        <div className="sticky top-32 bg-bg-surface dark:bg-bg-dark rounded-3xl p-6 shadow-sm">
                             <div className="mb-8 pb-6 border-b border-border dark:border-border">
                                 <h1 className="text-2xl font-bold text-text-primary dark:text-text-onDark font-sans">All Products</h1>
                                 <p className="text-sm text-text-secondary mt-1">Showing {filteredProducts.length} products</p>
@@ -170,7 +171,7 @@ const ProductList = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="bg-bg-surface dark:bg-bg-dark rounded-3xl p-12 text-center border border-border dark:border-border shadow-sm mt-8 lg:mt-0">
+                            <div className="bg-bg-surface dark:bg-bg-dark rounded-3xl p-12 text-center shadow-sm mt-8 lg:mt-0">
                                 <h3 className="text-xl font-bold text-text-primary dark:text-text-onDark mb-2">No products found</h3>
                                 <p className="text-text-secondary">Try adjusting your filters or search criteria.</p>
                                 <button 

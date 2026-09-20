@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCoupons, deleteCoupon, toggleCouponStatus } from '../../../store/slices/couponSlice';
-import { DataGrid } from '@mui/x-data-grid';
+import DataTable from '../../../components/ui/DataTable';
 import { Button, IconButton, Chip, Typography, Box } from '@mui/material';
 import { Edit, Delete, Add, ToggleOn, ToggleOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -127,14 +127,11 @@ const AdminCouponList = () => {
                     Create Coupon
                 </Button>
             </Box>
-            <div style={{ height: 600, width: '100%' }}>
-                <DataGrid
+            <div className="w-full">
+                <DataTable
                     rows={coupons}
                     columns={columns}
-                    loading={loading}
                     pageSize={10}
-                    rowsPerPageOptions={[10, 20, 50]}
-                    disableSelectionOnClick
                 />
             </div>
         </Box>

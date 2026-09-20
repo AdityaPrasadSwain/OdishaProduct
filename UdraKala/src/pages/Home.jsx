@@ -81,7 +81,7 @@ const Home = () => {
                         >
                             <button 
                                 onClick={() => navigate('/products')}
-                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary hover:bg-primary-dark text-text-onDark font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+                                className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary hover:bg-primary-hover text-text-onPrimary font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
                             >
                                 Shop Now <ArrowRight size={20} />
                             </button>
@@ -114,7 +114,7 @@ const Home = () => {
                             transition={{ delay: 0.8, type: "spring" }}
                             className="absolute bottom-12 right-12 z-30 bg-bg-dark text-text-onDark px-4 py-3 rounded-2xl shadow-xl flex flex-col items-center rotate-[-5deg]"
                         >
-                            <span className="text-2xl font-black text-accent-light">25% OFF</span>
+                            <span className="text-2xl font-black text-accent">25% OFF</span>
                             <span className="text-xs font-medium text-text-secondary">Summer Restocks</span>
                         </motion.div>
                     </div>
@@ -163,7 +163,7 @@ const Home = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {TRUST_FEATURES.map((feature, idx) => (
                             <div key={idx} className="flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-2xl bg-accent-tealBg-bg dark:bg-accent-tealBg-900/30 flex items-center justify-center text-accent mb-4">
+                                <div className="w-16 h-16 rounded-2xl bg-secondary/10 flex items-center justify-center text-secondary mb-4">
                                     <feature.icon size={28} />
                                 </div>
                                 <h4 className="text-lg font-bold text-text-primary dark:text-text-onDark mb-1">{feature.title}</h4>
@@ -186,7 +186,7 @@ const Home = () => {
                                     <h4 className="font-bold text-lg text-text-primary dark:text-text-onDark">{store.name}</h4>
                                     <p className="text-xs text-text-secondary">{store.followers} followers</p>
                                 </div>
-                                <button className="px-4 py-1.5 rounded-full border border-primary text-primary text-xs font-bold hover:bg-primary hover:text-text-onDark transition-colors">
+                                <button className="px-4 py-1.5 rounded-full border border-primary text-primary text-xs font-bold hover:bg-primary hover:text-text-onPrimary transition-colors">
                                     Follow
                                 </button>
                             </div>
@@ -208,7 +208,7 @@ const Home = () => {
                 <div className="max-w-7xl mx-auto bg-bg-dark rounded-3xl p-10 md:p-16 flex flex-col items-center text-center overflow-hidden relative shadow-2xl">
                     {/* Decorative blobs */}
                     <div className="absolute top-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-accent-tealBg/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+                    <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
                     
                     <div className="relative z-10">
                         <h2 className="text-3xl md:text-5xl font-bold text-text-onDark mb-4">Join the UdraKala Inner Circle</h2>
@@ -220,7 +220,7 @@ const Home = () => {
                                 placeholder="Email address" 
                                 className="flex-1 px-6 py-4 rounded-full bg-bg-surface/10 border border-white/20 text-text-onDark placeholder-secondary-400 focus:outline-none focus:border-primary focus:bg-bg-surface/20 transition-all"
                             />
-                            <button type="submit" className="px-8 py-4 rounded-full bg-primary hover:bg-primary-dark text-text-onDark font-bold transition-all shadow-lg hover:shadow-xl">
+                            <button type="submit" className="px-8 py-4 rounded-full bg-primary hover:bg-primary-hover text-text-onPrimary font-bold transition-all shadow-lg hover:shadow-xl">
                                 Subscribe
                             </button>
                         </form>

@@ -9,6 +9,7 @@ import com.odisha.handloom.repository.ShipmentBarcodeRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -19,33 +20,30 @@ public class DataSeeder implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final ShipmentRepository shipmentRepository;
     private final ShipmentBarcodeRepository shipmentBarcodeRepository; // Add field
+    private final JdbcTemplate jdbcTemplate;
 
     public DataSeeder(CategoryRepository categoryRepository,
             ShipmentRepository shipmentRepository,
-            ShipmentBarcodeRepository shipmentBarcodeRepository) { // Update Constructor
+            ShipmentBarcodeRepository shipmentBarcodeRepository,
+            JdbcTemplate jdbcTemplate) { // Update Constructor
         this.categoryRepository = categoryRepository;
         this.shipmentRepository = shipmentRepository;
         this.shipmentBarcodeRepository = shipmentBarcodeRepository;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        if (categoryRepository.count() == 0) {
-            List<String> defaultCategories = Arrays.asList(
-                    "Sarees",
-                    "Fabrics",
-                    "Handicrafts",
-                    "Home Decor",
-                    "Apparel");
-
-            for (String catName : defaultCategories) {
-                Category category = new Category();
-                category.setName(catName);
-                category.setDescription("Authentic Odisha " + catName);
-                category.setImageUrl("/default_category_placeholder.png");
-                categoryRepository.save(category);
-            }
-            System.out.println("✅ Default categories seeded successfully!");
+        // We are no longer seeding categories.
+        // Instead, we will clean up existing categories to ensure the table is empty.
+        long categoryCount = categoryRepository.count();
+        if (categoryCount > 0) {
+            System.out.println("Cleaning up existing categories...");
+            // First, nullify category associations in products to avoid foreign key constraint violations
+            jdbcTemplate.update("UPDATE products SET category_id = NULL");
+            // Then delete all categories
+            categoryRepository.deleteAll();
+            System.out.println("✅ " + categoryCount + " categories removed successfully!");
         }
 
         // Backfill Shipments with missing barcode

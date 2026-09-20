@@ -128,7 +128,7 @@ const Login = () => {
 
                         <button
                             disabled={loading}
-                            className="w-full bg-primary hover:bg-primary-hover text-text-onDark font-bold py-3 rounded-lg shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-primary hover:bg-primary-hover text-text-onPrimary font-bold py-3 rounded-lg shadow-lg hover:shadow-primary/30 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? t('signing_in') : t('sign_in')}
                         </button>

@@ -6,12 +6,12 @@ const Button = ({ children, variant = 'primary', size = 'md', className = "", ..
     const baseStyles = "inline-flex items-center justify-center rounded-xl font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]";
 
     const variants = {
-        primary: "bg-primary text-text-onDark hover:bg-primary-hover hover:shadow-lg hover:shadow-primary-500/30 focus:ring-primary",
-        secondary: "bg-bg-dark text-text-onDark hover:bg-bg-dark focus:ring-secondary-500",
-        outline: "border-2 border-primary text-primary hover:bg-bg-band focus:ring-primary",
-        ghost: "bg-transparent text-text-secondary hover:bg-bg-band hover:text-text-primary dark:text-text-secondary dark:hover:bg-bg-dark dark:hover:text-text-onDark",
-        danger: "bg-danger text-text-onDark hover:text-status-error hover:shadow-lg hover:shadow-red-500/30 focus:ring-danger",
-        success: "bg-success text-text-onDark hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 focus:ring-success",
+        primary: "bg-primary text-text-onPrimary hover:bg-primary-hover hover:shadow-lg hover:shadow-primary/30 focus:ring-primary",
+        secondary: "bg-secondary text-text-onPrimary hover:bg-secondary-hover focus:ring-secondary",
+        outline: "border-2 border-primary text-primary hover:bg-primary-light focus:ring-primary",
+        ghost: "bg-transparent text-text-secondary hover:bg-bg-muted hover:text-text-primary",
+        danger: "bg-status-error text-text-onPrimary hover:bg-red-800 hover:shadow-lg hover:shadow-red-500/30 focus:ring-status-error",
+        success: "bg-status-success text-text-onPrimary hover:bg-green-700 hover:shadow-lg hover:shadow-green-500/30 focus:ring-status-success",
     };
 
     const sizes = {

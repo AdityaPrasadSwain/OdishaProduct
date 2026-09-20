@@ -5,9 +5,7 @@ import { User, CheckCircle, XCircle, Trash2, Ban, Shield, Lock, Search, Eye } fr
 import Swal from 'sweetalert2';
 import Badge from '../../components/ui/Badge';
 import { motion } from 'framer-motion';
-import { DataGrid } from '@mui/x-data-grid';
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import DataTable from '../../components/ui/DataTable';
 import { useTheme } from '../../context/ThemeContext';
 
 const normalizeUser = (user) => {
@@ -175,38 +173,7 @@ const AdminUserManagement = () => {
 
     // --- Theme & Columns ---
     // Assuming 'useTheme' is provided by a parent context (e.g., from @mui/material/styles or a custom theme provider)
-    // If not, you might need to define 'theme' state or remove useTheme() and hardcode 'light'/'dark'
-    const { theme } = useTheme();
-    const muiTheme = React.useMemo(() => createTheme({
-        palette: {
-            mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#5747C7' }, // Orange-600
-            background: {
-                paper: theme === 'dark' ? '#1f2937' : '#ffffff',
-                default: theme === 'dark' ? '#111827' : '#ffffff',
-            },
-            text: {
-                primary: theme === 'dark' ? '#f3f4f6' : '#111827',
-                secondary: theme === 'dark' ? '#9ca3af' : '#4b5563',
-            },
-        },
-        components: {
-            MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-            MuiDataGrid: {
-                styleOverrides: {
-                    root: {
-                        border: 'none',
-                        '& .MuiDataGrid-cell': { borderColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
-                        '& .MuiDataGrid-columnHeaders': {
-                            borderColor: theme === 'dark' ? '#374151' : '#e5e7eb',
-                            backgroundColor: theme === 'dark' ? '#374151' : '#f9fafb',
-                        },
-                        '& .MuiDataGrid-footerContainer': { borderTopColor: theme === 'dark' ? '#374151' : '#e5e7eb' },
-                    },
-                },
-            },
-        },
-    }), [theme]);
+
 
     const columns = [
         {
@@ -376,20 +343,13 @@ const AdminUserManagement = () => {
                 {loading ? (
                     <div className="p-10 text-center text-text-secondary">Loading...</div>
                 ) : (
-                    <MuiThemeProvider theme={muiTheme}>
-                        <Paper sx={{ width: '100%', height: 600, boxShadow: 'none' }}>
-                            <DataGrid
-                                rows={filteredUsers}
-                                columns={columns}
-                                initialState={{ pagination: { paginationModel: { page: 0, pageSize: 10 } } }}
-                                pageSizeOptions={[5, 10, 20]}
-                                checkboxSelection
-                                disableRowSelectionOnClick
-                                getRowId={(row) => row.id}
-                                rowHeight={80}
-                            />
-                        </Paper>
-                    </MuiThemeProvider>
+                    <div className="w-full">
+                        <DataTable
+                            rows={filteredUsers}
+                            columns={columns}
+                            pageSize={10}
+                        />
+                    </div>
                 )}
             </div>
         </div>

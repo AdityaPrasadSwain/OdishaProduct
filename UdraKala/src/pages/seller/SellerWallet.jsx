@@ -36,7 +36,7 @@ const SellerWallet = () => {
             text: `Withdraw ₹${walletData.currentBalance}? This will be processed to your registered bank account.`,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#5747C7',
+            confirmButtonColor: '#B91C1C',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, Withdraw'
         });

@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { DataGrid } from '@mui/x-data-grid';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import Paper from '@mui/material/Paper';
+import DataTable from '../../components/ui/DataTable';
 import { Play, Heart, MessageCircle, Eye, Loader2, Send, X } from 'lucide-react';
 import API from '../../api/api';
 import Swal from 'sweetalert2';
@@ -32,32 +30,6 @@ const SellerReelsDashboard = () => {
     const [scriptInput, setScriptInput] = useState({ productName: '', targetAudience: '', platform: 'Instagram' });
     const [generatedScript, setGeneratedScript] = useState("");
 
-
-    const muiTheme = useMemo(() => createTheme({
-        palette: {
-            mode: theme === 'dark' ? 'dark' : 'light',
-            primary: { main: '#5747C7' }, // Orange
-            background: {
-                paper: theme === 'dark' ? '#1f2937' : '#ffffff',
-                default: theme === 'dark' ? '#111827' : '#ffffff',
-            },
-            text: {
-                primary: theme === 'dark' ? '#f3f4f6' : '#111827',
-                secondary: theme === 'dark' ? '#9ca3af' : '#4b5563',
-            },
-        },
-        components: {
-            MuiDataGrid: {
-                styleOverrides: {
-                    root: { border: 'none' },
-                    columnHeaders: {
-                        backgroundColor: theme === 'dark' ? '#374151' : '#f3f4f6',
-                        color: theme === 'dark' ? '#e5e7eb' : '#1f2937'
-                    }
-                }
-            }
-        }
-    }), [theme]);
 
     useEffect(() => {
         fetchData();
@@ -225,19 +197,13 @@ const SellerReelsDashboard = () => {
                 {loading ? (
                     <div className="flex justify-center p-12"><Loader2 className="animate-spin text-primary" /></div>
                 ) : (
-                    <ThemeProvider theme={muiTheme}>
-                        <Paper sx={{ width: '100%', height: 500, boxShadow: 'none' }}>
-                            <DataGrid
-                                rows={reels}
-                                columns={columns}
-                                pageSizeOptions={[5, 10]}
-                                getRowId={(row) => row.reelId || row.id}
-                                initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
-                                disableRowSelectionOnClick
-                                rowHeight={90}
-                            />
-                        </Paper>
-                    </ThemeProvider>
+                    <div className="w-full">
+                        <DataTable
+                            rows={reels}
+                            columns={columns}
+                            pageSize={5}
+                        />
+                    </div>
                 )}
             </Card>
 

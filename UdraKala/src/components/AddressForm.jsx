@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import { addAddress } from '../api/addressApi';
+import usePersistedState from '../hooks/usePersistedState';
 import { X, MapPin } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const AddressForm = ({ isOpen, onClose, onAddressAdded }) => {
-    const [formData, setFormData] = useState({
+    const [formData, setFormData, clearFormData, isRestored] = usePersistedState('form_draft_address', {
         street: '',
         city: '',
         state: '',
         zipCode: '',
         country: 'India',
         isDefault: false
-    });
+    }, 'session', 24 * 60 * 60 * 1000);
     const [loading, setLoading] = useState(false);
 
     if (!isOpen) return null;
@@ -39,14 +40,7 @@ const AddressForm = ({ isOpen, onClose, onAddressAdded }) => {
                 showConfirmButton: false
             });
             // Reset form
-            setFormData({
-                street: '',
-                city: '',
-                state: '',
-                zipCode: '',
-                country: 'India',
-                isDefault: false
-            });
+            clearFormData();
         } catch (error) {
             console.error('Failed to add address:', error);
             Swal.fire({
@@ -71,6 +65,15 @@ const AddressForm = ({ isOpen, onClose, onAddressAdded }) => {
                         <X size={24} />
                     </button>
                 </div>
+
+                {isRestored && (
+                    <div className="bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 p-3 mx-6 mt-4 rounded-lg text-sm flex justify-between items-center border border-yellow-200 dark:border-yellow-800">
+                        <span>We restored your unsaved changes.</span>
+                        <button type="button" onClick={clearFormData} className="text-yellow-900 dark:text-yellow-100 font-bold hover:underline">
+                            Discard
+                        </button>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
                     <div>

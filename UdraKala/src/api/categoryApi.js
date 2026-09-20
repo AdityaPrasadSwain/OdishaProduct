@@ -1,16 +1,40 @@
 import API from './api';
 
-// Create a new category with image
-export const createCategory = async (formData) => {
+// Create a new category (JSON payload)
+export const createCategory = async (categoryData) => {
     try {
-        const response = await API.post('/categories', formData, {
+        const response = await API.post('/categories', categoryData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': 'application/json',
             },
         });
         return response.data;
     } catch (error) {
-        throw error.response ? error.response.data : new Error('Network Error');
+        throw error;
+    }
+};
+
+// Update existing category
+export const updateCategory = async (id, categoryData) => {
+    try {
+        const response = await API.put(`/categories/${id}`, categoryData, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Reorder categories
+export const reorderCategories = async (orderData) => {
+    try {
+        const response = await API.put('/categories/reorder', orderData);
+        return response.data;
+    } catch (error) {
+        throw error;
     }
 };
 
@@ -20,7 +44,7 @@ export const getAllCategories = async () => {
         const response = await API.get('/categories');
         return response.data;
     } catch (error) {
-        throw error.response ? error.response.data : new Error('Network Error');
+        throw error;
     }
 };
 
@@ -30,7 +54,7 @@ export const getActiveCategories = async () => {
         const response = await API.get('/categories/active');
         return response.data;
     } catch (error) {
-        throw error.response ? error.response.data : new Error('Network Error');
+        throw error;
     }
 };
 
@@ -40,6 +64,6 @@ export const deleteCategory = async (id) => {
         const response = await API.delete(`/categories/${id}`);
         return response.data;
     } catch (error) {
-        throw error.response ? error.response.data : new Error('Network Error');
+        throw error;
     }
 };
